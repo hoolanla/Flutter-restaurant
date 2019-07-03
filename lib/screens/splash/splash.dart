@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:online_store/screens/home/home.dart';
 import 'package:online_store/screens/login/login.dart';
 import 'package:online_store/services/authService.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class SplashScreen extends StatefulWidget{
   @override
@@ -18,6 +20,9 @@ Widget page = Login();
 
   AuthService authService = AuthService();
   Widget page = Login();
+  SharedPreferences _pref = await SharedPreferences.getInstance();
+
+
   if(await authService.isLogin()){page = Home();
   }
 

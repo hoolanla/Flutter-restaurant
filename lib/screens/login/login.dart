@@ -56,8 +56,7 @@ class _SignUpState extends State<Login> {
   Widget build(BuildContext context) {
 
 
-    void _showAlertDialog() async
-    {
+    void _showAlertDialog() async {
       showDialog(context: context,
       barrierDismissible: false,
         builder: (context){
@@ -139,7 +138,6 @@ class _SignUpState extends State<Login> {
                                 padding: const EdgeInsets.only(left: 12.0),
                                 child: ListTile(
                                 title: TextFormField(
-                                  //   controller: _emailTextController,
                                   decoration: InputDecoration(
                                     border: InputBorder.none,
                                     hintText: "Email",
@@ -190,7 +188,7 @@ class _SignUpState extends State<Login> {
                                       icon: Icon(Icons.remove_red_eye),
                                       onPressed: () {
                                         setState(() {
-                                          hidePass = false;
+                                          hidePass = !hidePass;
                                         });
                                       }),
                                 ),

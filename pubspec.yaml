@@ -40,6 +40,7 @@ dependencies:
   geolocator: '^5.0.0'
   geocoder: ^0.1.2
   location: ^1.4.1
+
   flutter_google_places: ^0.1.2
 
 

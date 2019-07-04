@@ -8,10 +8,7 @@ String imagePath = '';
 String displayName = '';
 
 
-
 class DrawerLayout extends StatelessWidget  {
-
-
 
   _loadCounter() async {
     AuthService authService = AuthService();
@@ -21,14 +18,11 @@ class DrawerLayout extends StatelessWidget  {
     }
   }
 
-
-
   _logOut(BuildContext context) async {
     AuthService authService = AuthService();
     await authService.logout();
     Navigator.of(context).pushNamed('/login');
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -36,18 +30,40 @@ class DrawerLayout extends StatelessWidget  {
 
     _loadCounter();
 
-
-
-
     return new Drawer(
-
-
-
-
-
         child: new StreamBuilder(
       stream: authBloc.auth,
       builder: (context, snapshot) {
+
+
+        Future _showAlertDialog() async {
+          SharedPreferences _pref = await SharedPreferences.getInstance();
+          showDialog(context: context,
+              barrierDismissible: true,
+              builder: (context){
+                return AlertDialog(
+                  title: Text("${_pref.getString(AuthService.DISPLAYNAME)} to logout." ),
+                  content: Text("Are you sure?"),
+                  actions: <Widget>[
+                    FlatButton(
+                      onPressed: ()  {
+                        AuthService authService = AuthService();
+                         authService.logout();
+                        Navigator.of(context).pushNamed('/login');;
+                      },
+                      child: Text("Yes"),
+                    ),
+                    FlatButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text("No"),
+                    )
+                  ],
+                );
+              });
+        }
+
         return Container(
             color: Colors.green,
             child: new Column(
@@ -174,8 +190,11 @@ class DrawerLayout extends StatelessWidget  {
                           icon: Icon(
                             Icons.exit_to_app,
                             color: Colors.black54,
+
                           ),
-                          onTap: () => _logOut(context),
+
+                         onTap: _showAlertDialog,
+
                         ),
                       ],
                     ),

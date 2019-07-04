@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
+
 
 
 
@@ -13,19 +15,38 @@ class Mapgoogle extends StatefulWidget {
 
 class _MyAppState extends State<Mapgoogle> {
   Completer<GoogleMapController> _controller = Completer();
-
-
-
-  Map<String, double> currentLocation;
-
-
-  static const LatLng _center = const LatLng(14.521563, 100.677433);
-
-
+ // Map<String, double> currentLocation;
+   LatLng _center;// =  LatLng(14.521563, 100.677433);
 
   void _onMapCreated(GoogleMapController controller) {
     _controller.complete(controller);
   }
+
+  Map<String,double> currentLocation = new Map();
+  StreamSubscription<Map<String,double>> locationSubscription;
+
+  Location location = new Location();
+
+
+  @override
+  void initState() {
+    super.initState();
+
+    currentLocation['latitude'] = 0.0;
+    currentLocation['longitude'] = 0.0;
+
+    initPlatformState();
+    locationSubscription = location.onLocationChanged().listen((Map<String, double> result){
+      setState(() {
+        currentLocation = result;
+
+        _center = LatLng(currentLocation['latitude'], currentLocation['longitude']);
+      });
+
+    });
+  }
+
+
 
 
 
@@ -50,9 +71,18 @@ class _MyAppState extends State<Mapgoogle> {
   }
 
 
+  void initPlatformState() async{
+    Map<String,double> Mylocation = new Map();
 
+
+    Mylocation = await location.getLocation();
+
+
+
+
+
+  }
 
 
 
 }
-

@@ -68,6 +68,12 @@ PODS:
     - FBSDKCoreKit (= 4.39.1)
     - FBSDKLoginKit (= 4.39.1)
     - Flutter
+  - geocoder (0.0.1):
+    - Flutter
+  - geolocator (5.0.1):
+    - Flutter
+  - google_api_availability (2.0.1):
+    - Flutter
   - google_maps_flutter (0.0.1):
     - Flutter
     - GoogleMaps
@@ -118,6 +124,8 @@ PODS:
   - GTMSessionFetcher/Core (1.2.2)
   - location (0.0.1):
     - Flutter
+  - location_permissions (2.0.2):
+    - Flutter
   - MTBBarcodeScanner (5.0.11)
   - nanopb (0.3.901):
     - nanopb/decode (= 0.3.901)
@@ -138,9 +146,13 @@ DEPENDENCIES:
   - firebase_dynamic_links (from `.symlinks/plugins/firebase_dynamic_links/ios`)
   - Flutter (from `.symlinks/flutter/ios`)
   - flutter_facebook_login (from `.symlinks/plugins/flutter_facebook_login/ios`)
+  - geocoder (from `.symlinks/plugins/geocoder/ios`)
+  - geolocator (from `.symlinks/plugins/geolocator/ios`)
+  - google_api_availability (from `.symlinks/plugins/google_api_availability/ios`)
   - google_maps_flutter (from `.symlinks/plugins/google_maps_flutter/ios`)
   - google_sign_in (from `.symlinks/plugins/google_sign_in/ios`)
   - location (from `.symlinks/plugins/location/ios`)
+  - location_permissions (from `.symlinks/plugins/location_permissions/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
   - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
 
@@ -181,12 +193,20 @@ EXTERNAL SOURCES:
     :path: ".symlinks/flutter/ios"
   flutter_facebook_login:
     :path: ".symlinks/plugins/flutter_facebook_login/ios"
+  geocoder:
+    :path: ".symlinks/plugins/geocoder/ios"
+  geolocator:
+    :path: ".symlinks/plugins/geolocator/ios"
+  google_api_availability:
+    :path: ".symlinks/plugins/google_api_availability/ios"
   google_maps_flutter:
     :path: ".symlinks/plugins/google_maps_flutter/ios"
   google_sign_in:
     :path: ".symlinks/plugins/google_sign_in/ios"
   location:
     :path: ".symlinks/plugins/location/ios"
+  location_permissions:
+    :path: ".symlinks/plugins/location_permissions/ios"
   path_provider:
     :path: ".symlinks/plugins/path_provider/ios"
   shared_preferences:
@@ -211,6 +231,9 @@ SPEC CHECKSUMS:
   FirebaseInstanceID: a122b0c258720cf250551bb2bedf48c699f80d90
   Flutter: 58dd7d1b27887414a370fcccb9e645c08ffd7a6a
   flutter_facebook_login: 07a42eaf780e147af9c7a7d75b807b2cc820d1f0
+  geocoder: 3cfab70531a0b367e917bafe82df4c30f6d4c45a
+  geolocator: f3dd3b5b1761a15a4da00665774c5a8319e657d6
+  google_api_availability: 163b30f802e6148c67f092aa4501c90ddd8eec8d
   google_maps_flutter: 924970f41ec509a201b593548db005efb2a09ee9
   google_sign_in: 27e70a98b529f0b076d4b19f231b81da28b1750b
   GoogleAppMeasurement: ffe513e90551844a739e7bcbb1d2aca1c28a4338
@@ -220,6 +243,7 @@ SPEC CHECKSUMS:
   GoogleUtilities: 04fce34bcd5620c1ee76fb79172105c74a4df335
   GTMSessionFetcher: 61bb0f61a4cb560030f1222021178008a5727a23
   location: 3a2eed4dd2fab25e7b7baf2a9efefe82b512d740
+  location_permissions: 67cfaff583afbb027a9f9248196f4b79c40f3cdc
   MTBBarcodeScanner: f453b33c4b7dfe545d8c6484ed744d55671788cb
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   path_provider: f96fff6166a8867510d2c25fdcc346327cc4b259

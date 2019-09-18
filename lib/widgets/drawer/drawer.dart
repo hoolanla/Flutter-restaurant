@@ -175,6 +175,29 @@ class DrawerLayout extends StatelessWidget  {
                             Navigator.of(context).pushNamed('/home');
                           },
                         ),
+
+                        new MenuItem(
+                          title: "ViewMenu",
+                          icon: Icon(
+                            Icons.edit,
+                            color: Colors.black54,
+                          ),
+                          onTap: () {
+                            Navigator.of(context).pushNamed('/ViewMenu');
+                          },
+                        ),
+
+                        new MenuItem(
+                          title: "OrderList",
+                          icon: Icon(
+                            Icons.list,
+                            color: Colors.black54,
+                          ),
+                          onTap: () {
+                            Navigator.of(context).pushNamed('/OrderList');
+                          },
+                        ),
+
                         new MenuItem(
                           title: "Cart",
                           icon: Icon(

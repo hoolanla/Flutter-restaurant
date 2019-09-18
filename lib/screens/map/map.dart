@@ -1,3 +1,4 @@
+/*
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -92,6 +93,7 @@ class _MyAppState extends State<Mapgoogle> {
           body: Stack(
             children: <Widget>[
               GoogleMap(
+
                 myLocationEnabled: true,
                 onMapCreated: _onMapCreated,
                 initialCameraPosition: CameraPosition(
@@ -116,7 +118,8 @@ class _MyAppState extends State<Mapgoogle> {
                     alignment: Alignment.bottomRight,
                     child: Column(
                       children: <Widget>[
-                  /*      FloatingActionButton(
+                  */
+/*      FloatingActionButton(
                           onPressed: _onMapTypeButtonPressed,
                           materialTapTargetSize: MaterialTapTargetSize.padded,
                           backgroundColor: Colors.green,
@@ -126,7 +129,8 @@ class _MyAppState extends State<Mapgoogle> {
                         ),
                         SizedBox(
                           height: 16.0,
-                        ),*/
+                        ),*//*
+
                         FloatingActionButton(
                           onPressed: _onAddMarkerButtonPressed,
                           materialTapTargetSize: MaterialTapTargetSize.padded,
@@ -148,3 +152,4 @@ class _MyAppState extends State<Mapgoogle> {
     Mylocation = await location.getLocation();
   }
 }
+*/

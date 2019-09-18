@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:online_store/blocs/auth.dart';
-import 'package:online_store/blocs/cart.dart';
-import 'package:online_store/blocs/products.dart';
+import 'package:online_store/blocs2/auth.dart';
+import 'package:online_store/blocs2/cart.dart';
+import 'package:online_store/blocs2/products.dart';
 
 class BlocProvider extends InheritedWidget {
   final CartBloc cartBloc = CartBloc();

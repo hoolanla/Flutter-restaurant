@@ -69,7 +69,7 @@ class ProductState extends State<ProductPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           new Text(
-                            widget.data['price'].toString() + "B ",
+                            widget.data['price'].toString() + "H ",
                             textDirection: TextDirection.rtl,
                             style: TextStyle(
                                 fontSize: 20.0, fontWeight: FontWeight.bold),

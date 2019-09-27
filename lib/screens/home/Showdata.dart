@@ -58,6 +58,7 @@ class _ShowData extends State<ShowData> {
   String description;
   String images;
   int qty;
+  String taste;
 
   String iTest = '';
 
@@ -73,31 +74,41 @@ class _ShowData extends State<ShowData> {
     refreshTotal();
   }
 
+
+  Timer _Timer;
+
   refreshList() {
-    setState(() {
-      orders = dbHelper.getOrders();
-    });
+
+      setState(() {
+        orders = dbHelper.getOrders();
+      });
+
   }
 
   refreshTotal() {
-    setState(() {
-      _totals = dbHelper.calculateTotal();
-    });
+
+      setState(() {
+        _totals = dbHelper.calculateTotal();
+      });
+
   }
 
   void _removeQty({int foodsID}) async {
     int i;
 
     i = await dbHelper.removeQty(foodsID);
-    refreshList();
+
+
     refreshTotal();
+    refreshList();
   }
 
   void _addQty({int foodsID}) async {
     int i;
     i = await dbHelper.addQty(foodsID);
-    refreshList();
+
     refreshTotal();
+    refreshList();
   }
 
   list() {
@@ -106,7 +117,7 @@ class _ShowData extends State<ShowData> {
         future: orders,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            //   return Text('Have Data ' + snapshot.data.length.toString());
+            //  return Text('Have Data ' + snapshot.data.length.toString());
 
             _order = snapshot.data;
 
@@ -118,7 +129,7 @@ class _ShowData extends State<ShowData> {
             return Text("No Data Found");
           }
 
-          return CircularProgressIndicator();
+        //  return CircularProgressIndicator();
         },
       ),
     );
@@ -143,7 +154,7 @@ class _ShowData extends State<ShowData> {
             orders[idx].qty.toString() +
             ',"totalPrice":' +
             orders[idx].totalPrice.toString() +
-            '},';
+            ',"taste":"' + orders[idx].taste + '"},';
 
         return ListTile(
           leading: ClipOval(
@@ -161,29 +172,18 @@ class _ShowData extends State<ShowData> {
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.all(0.0),
-                    child: Text('Price:'),
+                    child: Text('ราคา:'),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(0.0),
-                    child: Text(
-                      orders[idx].price.toString(),
+                    child: Text(orders[idx].price.toString(),
                       style: TextStyle(color: Colors.green),
                     ),
                   ),
+
                   Padding(
                     padding: const EdgeInsets.fromLTRB(20.0, 8.0, 8.0, 8.0),
-                    child: Text('qty:'),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(0.0),
-                    child: Text(
-                      orders[idx].qty.toString(),
-                      style: TextStyle(color: Colors.green),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(20.0, 8.0, 8.0, 8.0),
-                    child: Text('Total:'),
+                    child: Text('รวม:'),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(0.0),
@@ -198,6 +198,20 @@ class _ShowData extends State<ShowData> {
                 children: <Widget>[
                   new Row(
                     children: <Widget>[
+
+                      Padding(
+                        padding: const EdgeInsets.all(0.0),
+                        child: Text('ขนาด: '),
+                      ),
+
+                      Padding(
+                        padding: const EdgeInsets.all(0.0),
+                        child: Text('${orders[idx].size}    (${orders[idx].taste})',
+                          style: TextStyle(color: Colors.green),
+                        ),
+                      ),
+
+
                       Padding(
                         padding: const EdgeInsets.all(0.0),
                         child: IconButton(
@@ -208,6 +222,15 @@ class _ShowData extends State<ShowData> {
                             onPressed: () =>
                                 _removeQty(foodsID: orders[idx].foodsID)),
                       ),
+
+                      Padding(
+                        padding: const EdgeInsets.all(0.0),
+                        child: Text(
+                          orders[idx].qty.toString(),
+                          style: TextStyle(color: Colors.deepOrange,fontWeight: FontWeight.bold,fontSize: 16),
+                        ),
+                      ),
+
                       Padding(
                         padding: const EdgeInsets.all(0.0),
                         child: IconButton(
@@ -232,8 +255,6 @@ class _ShowData extends State<ShowData> {
   Widget build(BuildContext context) {
     _loadCounter();
 
-
-    print('=================> Rest' + restuarantID);
     return new Scaffold(
         appBar: new AppBar(
           title: new Text('BASKET'),
@@ -245,7 +266,7 @@ class _ShowData extends State<ShowData> {
             children: <Widget>[
               new IconButton(
                   icon: new Icon(Icons.home),
-                  tooltip: 'test',
+
                   onPressed: () {
                     Navigator.push(
                       context,

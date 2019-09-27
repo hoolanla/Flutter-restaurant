@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:online_store/screens/home/home.dart';
-import 'package:online_store/screens/home/home2.dart';
 
-import 'package:online_store/screens/cart/cart.dart';
 import 'package:online_store/screens/login/login.dart';
 import 'package:online_store/screens/map/place.dart';
 import 'package:online_store/screens/barcode/barcode.dart';
@@ -59,18 +56,15 @@ class _MyStatefulState extends State<MyStateful>
   String email = '';
   String userid = '';
 
-
   _loadCounter() async {
     AuthService authService = AuthService();
-    if(await authService.isLogin()){
+    if (await authService.isLogin()) {
       restuarantID = await authService.getRestuarantID();
       tableID = await authService.getTableID();
       email = await authService.getEmail();
       userid = await authService.getUserID();
     }
   }
-
-
 
   @override
   void initState() {
@@ -86,20 +80,18 @@ class _MyStatefulState extends State<MyStateful>
 
   @override
   Widget build(BuildContext context) {
-
-
     _loadCounter();
 
     String strBody;
 
-  // strBody = '{"restaurantID":"${restuarantID}","tableID":"${tableID}","userID":"${userid}"}';
+    // strBody = '{"restaurantID":"${restuarantID}","tableID":"${tableID}","userID":"${userid}"}';
     strBody = '{"restaurantID":"1","tableID":"1","userID":"20"}';
 
-
     void _showAlertDialog({String strError}) async {
-      showDialog(context: context,
+      showDialog(
+          context: context,
           barrierDismissible: false,
-          builder: (context){
+          builder: (context) {
             return AlertDialog(
               title: Text(strError),
               content: Text(""),
@@ -115,27 +107,20 @@ class _MyStatefulState extends State<MyStateful>
           });
     }
 
-
-
-    void SendtoJson({String restaurantID,String tableID,String userID}) async{
-
-     String strBody = '{"restaurantID":"${restaurantID}","tableID":"${tableID}","userID":"${userID}"}';
-   //   String strBody = '{"restaurantID":"1","tableID":"1","userID":"20"}';
+    void SendtoJson(
+        {String restaurantID, String tableID, String userID}) async {
+      String strBody =
+          '{"restaurantID":"${restaurantID}","tableID":"${tableID}","userID":"${userID}"}';
+      //   String strBody = '{"restaurantID":"1","tableID":"1","userID":"20"}';
 
       var feed = await NetworkFoods.checkBill(strBody: strBody);
       var data = DataFeed(feed: feed);
       if (data.feed.ResultOk.toString() == "true") {
-
       } else {
 //print('================================' + data.feed.ErrorMessage);
         _showAlertDialog(strError: 'กำลังเคลียร์โต๊ะ !!');
-
       }
     }
-
-
-
-
 
     return new Scaffold(
       appBar: new AppBar(
@@ -151,19 +136,15 @@ class _MyStatefulState extends State<MyStateful>
         title: Text('MENU'),
       ),
 
-
-        floatingActionButton: new FloatingActionButton.extended(
-          backgroundColor: Colors.deepOrangeAccent,
-          label: Text('CHECK BILL'),
-          onPressed: () {
-            SendtoJson(restaurantID: restuarantID,tableID: tableID,userID: userid);
-          },
-
-        ),
+      floatingActionButton: new FloatingActionButton.extended(
+        backgroundColor: Colors.deepOrangeAccent,
+        label: Text('CHECK BILL'),
+        onPressed: () {
+          SendtoJson(
+              restaurantID: restuarantID, tableID: tableID, userID: userid);
+        },
+      ),
       //  floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat);
-
-
-
 
       bottomNavigationBar: new BottomAppBar(
         child: new Row(
@@ -204,9 +185,8 @@ class _MyStatefulState extends State<MyStateful>
           future: NetworkFoods.loadStatusOrder(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-
               print('=========have');
-             return new Container(
+              return new Container(
                 child: _ListSection(menu: snapshot.data),
               );
             } else if (snapshot.hasError) {
@@ -229,53 +209,56 @@ class _MyStatefulState extends State<MyStateful>
                 Container(
                   child: new ListTile(
                     leading: Text(
-                      'Table  ' + menu.orderList[idx].tableID,
+                      '' + menu.orderList[idx].foodsName,
                       style: TextStyle(
                           color: Colors.green,
                           fontSize: 16.0,
                           fontWeight: FontWeight.bold),
                     ),
+                    title: Text('ราคา: ' +
+                        menu.orderList[idx].price.toString() +
+                        '    จำนวนวน: ' +
+                        menu.orderList[idx].qty.toString()),
+                    subtitle: new Column(
+                      children: <Widget>[
+                        new Row(
+                          children: <Widget>[
+                            Text('รวมราคา: ' +
+                                menu.orderList[idx].totalPrice.toString())
+                          ],
+                        ),
+                        new Row(
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.all(0.0),
+                              child: Text('CANCEL: '),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(0.0),
+                              child: IconButton(
+                                icon: Icon(
+                                  Icons.delete,
+                                  color: Colors.red,
+                                ),
+                                onPressed: null,
+                              ),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                    trailing: changeIcon(status: menu.orderList[idx].status),
                   ),
                 ),
-                ListView.builder(
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 16.0,
-                        vertical: 8.0,
-                      ),
-                      child: ListTile(
-                        leading: Text(menu.orderList[idx].foodsName),
-                        title: Text('Price :' +
-                            menu.orderList[idx].price +
-                            '        ' +
-                            menu.orderList[idx].qty +
-                            '  qty.'),
-                        subtitle: Text(
-                          'Total:  ' + menu.orderList[idx].totalPrice,
-                        ),
-                        trailing:
-                            changeIcon(status: menu.orderList[idx].status),
-                        onTap: null,
-                      ),
-                    );
-                  },
-                  itemCount: menu.orderList.length,
-                  shrinkWrap: true,
-                  // todo comment this out and check the result
-                  physics:
-                      ClampingScrollPhysics(), // todo comment this out and check the result
-                )
               ],
             ),
           );
         },
-        itemCount: 1,
+        itemCount: menu.orderList.length,
       );
 }
 
 Widget changeIcon({String status}) {
-
   print(status);
 
   if (status == "Pending") {
@@ -289,7 +272,8 @@ Widget changeIcon({String status}) {
       Icons.done_outline,
       color: Colors.green,
     );
-  } else { //Close
+  } else {
+    //Close
     return Icon(
       Icons.note,
       color: Colors.green,
@@ -299,5 +283,6 @@ Widget changeIcon({String status}) {
 
 class DataFeed {
   RetBill feed;
+
   DataFeed({this.feed});
 }

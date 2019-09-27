@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
 //import 'package:polygon_clipper/polygon_clipper.dart';
 import 'package:online_store/screens/home/CafeLine.dart';
 import 'package:online_store/screens/home/CafeLine_Recommend.dart';
@@ -32,9 +33,11 @@ var burgerImage =
 var water =
     'https://img.wongnai.com/p/400x0/2017/09/10/3a5e42df82a343b49e959625d0a9dcbb.jpg';
 
-var salong = 'https://img.wongnai.com/p/1920x0/2013/06/08/92cea1b60dcb4e6d9e52bf501363b381.jpg';
+var salong =
+    'https://img.wongnai.com/p/1920x0/2013/06/08/92cea1b60dcb4e6d9e52bf501363b381.jpg';
 
-var somtom = 'https://img.wongnai.com/p/1920x0/2018/10/21/f2e52e7e656242fb9033dc83154b022c.jpg';
+var somtom =
+    'https://img.wongnai.com/p/1920x0/2018/10/21/f2e52e7e656242fb9033dc83154b022c.jpg';
 
 // COLORS
 var textYellow = Color(0xFFf6c24d);
@@ -54,22 +57,21 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
 
-
-      //  bottomNavigationBar: MyAppbar(),
+        //  bottomNavigationBar: MyAppbar(),
         body: Container(
-          child: ListView(
-            children: <Widget>[
-              SizedBox(height: 16.0),
-              MyAppBar(),
-              SizedBox(height: 16.0),
-              FoodListview(),
-              SizedBox(height: 16.0),
-              SelectTypeSection(),
-              SizedBox(height: 16.0),
-              MenuItemsList()
-            ],
-          ),
-        ));
+      child: ListView(
+        children: <Widget>[
+          SizedBox(height: 16.0),
+          MyAppBar(),
+          SizedBox(height: 16.0),
+          FoodListview(),
+          SizedBox(height: 16.0),
+          SelectTypeSection(),
+          SizedBox(height: 16.0),
+          MenuItemsList()
+        ],
+      ),
+    ));
   }
 }
 
@@ -87,7 +89,6 @@ class MyAppbar extends StatelessWidget {
         children: <Widget>[
           new IconButton(
               icon: new Icon(Icons.home),
-
               onPressed: () {
                 Navigator.push(
                   context,
@@ -145,7 +146,7 @@ class MyActionButton extends StatelessWidget {
 /* @override
   Widget build(BuildContext context) {
     return
-  }*//*
+  }*/ /*
 
 }
 */
@@ -189,12 +190,17 @@ class MenuItem1 extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Container(
-            height: 100.0,
-            width: 100.0,
-            child: Image.network(
-              salong,
-              fit: BoxFit.cover,
+          InkWell(
+            onTap: () {
+              print('ontab');
+            },
+            child: Container(
+              height: 100.0,
+              width: 100.0,
+              child: Image.network(
+                salong,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
           SizedBox(
@@ -235,8 +241,6 @@ class MenuItem1 extends StatelessWidget {
                       'อาหารพื้นเมืองแบบชาวเหนือ ล้ำแต้ๆจ้าว, ...',
                       style: TextStyle(color: Colors.grey),
                     )),
-
-
               ],
             ),
           )
@@ -258,12 +262,17 @@ class MenuItem2 extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Container(
-            height: 100.0,
-            width: 100.0,
-            child: Image.network(
-              water,
-              fit: BoxFit.cover,
+          InkWell(
+            onTap: () {
+              print('=====ontab');
+            },
+            child: Container(
+              height: 100.0,
+              width: 100.0,
+              child: Image.network(
+                water,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
           SizedBox(
@@ -304,8 +313,6 @@ class MenuItem2 extends StatelessWidget {
                       'ลูกชิ้นปลากรายผัดฉ่า 👍 ลูกชิ้นเนื้อเนียนเหนียวเด้งผัดฉ่าใส่ยอดมะพร้าวและมะเขือเปราะ, ...',
                       style: TextStyle(color: Colors.grey),
                     )),
-
-
               ],
             ),
           )
@@ -327,12 +334,17 @@ class MenuItem3 extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Container(
-            height: 100.0,
-            width: 100.0,
-            child: Image.network(
-              somtom,
-              fit: BoxFit.cover,
+          InkWell(
+            onTap: () {
+              print('ontab');
+            },
+            child: Container(
+              height: 100.0,
+              width: 100.0,
+              child: Image.network(
+                somtom,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
           SizedBox(
@@ -373,8 +385,6 @@ class MenuItem3 extends StatelessWidget {
                       'ส้มตำครกทอง แซ่บๆทุกจานที่เสิร์ฟ, ...',
                       style: TextStyle(color: Colors.grey),
                     )),
-
-
               ],
             ),
           )
@@ -396,12 +406,17 @@ class MenuItem4 extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Container(
-            height: 100.0,
-            width: 100.0,
-            child: Image.network(
-              burgerImage,
-              fit: BoxFit.cover,
+          InkWell(
+            onTap: () {
+              print('ontab');
+            },
+            child: Container(
+              height: 100.0,
+              width: 100.0,
+              child: Image.network(
+                burgerImage,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
           SizedBox(
@@ -442,8 +457,6 @@ class MenuItem4 extends StatelessWidget {
                       'Chicken, Yogurt, Red chilli, Ginger paste, Carlic paste, ...',
                       style: TextStyle(color: Colors.grey),
                     )),
-
-
               ],
             ),
           )
@@ -509,14 +522,13 @@ class MyAppBar extends StatelessWidget {
         children: <Widget>[
           IconButton(
             icon: Icon(Icons.center_focus_strong),
-           color: Colors.black45,
-           onPressed: () {
-             Navigator.push(
-               context,
-               MaterialPageRoute(builder: (context) => Barcode()),
-             );
-           },
-
+            color: Colors.black45,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Barcode()),
+              );
+            },
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -545,50 +557,58 @@ class ItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(right: 8.0),
-      child: Container(
-          height: 160.0,
-          width: 300.0,
-          decoration: BoxDecoration(
-              image: DecorationImage(
-                  image: NetworkImage(meatImage), fit: BoxFit.cover)),
-          child: Stack(
-            children: <Widget>[
-              Container(
-                height: 160.0,
-                width: 300.0,
-                decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                        colors: [Colors.black.withOpacity(0.1), Colors.black],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter)),
+        padding: const EdgeInsets.only(right: 8.0),
+        child: InkWell(
+          onTap: () {
+            print('======== on tab');
+          },
+          child: Container(
+              height: 160.0,
+              width: 300.0,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: NetworkImage(meatImage), fit: BoxFit.cover),
               ),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Spacer(),
-                    Text(
-                      'ร้านนั่งเล่น ',
-                      style: TextStyle(
-                          color: textYellow,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 24.0,
-                          letterSpacing: 1.1),
+              child: Stack(
+                children: <Widget>[
+                  Container(
+                    height: 160.0,
+                    width: 300.0,
+                    decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                            colors: [
+                          Colors.black.withOpacity(0.1),
+                          Colors.black
+                        ],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter)),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Spacer(),
+                        Text(
+                          'ร้านนั่งเล่น ',
+                          style: TextStyle(
+                              color: textYellow,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24.0,
+                              letterSpacing: 1.1),
+                        ),
+                        Text(
+                          'ลด 10% ทุกเมนู',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16.0,
+                              letterSpacing: 1.1),
+                        ),
+                      ],
                     ),
-                    Text(
-                      'ลด 10% ทุกเมนู',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16.0,
-                          letterSpacing: 1.1),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          )),
-    );
+                  ),
+                ],
+              )),
+        ));
   }
 }

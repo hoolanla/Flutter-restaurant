@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:online_store/screens/home/home.dart';
-import 'package:online_store/screens/home/home2.dart';
 
-import 'package:online_store/screens/cart/cart.dart';
 import 'package:online_store/screens/login/login.dart';
 import 'package:online_store/screens/map/place.dart';
 import 'package:online_store/screens/barcode/barcode.dart';
@@ -51,8 +48,6 @@ class MyStateful extends StatefulWidget {
   }
 }
 
-
-
 class _MyStatefulState extends State<MyStateful>
     with SingleTickerProviderStateMixin {
   TabController controller;
@@ -62,16 +57,12 @@ class _MyStatefulState extends State<MyStateful>
   String restaurantID;
   String strBody;
 
-
   _loadCounter() async {
     AuthService authService = AuthService();
     // if(await authService.isLogin()){
     restaurantID = await authService.getRestuarantID();
     // }
-
   }
-
-
 
   // final urlJSONString = "http://203.150.203.74/foods1.json";
 
@@ -90,7 +81,6 @@ class _MyStatefulState extends State<MyStateful>
 
   @override
   Widget build(BuildContext context) {
-
     return new Scaffold(
       appBar: new AppBar(
         textTheme: TextTheme(
@@ -122,7 +112,6 @@ class _MyStatefulState extends State<MyStateful>
               ),
             ),
             onTap: () {
-
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => Cafe_Line()),
@@ -136,12 +125,10 @@ class _MyStatefulState extends State<MyStateful>
               color: Colors.black54,
             )),
             onTap: () {
-
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => CafeLine_Recommend()),
               );
-
             },
           ),
         ]),
@@ -285,6 +272,12 @@ class _MyStatefulState extends State<MyStateful>
                                         .data[idx].foodsItems[index].foodName,
                                     price:
                                         menu.data[idx].foodsItems[index].price,
+                                    priceS:
+                                        menu.data[idx].foodsItems[index].priceS,
+                                    priceM:
+                                        menu.data[idx].foodsItems[index].priceM,
+                                    priceL:
+                                        menu.data[idx].foodsItems[index].priceL,
                                     size: "size",
                                     description: menu.data[idx]
                                         .foodsItems[index].description,

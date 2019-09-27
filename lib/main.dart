@@ -1,11 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:online_store/blocs/bloc_provider.dart';
-import 'package:online_store/screens/home/home.dart';
-import 'package:online_store/screens/home/home2.dart';
-import 'package:online_store/screens/home/widgets/ViewMenu.dart';
-import 'package:online_store/screens/cart/cart.dart';
+
 import 'package:online_store/screens/login/login.dart';
 import 'package:online_store/screens/map/place.dart';
 import 'package:online_store/screens/barcode/barcode.dart';
@@ -13,7 +9,6 @@ import 'package:online_store/screens/splash/splash.dart';
 import 'package:online_store/services/authService.dart';
 import 'package:online_store/screens/home/CafeLine.dart';
 import 'package:online_store/screens/home/FirstPage.dart';
-import 'package:online_store/sqlite/GridSqlite.dart';
 import 'package:online_store/screens/home/Showdata.dart';
 import 'package:online_store/screens/home/status_order.dart';
 import 'package:online_store/screens/home/Home_recomment.dart';
@@ -36,23 +31,18 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-    return new BlocProvider(
-      child: new MaterialApp(
-        title: 'ti',
-        theme: androidTheme,
-        initialRoute: '/',
-        routes: <String, Widget Function(BuildContext)>{
+    return new MaterialApp(
+      title: 'ti',
+      theme: androidTheme,
+      initialRoute: '/',
+      routes: <String, Widget Function(BuildContext)>{
         //  '/': (context) => SplashScreen(),
-          '/login': (context) => Login(),
-         '/home': (context) => Home(),
-          '/home2': (context) => Home2(),
-          '/cart': (context) => Cart(),
-          '/map': (context) => Mapgoogle(),
-          '/barcode': (context) => Barcode(),
-          '/ViewMenu': (context) => ViewMenu(),
-          '/': (context) => Login(),
-        },
-      ),
+        '/login': (context) => Login(),
+        '/home': (context) => Login(),
+        '/map': (context) => Mapgoogle(),
+        '/barcode': (context) => Barcode(),
+        '/': (context) => FirstPage(),
+      }
     );
   }
 }

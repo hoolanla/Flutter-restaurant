@@ -14,24 +14,31 @@ class CafeLine2 extends StatelessWidget {
   final int foodsID;
   final String foodName;
   final double price;
+  final double priceS;
+  final double priceM;
+  final double priceL;
   final String size;
   final String description;
   final String image;
   final String foodType;
 
-  CafeLine2({this.foodsID,
-    this.foodName,
-    this.price,
-    this.size,
-    this.description,
-    this.image,
-    this.foodType})
+  CafeLine2(
+      {this.foodsID,
+      this.foodName,
+      this.price,
+      this.priceS,
+      this.priceM,
+      this.priceL,
+      this.size,
+      this.description,
+      this.image,
+      this.foodType})
       : super(key: null);
 
   // CafeLine2({Key key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return  MaterialApp(
+    return MaterialApp(
       title: ' Cart ',
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -40,6 +47,9 @@ class CafeLine2 extends StatelessWidget {
         foodsID: foodsID,
         foodName: foodName,
         price: price,
+        priceS: priceS,
+        priceM: priceM,
+        priceL: priceL,
         size: size,
         description: description,
         image: image,
@@ -53,6 +63,9 @@ class MyHomePage extends StatefulWidget {
   final int foodsID;
   final String foodName;
   final double price;
+  final double priceS;
+  final double priceM;
+  final double priceL;
   final String size;
   final String description;
   final String image;
@@ -62,6 +75,9 @@ class MyHomePage extends StatefulWidget {
     this.foodsID,
     this.foodName,
     this.price,
+    this.priceS,
+    this.priceM,
+    this.priceL,
     this.size,
     this.description,
     this.image,
@@ -82,56 +98,86 @@ class _MyHomePageState extends State<MyHomePage> {
 
   String foodsName;
   double price;
+  double priceS;
+  double priceM;
+  double priceL;
   String size;
   String description;
   String images;
   int qty;
   double totalPrice;
+  String taste;
 
   List<Order> HaveData;
 
   final formKey = new GlobalKey<FormState>();
   var dbHelper;
+  int _radioValueSML = 0;
+  int _radioValueDrink = 0;  // ธรมดา หวาน
+  int _radioValueGrill = 0; // ธรรมดา สุก
+  String _taste = 'ธรรมดา';
+  String _size='S';
 
-  int _radioValue1 = 0;
-  int _radioValue2 = 0;
-  String taste = "";
+  double priceSml = 0;
 
-  void _handleRadioValueChange1(int value) {
+  void _handleRadioValueChangeSML(int value) {
     setState(() {
-      _radioValue1 = value;
-      switch (_radioValue1) {
+      _radioValueSML = value;
+      switch (_radioValueSML) {
         case 0:
-          taste = 'ธรรมดา';
-          Fluttertoast.showToast(msg: taste, toastLength: Toast.LENGTH_SHORT);
+          priceSml = widget.priceS;
+          _size = 'S';
+          //   Fluttertoast.showToast(msg: taste, toastLength: Toast.LENGTH_SHORT);
           break;
         case 1:
-          taste = 'ปานกลาง';
-          Fluttertoast.showToast(msg: taste, toastLength: Toast.LENGTH_SHORT);
+          priceSml = widget.priceM;
+          _size = 'M';
+          //   Fluttertoast.showToast(msg: taste, toastLength: Toast.LENGTH_SHORT);
           break;
         case 2:
-          taste = 'หวาน';
-          Fluttertoast.showToast(msg: 'หวาน', toastLength: Toast.LENGTH_SHORT);
+          priceSml = widget.priceL;
+          _size = 'L';
+          //  Fluttertoast.showToast(msg: 'หวาน', toastLength: Toast.LENGTH_SHORT);
           break;
       }
     });
   }
 
-  void _handleRadioValueChange2(int value) {
+  void _handleRadioValueChangeDrink(int value) {
     setState(() {
-      _radioValue2 = value;
-      switch (_radioValue2) {
+      _radioValueDrink = value;
+      switch (_radioValueDrink) {
         case 0:
-          taste = 'ธรรมดา';
-          Fluttertoast.showToast(msg: taste, toastLength: Toast.LENGTH_SHORT);
+          _taste = 'ธรรมดา';
+       //   Fluttertoast.showToast(msg: taste, toastLength: Toast.LENGTH_SHORT);
           break;
         case 1:
-          taste = 'ปานกลาง';
-          Fluttertoast.showToast(msg: taste, toastLength: Toast.LENGTH_SHORT);
+          _taste = 'ปานกลาง';
+      //    Fluttertoast.showToast(msg: taste, toastLength: Toast.LENGTH_SHORT);
           break;
         case 2:
-          taste = 'สุกน้อย';
-          Fluttertoast.showToast(msg: taste, toastLength: Toast.LENGTH_SHORT);
+          _taste = 'หวาน';
+       //   Fluttertoast.showToast(msg: 'หวาน', toastLength: Toast.LENGTH_SHORT);
+          break;
+      }
+    });
+  }
+
+  void _handleRadioValueChangeGrill(int value) {
+    setState(() {
+      _radioValueGrill = value;
+      switch (_radioValueGrill) {
+        case 0:
+          _taste = 'ธรรมดา';
+      //    Fluttertoast.showToast(msg: taste, toastLength: Toast.LENGTH_SHORT);
+          break;
+        case 1:
+          _taste = 'สุกกลาง';
+       //   Fluttertoast.showToast(msg: taste, toastLength: Toast.LENGTH_SHORT);
+          break;
+        case 2:
+          _taste = 'สุกน้อย';
+      //    Fluttertoast.showToast(msg: taste, toastLength: Toast.LENGTH_SHORT);
           break;
       }
     });
@@ -160,7 +206,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -194,17 +239,31 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      body: new Card(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+      body: Center(
+        child: ListView(
+          shrinkWrap: true,
+          padding: EdgeInsets.all(1.0),
           children: <Widget>[
-            _header(
-                image: widget.image,
-                price: widget.price.toString(),
-                foodName: widget.foodName),
-            _header2(image: widget.image),
-            _detailCafe(desc: widget.description),
-            _footerCoffee(foodsTyp: widget.foodType),
+            new Card(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  _header(
+                      image: widget.image,
+                      price: widget.price.toString(),
+                      foodName: widget.foodName),
+                  _header2(image: widget.image),
+                  _detailCafe(desc: widget.description),
+                  _textSML(priceM: widget.priceM),
+                  _radioSML(
+                      priceS: widget.priceS,
+                      priceM: widget.priceM,
+                      priceL: widget.priceL),
+                  _textTaste(foodsTyp: widget.foodType),
+                  _radioTaste(foodsTyp: widget.foodType),
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -235,15 +294,25 @@ class _MyHomePageState extends State<MyHomePage> {
     if (HaveData.length == 0) {
       foodID = widget.foodsID;
       foodsName = widget.foodName;
-      price = widget.price;
-      size = widget.size;
+      if(priceSml < 1) {
+        price = widget.priceS;
+      }
+      else {
+        price = priceSml;
+      }
+
+      size = _size;
       description = widget.description;
       images = widget.image;
       qty = 1;
       totalPrice = qty * price;
+      taste = _taste;
 
-      Order e = Order(
-          foodID, foodsName, price, size, description, images, qty, totalPrice);
+      Order e = Order(foodID, foodsName, price, size, description, images, qty,
+          totalPrice, taste);
+
+      print('=======' + e.size);
+
       dbHelper.save(e);
       showSnak();
     } else {
@@ -252,8 +321,12 @@ class _MyHomePageState extends State<MyHomePage> {
       showSnak();
     }
 
-    //  dbHelper.deleteAll();
-    //  refreshList();
+    if (priceSml < 1) {
+      priceSml = widget.priceS;
+    }
+
+//      dbHelper.deleteAll();
+//      refreshList();
   }
 
   RaisedButton _ButtonAdd() {
@@ -269,7 +342,69 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget _footerCoffee({String foodsTyp}) {
+  Widget _textSML({double priceM}) {
+    if (priceM > 0) {
+      return Text('เลือกขนาด');
+    } else {
+      return Text('');
+    }
+  }
+
+  Widget _textTaste({String foodsTyp}) {
+    if (foodsTyp == "7" || foodsTyp == "8") {
+      return Text('เลือกรสชาติ');
+    } else if (foodsTyp == "1") {
+      return Text('เลือกความสุก');
+    } else {
+      return Text('');
+    }
+  }
+
+  Widget _radioSML({double priceS, double priceM, double priceL}) {
+    if (priceM > 0) {
+      return new Padding(
+        padding: new EdgeInsets.all(8.0),
+        child: new Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            new Radio(
+              value: 0,
+              groupValue: _radioValueSML,
+              onChanged: _handleRadioValueChangeSML,
+            ),
+            new Text(
+              priceS.toString(),
+              style: new TextStyle(fontSize: 14.0),
+            ),
+            new Radio(
+              value: 1,
+              groupValue: _radioValueSML,
+              onChanged: _handleRadioValueChangeSML,
+            ),
+            new Text(
+              priceM.toString(),
+              style: new TextStyle(
+                fontSize: 14.0,
+              ),
+            ),
+            new Radio(
+              value: 2,
+              groupValue: _radioValueSML,
+              onChanged: _handleRadioValueChangeSML,
+            ),
+            new Text(
+              priceL.toString(),
+              style: new TextStyle(fontSize: 14.0),
+            ),
+          ],
+        ),
+      );
+    } else {
+      return Text('');
+    }
+  }
+
+  Widget _radioTaste({String foodsTyp}) {
     if (foodsTyp == "7" || foodsTyp == "8") {
       return new Padding(
         padding: new EdgeInsets.all(8.0),
@@ -278,32 +413,32 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             new Radio(
               value: 0,
-              groupValue: _radioValue1,
-              onChanged: _handleRadioValueChange1,
+              groupValue: _radioValueDrink,
+              onChanged: _handleRadioValueChangeDrink,
             ),
             new Text(
               'ธรรมดา',
-              style: new TextStyle(fontSize: 16.0),
+              style: new TextStyle(fontSize: 14.0),
             ),
             new Radio(
               value: 1,
-              groupValue: _radioValue1,
-              onChanged: _handleRadioValueChange1,
+              groupValue: _radioValueDrink,
+              onChanged: _handleRadioValueChangeDrink,
             ),
             new Text(
               'ปานกลาง',
               style: new TextStyle(
-                fontSize: 16.0,
+                fontSize: 14.0,
               ),
             ),
             new Radio(
               value: 2,
-              groupValue: _radioValue1,
-              onChanged: _handleRadioValueChange1,
+              groupValue: _radioValueDrink,
+              onChanged: _handleRadioValueChangeDrink,
             ),
             new Text(
               'หวาน',
-              style: new TextStyle(fontSize: 16.0),
+              style: new TextStyle(fontSize: 14.0),
             ),
           ],
         ),
@@ -316,8 +451,8 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             new Radio(
               value: 0,
-              groupValue: _radioValue2,
-              onChanged: _handleRadioValueChange2,
+              groupValue: _radioValueGrill,
+              onChanged: _handleRadioValueChangeGrill,
             ),
             new Text(
               'ธรรมดา',
@@ -325,8 +460,8 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             new Radio(
               value: 1,
-              groupValue: _radioValue2,
-              onChanged: _handleRadioValueChange2,
+              groupValue: _radioValueGrill,
+              onChanged: _handleRadioValueChangeGrill,
             ),
             new Text(
               'ปานกลาง',
@@ -336,8 +471,8 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             new Radio(
               value: 2,
-              groupValue: _radioValue2,
-              onChanged: _handleRadioValueChange2,
+              groupValue: _radioValueGrill,
+              onChanged: _handleRadioValueChangeGrill,
             ),
             new Text(
               'สุกน้อย',

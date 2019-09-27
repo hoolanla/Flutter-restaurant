@@ -1,5 +1,5 @@
 library online_store.globals;
 
-String  restaurantID = '0';
-String  tableID = '0';
-String  userID = '0';
+String  restaurantID = '1';
+String  tableID = '1';
+String  userID = '20';

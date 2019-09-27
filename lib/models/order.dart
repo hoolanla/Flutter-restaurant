@@ -7,9 +7,10 @@ class Order {
   String images;
   int qty;
   double totalPrice;
+ String taste;
 
   Order(this.foodsID, this.foodsName, this.price, this.size, this.description,
-      this.images, this.qty, this.totalPrice);
+      this.images, this.qty, this.totalPrice,this.taste);
 
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
@@ -21,6 +22,7 @@ class Order {
       'images': images,
       'qty': qty,
       'totalprice': totalPrice,
+      'taste': taste,
     };
     return map;
   }
@@ -34,6 +36,7 @@ class Order {
     images = map['images'];
     qty = map['qty'];
     totalPrice = map['totalprice'];
+    taste = map['taste'];
   }
 }
 
@@ -59,27 +62,15 @@ class InsertOrder {
   String tableID;
   List<OrderList> orderList;
 
-  InsertOrder({
-    this.restuarantID,
-    this.userID,
-    this.tableID,
-    this.orderList
-});
-
-
-
-
+  InsertOrder({this.restuarantID, this.userID, this.tableID, this.orderList});
 
   Map<String, dynamic> toJson() => _itemToJson(this);
-
 }
 
 Map<String, dynamic> _itemToJson(InsertOrder instance) {
-
   List<Map<String, dynamic>> _orderList = instance.orderList != null
       ? instance.orderList.map((i) => i.toJson()).toList()
       : null;
-
 
   return <String, dynamic>{
     'restuarantID': instance.restuarantID,
@@ -89,11 +80,7 @@ Map<String, dynamic> _itemToJson(InsertOrder instance) {
   };
 }
 
-
-
-
-class OrderList
-{
+class OrderList {
   int foodID;
   String foodName;
   double price;
@@ -105,66 +92,64 @@ class OrderList
 
   OrderList(this.foodID, this.foodName, this.price, this.size, this.description,
       this.images, this.qty, this.totalPrice);
-  Map<String, dynamic> toJson() => _OrderListToJson(this);
 
+  Map<String, dynamic> toJson() => _OrderListToJson(this);
 }
 
 Map<String, dynamic> _OrderListToJson(OrderList instance) => <String, dynamic>{
-  'foodID': instance.foodID,
-  'foodName': instance.foodName,
-  'price': instance.price,
-  'size': instance.size,
-  'description': instance.description,
-  'images': instance.images,
-  'qty': instance.qty,
-  'totalPrice': instance.totalPrice
-};
+      'foodID': instance.foodID,
+      'foodName': instance.foodName,
+      'price': instance.price,
+      'size': instance.size,
+      'description': instance.description,
+      'images': instance.images,
+      'qty': instance.qty,
+      'totalPrice': instance.totalPrice
+    };
 
-class StatusOrder{
+class StatusOrder {
   String ResultOk;
   String ErrorMessage;
   String ReturnMessage;
   List<StatusOrderlist> orderList;
 
-  StatusOrder  ({this.ResultOk,
-    this.ErrorMessage,
-    this.ReturnMessage,
-    this.orderList});
+  StatusOrder(
+      {this.ResultOk, this.ErrorMessage, this.ReturnMessage, this.orderList});
 
-  factory StatusOrder.fromJson(Map<String, dynamic> parsedJson){
-
+  factory StatusOrder.fromJson(Map<String, dynamic> parsedJson) {
     var list = parsedJson['orderList'] as List;
-    List<StatusOrderlist> orderList = list.map((i) => StatusOrderlist.fromJson(i)).toList();
+    List<StatusOrderlist> orderList =
+        list.map((i) => StatusOrderlist.fromJson(i)).toList();
 
     return StatusOrder(
         ResultOk: parsedJson['ResultOk'],
         ErrorMessage: parsedJson['ErrorMessage'],
         ReturnMessage: parsedJson['ReturnMessage'],
-        orderList: orderList
-    );
+        orderList: orderList);
   }
 }
 
-class RetStatusInsertOrder{
+class RetStatusInsertOrder {
   String ResultOk;
   String ErrorMessage;
   String ReturnMessage;
-  RetStatusInsertOrder ({
+
+  RetStatusInsertOrder({
     this.ResultOk,
     this.ErrorMessage,
     this.ReturnMessage,
-    });
-  factory RetStatusInsertOrder.fromJson(Map<String, dynamic> parsedJson){
+  });
+
+  factory RetStatusInsertOrder.fromJson(Map<String, dynamic> parsedJson) {
     return RetStatusInsertOrder(
-        ResultOk: parsedJson['ResultOk'],
-        ErrorMessage: parsedJson['ErrorMessage'],
-        ReturnMessage: parsedJson['ReturnMessage'],
+      ResultOk: parsedJson['ResultOk'],
+      ErrorMessage: parsedJson['ErrorMessage'],
+      ReturnMessage: parsedJson['ReturnMessage'],
     );
   }
 }
 
-
-class StatusOrderlist{
+class StatusOrderlist {
   String restuarantID;
   String userID;
   String tableID;
@@ -175,32 +160,28 @@ class StatusOrderlist{
   String totalPrice;
   String status;
 
+  StatusOrderlist(
+      {this.restuarantID,
+      this.userID,
+      this.tableID,
+      this.foodsID,
+      this.foodsName,
+      this.qty,
+      this.price,
+      this.totalPrice,
+      this.status});
 
-  StatusOrderlist({
-    this.restuarantID,
-    this.userID,
-    this.tableID,
-    this.foodsID,
-    this.foodsName,
-    this.qty,
-    this.price,
-    this.totalPrice,
-    this.status
-  });
-
-  factory  StatusOrderlist.fromJson(Map<String, dynamic> parsedJson){
-
-
+  factory StatusOrderlist.fromJson(Map<String, dynamic> parsedJson) {
     return StatusOrderlist(
-        restuarantID: parsedJson['restuarantID'],
-        userID: parsedJson['userID'],
-        tableID: parsedJson['tableID'],
-        foodsID: parsedJson['foodsID'],
-        foodsName: parsedJson['foodsName'],
-        qty: parsedJson['qty'],
-        price: parsedJson['price'],
-        totalPrice: parsedJson['totalPrice'],
-        status: parsedJson['status'],
+      restuarantID: parsedJson['restuarantID'],
+      userID: parsedJson['userID'],
+      tableID: parsedJson['tableID'],
+      foodsID: parsedJson['foodsID'],
+      foodsName: parsedJson['foodsName'],
+      qty: parsedJson['qty'],
+      price: parsedJson['price'],
+      totalPrice: parsedJson['totalPrice'],
+      status: parsedJson['status'],
     );
   }
 }

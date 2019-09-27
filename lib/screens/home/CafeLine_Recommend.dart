@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:online_store/screens/home/home.dart';
-import 'package:online_store/screens/home/home2.dart';
 
-import 'package:online_store/screens/cart/cart.dart';
+
 import 'package:online_store/screens/login/login.dart';
 import 'package:online_store/screens/map/place.dart';
 import 'package:online_store/screens/barcode/barcode.dart';

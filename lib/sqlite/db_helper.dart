@@ -7,7 +7,7 @@ import 'package:online_store/models/order.dart';
 
 class DBHelper {
   static Database _db;
-  static const String DB_NAME = 'foods2.db';
+  static const String DB_NAME = 'foods3.db';
   static const String TABLE = 'orderlist';
   static const String foodsID = 'foodsid';
   static const String foodsName = 'foodsname';
@@ -17,11 +17,12 @@ class DBHelper {
   static const String description = 'description';
   static const String images = 'images';
   static const String totalPrice = 'totalprice';
+  static const String taste = 'taste';
 
   Future<Database> get db async {
     if (_db != null) {
-/*     _db = await dropTable();
-       print('dddddddddddddddddddrop table');*/
+//  _db = await dropTable();
+
       return _db;
     } else {
      _db = await initDB();
@@ -45,6 +46,13 @@ class DBHelper {
     return _db;
   }
 
+
+  _onUpgrade(Database db, int oldVersion, int newVersion) {
+    if (oldVersion < newVersion) {
+      db.execute('ALTER TABLE orderlist ADD COLUMN taste TEXT;');
+    }
+  }
+
   _onDropTable(Database db, int version) async {
     await db.execute(
         'DROP TABLE IF EXISTS $TABLE');
@@ -53,13 +61,16 @@ class DBHelper {
 
   _onCreate(Database db, int version) async {
     await db.execute(
-        'CREATE TABLE IF NOT EXISTS $TABLE($foodsID INTEGER PRIMARY KEY,$foodsName TEXT,$price REAL,$size TEXT,$description TEXT,$images TEXT,$qty INTEGER,$totalPrice REAL)');
+        'CREATE TABLE IF NOT EXISTS $TABLE($foodsID INTEGER PRIMARY KEY,$foodsName TEXT,$price REAL,$size TEXT,$description TEXT,$images TEXT,$qty INTEGER,$totalPrice REAL,$taste TEXT)');
 
   }
 
   Future<Order> save(Order order) async {
     var dbClient = await db;
     order.foodsID = await dbClient.insert(TABLE, order.toMap());
+
+    print("========" + order.taste);
+
     return order;
     /*
     await dbClient.transaction((txn) async {
@@ -81,15 +92,23 @@ class DBHelper {
       qty,
       description,
       images,
-      totalPrice
+      totalPrice,
+      taste,
     ]);
     //List<Map> maps = await dbClient.rawQuery("SELECT * FROM $TABLE");
     List<Order> orders = [];
+
+
+    print('==========' + maps.length.toString());
     if (maps.length > 0) {
       for (int i = 0; i < maps.length; i++) {
         orders.add(Order.fromMap(maps[i]));
       }
     }
+
+  //  print(orders[0].price.toString());
+   // print(orders[0].taste);
+
     return orders;
   }
 
@@ -98,7 +117,7 @@ class DBHelper {
   Future<List<Order>> getByID(int id) async {
     var dbClient = await db;
     List<Map> maps = await dbClient.query(TABLE,
-        columns: [foodsID, foodsName, price,size,qty,description,images,totalPrice],
+        columns: [foodsID, foodsName, price,size,qty,description,images,totalPrice,taste],
         where: '$foodsID = ?',
         whereArgs: [id]);
 //   var result = await dbClient.rawQuery('SELECT * FROM $tableNote WHERE $columnId = $id');
@@ -133,7 +152,7 @@ class DBHelper {
   Future<int> removeQty(int id) async {
     var dbClient = await db;
     List<Map> maps = await dbClient.query(TABLE,
-        columns: [foodsID, foodsName, price,size,qty,description,images,totalPrice],
+        columns: [foodsID, foodsName, price,size,qty,description,images,totalPrice,taste],
         where: '$foodsID = ?',
         whereArgs: [id]);
 //   var result = await dbClient.rawQuery('SELECT * FROM $tableNote WHERE $columnId = $id');
@@ -150,13 +169,13 @@ class DBHelper {
     }
     else
     {
-      return await dbClient.rawDelete("Update orderlist SET qty=qty-1,totalprice=(price*qty)-price where foodsid = " + id.toString());
+      return await dbClient.rawUpdate("Update orderlist SET qty=qty-1,totalprice=(price*qty)-price where foodsid = " + id.toString());
     }
   }
 
   Future<int> addQty(int id) async {
     var dbClient = await db;
-      return await dbClient.rawDelete("Update orderlist SET qty=qty+1,totalprice=(price*qty)+price where foodsid = " + id.toString());
+      return await dbClient.rawUpdate("Update orderlist SET qty=qty+1,totalprice=(price*qty)+price where foodsid = " + id.toString());
 
   }
 

@@ -49,7 +49,7 @@ class HomeState extends State<Mapgoogle> {
     return Scaffold(
         key: homeScaffoldKey,
         appBar: AppBar(
-          backgroundColor: Colors.green.shade500,
+          backgroundColor: Colors.deepOrange,
           title: const Text("eMENU"),
           actions: <Widget>[
             isLoading

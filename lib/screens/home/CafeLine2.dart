@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:online_store/screens/home/cart_page.dart';
 import 'package:online_store/screens/home/CafeLine.dart';
-import 'cart_bloc.dart';
-import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:online_store/services/foods.dart';
 import 'package:online_store/models/order.dart';
 import 'package:online_store/sqlite/db_helper.dart';
-import 'package:online_store/sqlite/ShowData.dart';
+import 'package:online_store/screens/home/Showdata.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() => runApp(CafeLine2());
 
@@ -18,35 +17,35 @@ class CafeLine2 extends StatelessWidget {
   final String size;
   final String description;
   final String image;
+  final String foodType;
 
-  CafeLine2(
-      {this.foodsID,
-      this.foodName,
-      this.price,
-      this.size,
-      this.description,
-      this.image})
+  CafeLine2({this.foodsID,
+    this.foodName,
+    this.price,
+    this.size,
+    this.description,
+    this.image,
+    this.foodType})
       : super(key: null);
 
   // CafeLine2({Key key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<CartBloc>(
-        builder: (context) => CartBloc(),
-        child: MaterialApp(
-          title: ' Cart ',
-          theme: ThemeData(
-            primarySwatch: Colors.blue,
-          ),
-          home: MyHomePage(
-            foodsID: foodsID,
-            foodName: foodName,
-            price: price,
-            size: size,
-            description: description,
-            image: image,
-          ),
-        ));
+    return  MaterialApp(
+      title: ' Cart ',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: MyHomePage(
+        foodsID: foodsID,
+        foodName: foodName,
+        price: price,
+        size: size,
+        description: description,
+        image: image,
+        foodType: foodType,
+      ),
+    );
   }
 }
 
@@ -57,15 +56,17 @@ class MyHomePage extends StatefulWidget {
   final String size;
   final String description;
   final String image;
+  final String foodType;
 
-  MyHomePage(
-      {this.foodsID,
-      this.foodName,
-      this.price,
-      this.size,
-      this.description,
-      this.image})
-      : super(key: null);
+  MyHomePage({
+    this.foodsID,
+    this.foodName,
+    this.price,
+    this.size,
+    this.description,
+    this.image,
+    this.foodType,
+  }) : super(key: null);
 
   // MyHomePage({Key key, this.title}) : super(key: key);
 
@@ -92,6 +93,50 @@ class _MyHomePageState extends State<MyHomePage> {
   final formKey = new GlobalKey<FormState>();
   var dbHelper;
 
+  int _radioValue1 = 0;
+  int _radioValue2 = 0;
+  String taste = "";
+
+  void _handleRadioValueChange1(int value) {
+    setState(() {
+      _radioValue1 = value;
+      switch (_radioValue1) {
+        case 0:
+          taste = 'ธรรมดา';
+          Fluttertoast.showToast(msg: taste, toastLength: Toast.LENGTH_SHORT);
+          break;
+        case 1:
+          taste = 'ปานกลาง';
+          Fluttertoast.showToast(msg: taste, toastLength: Toast.LENGTH_SHORT);
+          break;
+        case 2:
+          taste = 'หวาน';
+          Fluttertoast.showToast(msg: 'หวาน', toastLength: Toast.LENGTH_SHORT);
+          break;
+      }
+    });
+  }
+
+  void _handleRadioValueChange2(int value) {
+    setState(() {
+      _radioValue2 = value;
+      switch (_radioValue2) {
+        case 0:
+          taste = 'ธรรมดา';
+          Fluttertoast.showToast(msg: taste, toastLength: Toast.LENGTH_SHORT);
+          break;
+        case 1:
+          taste = 'ปานกลาง';
+          Fluttertoast.showToast(msg: taste, toastLength: Toast.LENGTH_SHORT);
+          break;
+        case 2:
+          taste = 'สุกน้อย';
+          Fluttertoast.showToast(msg: taste, toastLength: Toast.LENGTH_SHORT);
+          break;
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -115,11 +160,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    var bloc = Provider.of<CartBloc>(context);
-    int totalCount = 0;
-    if (bloc.cart.length > 0) {
-      totalCount = bloc.cart.values.reduce((a, b) => a + b);
-    }
+
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -143,14 +184,12 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           new IconButton(
-            icon: new Icon(Icons.list),
-            tooltip: 'Action Tool Tip',
+            icon: new Icon(Icons.shopping_cart),
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => ShowData()),
               );
-
             },
           ),
         ],
@@ -159,9 +198,13 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            _header(image: widget.image, price: widget.price.toString(),foodName: widget.foodName),
+            _header(
+                image: widget.image,
+                price: widget.price.toString(),
+                foodName: widget.foodName),
             _header2(image: widget.image),
-            _detailCafe(desc: widget.description)
+            _detailCafe(desc: widget.description),
+            _footerCoffee(foodsTyp: widget.foodType),
           ],
         ),
       ),
@@ -189,9 +232,7 @@ class _MyHomePageState extends State<MyHomePage> {
     foodID = widget.foodsID;
     HaveData = await dbHelper.getByID(foodID);
 
-    print('======================== Have' + HaveData.length.toString());
     if (HaveData.length == 0) {
-      print('======================== insert');
       foodID = widget.foodsID;
       foodsName = widget.foodName;
       price = widget.price;
@@ -206,7 +247,6 @@ class _MyHomePageState extends State<MyHomePage> {
       dbHelper.save(e);
       showSnak();
     } else {
-      print('==================== Update');
       foodID = widget.foodsID;
       dbHelper.updateBySQL(foodsID: foodID);
       showSnak();
@@ -228,9 +268,94 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
+
+  Widget _footerCoffee({String foodsTyp}) {
+    if (foodsTyp == "7" || foodsTyp == "8") {
+      return new Padding(
+        padding: new EdgeInsets.all(8.0),
+        child: new Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            new Radio(
+              value: 0,
+              groupValue: _radioValue1,
+              onChanged: _handleRadioValueChange1,
+            ),
+            new Text(
+              'ธรรมดา',
+              style: new TextStyle(fontSize: 16.0),
+            ),
+            new Radio(
+              value: 1,
+              groupValue: _radioValue1,
+              onChanged: _handleRadioValueChange1,
+            ),
+            new Text(
+              'ปานกลาง',
+              style: new TextStyle(
+                fontSize: 16.0,
+              ),
+            ),
+            new Radio(
+              value: 2,
+              groupValue: _radioValue1,
+              onChanged: _handleRadioValueChange1,
+            ),
+            new Text(
+              'หวาน',
+              style: new TextStyle(fontSize: 16.0),
+            ),
+          ],
+        ),
+      );
+    } else if (foodsTyp == "1") {
+      return new Padding(
+        padding: new EdgeInsets.all(8.0),
+        child: new Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            new Radio(
+              value: 0,
+              groupValue: _radioValue2,
+              onChanged: _handleRadioValueChange2,
+            ),
+            new Text(
+              'ธรรมดา',
+              style: new TextStyle(fontSize: 16.0),
+            ),
+            new Radio(
+              value: 1,
+              groupValue: _radioValue2,
+              onChanged: _handleRadioValueChange2,
+            ),
+            new Text(
+              'ปานกลาง',
+              style: new TextStyle(
+                fontSize: 16.0,
+              ),
+            ),
+            new Radio(
+              value: 2,
+              groupValue: _radioValue2,
+              onChanged: _handleRadioValueChange2,
+            ),
+            new Text(
+              'สุกน้อย',
+              style: new TextStyle(fontSize: 16.0),
+            ),
+          ],
+        ),
+      );
+    } else {
+      return new Padding(
+        padding: new EdgeInsets.all(8.0),
+        child: new Text(''),
+      );
+    }
+  }
 }
 
-Widget _header({String image, String price,String foodName}) {
+Widget _header({String image, String price, String foodName}) {
   return new ListTile(
     leading: ClipOval(
       child: Image.network(
@@ -245,17 +370,6 @@ Widget _header({String image, String price,String foodName}) {
   );
 }
 
-/*
-  ClipOval(
-  child: Image.network(
-  image,
-  height: 60,
-  width: 60,
-  fit: BoxFit.cover,
-),)
-,
-);*/
-
 Widget _detailCafe({String desc}) => Padding(
       padding: new EdgeInsets.all(8.0),
       child: new Text(desc),
@@ -267,45 +381,6 @@ Widget _header2({String image}) => Padding(
         image,
         fit: BoxFit.fill,
         height: 300,
-      ),
-    );
-
-Widget _footer() => Padding(
-      padding: new EdgeInsets.all(8.0),
-      //child: new Text('   ลาตเท หรือ แลตเท (อังกฤษ: latte) คือเครื่องดื่มกาแฟที่เตรียมด้วยนมร้อน โดยเทเอสเปรสโซ 1/3 ส่วน และนมร้อนที่ตีด้วยไอน้ำจากเครื่องชง 2/3 ส่วน ลงในถ้วยพร้อม ๆ กัน'),
-      child: new Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          new Radio(
-            value: 0,
-            groupValue: null,
-            onChanged: null,
-          ),
-          new Text(
-            'ธรรมดา',
-            style: new TextStyle(fontSize: 16.0),
-          ),
-          new Radio(
-            value: 1,
-            groupValue: null,
-            onChanged: null,
-          ),
-          new Text(
-            'หวานน้อย',
-            style: new TextStyle(
-              fontSize: 16.0,
-            ),
-          ),
-          new Radio(
-            value: 2,
-            groupValue: null,
-            onChanged: null,
-          ),
-          new Text(
-            'หวานมาก',
-            style: new TextStyle(fontSize: 16.0),
-          ),
-        ],
       ),
     );
 

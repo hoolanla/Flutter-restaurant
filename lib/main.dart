@@ -12,22 +12,14 @@ import 'package:online_store/screens/barcode/barcode.dart';
 import 'package:online_store/screens/splash/splash.dart';
 import 'package:online_store/services/authService.dart';
 import 'package:online_store/screens/home/CafeLine.dart';
-import 'package:online_store/screens/home/TestPage.dart';
+import 'package:online_store/screens/home/FirstPage.dart';
 import 'package:online_store/sqlite/GridSqlite.dart';
-import 'package:online_store/sqlite/ShowData.dart';
+import 'package:online_store/screens/home/Showdata.dart';
+import 'package:online_store/screens/home/status_order.dart';
+import 'package:online_store/screens/home/Home_recomment.dart';
+
 
 main()  {
-
-/*
-  AuthService authService = AuthService();
-  Widget page = Login();
-  if(await authService.isLogin()){
-page = Home();
-  }
-*/
-
-
-
   runApp(new App());
 }
 
@@ -36,7 +28,6 @@ class App extends StatefulWidget {
   @override
   _AppState createState() => _AppState();
 }
-
 class _AppState extends State<App> {
 
   final ThemeData androidTheme = new ThemeData(
@@ -59,12 +50,13 @@ class _AppState extends State<App> {
           '/map': (context) => Mapgoogle(),
           '/barcode': (context) => Barcode(),
           '/ViewMenu': (context) => ViewMenu(),
-          '/TestPage': (context) => TestPage(),
-          '/': (context) => Cafe_Line(),
+          '/': (context) => Login(),
         },
       ),
     );
   }
-
 }
+
+
+
 

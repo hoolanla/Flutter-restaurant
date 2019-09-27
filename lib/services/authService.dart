@@ -1,17 +1,30 @@
 import 'package:online_store/models/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:online_store/models/qrcode.dart';
+import 'package:online_store/globals.dart' as globals;
 
 class AuthService {
   static final String DISPLAYNAME = "displayName";
   static final String IMAGEPATH = "imagePath";
   static final String IS_LOGIN = "is_login";
   static final String TYPE = "type";
+  static final String EMAIL = "email";
+  static final String USERID = "userid";
+
+
+  static final String REST_ID = "restuarantID";
+  static final String TABLE_ID = "tableID";
 
 
 
   Future LoginEmail({User user}) async {
     //By email
     if (user.email == "admin@gmail.com" && user.password == "123456") {
+      SharedPreferences _pref = await SharedPreferences.getInstance();
+      _pref.setString(EMAIL, user.email);
+      _pref.setString(DISPLAYNAME, user.Displayname);
+
+
       return true;
     }
 
@@ -27,6 +40,7 @@ class AuthService {
       _pref.setString(DISPLAYNAME, user.Displayname);
       _pref.setString(IMAGEPATH, user.imagePath);
       _pref.setString(TYPE, user.type);
+      _pref.setString(EMAIL, user.email);
       _pref.setBool(IS_LOGIN, true);
       return true;
     }
@@ -35,6 +49,23 @@ class AuthService {
       return false;
     }
   }
+
+  Future SetRestuarant({Qrcode qrcode}) async {
+    if (qrcode.restuarantID != '') {
+      SharedPreferences _pref = await SharedPreferences.getInstance();
+      _pref.setString(REST_ID, qrcode.restuarantID);
+      _pref.setString(TABLE_ID, qrcode.tableID);
+
+      globals.restaurantID = qrcode.restuarantID;
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+
+
 
   Future<bool> isLogin() async {
     SharedPreferences _pref = await SharedPreferences.getInstance();
@@ -56,4 +87,28 @@ class AuthService {
     SharedPreferences _pref = await SharedPreferences.getInstance();
     return _pref.getString(IMAGEPATH);
   }
+
+
+  Future getRestuarantID() async {
+    SharedPreferences _pref = await SharedPreferences.getInstance();
+    return _pref.getString(REST_ID);
+  }
+
+  Future getTableID() async {
+    SharedPreferences _pref = await SharedPreferences.getInstance();
+    return _pref.getString(TABLE_ID);
+  }
+
+
+  Future getEmail() async {
+    SharedPreferences _pref = await SharedPreferences.getInstance();
+    return _pref.getString(EMAIL);
+  }
+
+
+  Future getUserID() async {
+    SharedPreferences _pref = await SharedPreferences.getInstance();
+    return _pref.getString(USERID);
+  }
+
 }

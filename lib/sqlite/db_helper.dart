@@ -54,7 +54,7 @@ class DBHelper {
   _onCreate(Database db, int version) async {
     await db.execute(
         'CREATE TABLE IF NOT EXISTS $TABLE($foodsID INTEGER PRIMARY KEY,$foodsName TEXT,$price REAL,$size TEXT,$description TEXT,$images TEXT,$qty INTEGER,$totalPrice REAL)');
-    print('ssssssssssssssssssssss');
+
   }
 
   Future<Order> save(Order order) async {
@@ -103,13 +103,7 @@ class DBHelper {
         whereArgs: [id]);
 //   var result = await dbClient.rawQuery('SELECT * FROM $tableNote WHERE $columnId = $id');
     List<Order> orders = [];
-
-    print('mapsL============' + maps.length.toString());
-
     if (maps.length > 0) {
-
-
-
       for (int i = 0; i < maps.length; i++) {
         orders.add(Order.fromMap(maps[i]));
       }
@@ -124,6 +118,8 @@ class DBHelper {
     return await dbClient.delete(TABLE, where: '$foodsID = ?', whereArgs: [id]);
   }
 
+
+
   Future<int> deleteAll() async {
     var dbClient = await db;
     return await dbClient.rawDelete("Delete from orderlist");
@@ -134,7 +130,46 @@ class DBHelper {
     return await dbClient.rawDelete("Update orderlist SET qty=qty+1,totalprice=(price*qty)+price where foodsid = " + foodsID.toString());
   }
 
+  Future<int> removeQty(int id) async {
+    var dbClient = await db;
+    List<Map> maps = await dbClient.query(TABLE,
+        columns: [foodsID, foodsName, price,size,qty,description,images,totalPrice],
+        where: '$foodsID = ?',
+        whereArgs: [id]);
+//   var result = await dbClient.rawQuery('SELECT * FROM $tableNote WHERE $columnId = $id');
+    List<Order> orders = [];
+    if (maps.length > 0) {
+      for (int i = 0; i < maps.length; i++) {
+        orders.add(Order.fromMap(maps[i]));
+      }
+    }
 
+    if(orders[0].qty == 1)
+    {
+      return await dbClient.delete(TABLE, where: '$foodsID = ?', whereArgs: [id]);
+    }
+    else
+    {
+      return await dbClient.rawDelete("Update orderlist SET qty=qty-1,totalprice=(price*qty)-price where foodsid = " + id.toString());
+    }
+  }
+
+  Future<int> addQty(int id) async {
+    var dbClient = await db;
+      return await dbClient.rawDelete("Update orderlist SET qty=qty+1,totalprice=(price*qty)+price where foodsid = " + id.toString());
+
+  }
+
+  Future<double> calculateTotal() async {
+    var dbClient = await db;
+    var result = await dbClient.rawQuery("SELECT * FROM orderlist");
+    List totalList;
+    totalList = result.toList();
+   double tot = 0;
+    totalList.forEach((price){ tot = tot + price['totalprice'];});
+    return tot;
+   // return result.toList();
+  }
 
 
   Future<int> update(Order orders) async {

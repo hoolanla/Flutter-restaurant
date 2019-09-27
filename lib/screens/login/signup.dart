@@ -1,6 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:validators/validators.dart';
+import 'package:online_store/models/register.dart';
+import 'package:online_store/screens/Json/foods.dart';
+
+
 
 class SignUp extends StatefulWidget {
   @override
@@ -9,6 +13,11 @@ class SignUp extends StatefulWidget {
 
 class _SignUpState extends State<SignUp> {
   final _formKey = GlobalKey<FormState>();
+
+  Register _reg;
+  String username;
+  String email;
+  String password;
 
   String gender;
   String groupValue = "male";
@@ -40,15 +49,39 @@ class _SignUpState extends State<SignUp> {
           });
     }
 
+    void ttt(String strAll) async {
+      var feed = await NetworkFoods.insertRegister(strBody: strAll);
+      var data = DataFeed(feed: feed);
+      if (data.feed.ResultOk.toString() == "true") {
 
+      } else {}
+    }
+
+    void SendtoJson({String email,String password,String username}) async{
+
+      String strBody = '{"email":"${email}","password":"${password}","username":"${username}"}';
+      var feed = await NetworkFoods.insertRegister(strBody: strBody);
+      var data = DataFeed(feed: feed);
+      if (data.feed.ResultOk.toString() == "true") {
+
+      } else {
+
+      }
+    }
 
     void _submit() async {
       if (this._formKey.currentState.validate()) {
         _formKey.currentState.save();
         //todo
+
+
+      SendtoJson(email:  email,password: password,username: username);
+
         _showAlertDialog();
       }
     }
+
+
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -76,7 +109,9 @@ class _SignUpState extends State<SignUp> {
                           if (value.isEmpty) {
                             return "The name field cannot be empty";
                           }
-                          return null;
+                        },
+                        onSaved: (String value){
+                        username = value;
                         },
                         onFieldSubmitted: (String value) {
                           FocusScope.of(context).requestFocus(emailFocusNode);
@@ -101,7 +136,9 @@ class _SignUpState extends State<SignUp> {
                             icon: Icon(Icons.alternate_email),
                             border: InputBorder.none),
                         validator: _validateEmail,
-                        onSaved: (String value) {},
+                        onSaved: (String value) {
+                          email = value;
+                        },
                         onFieldSubmitted: (String value) {
                           FocusScope.of(context)
                               .requestFocus(passwordFocusNode);
@@ -128,6 +165,9 @@ class _SignUpState extends State<SignUp> {
                             icon: Icon(Icons.lock_outline),
                             border: InputBorder.none),
                         validator: _validatePassword,
+                        onSaved: (String value) {
+                          password = value;
+                        },
                         focusNode: passwordFocusNode,
                       ),
                       trailing: IconButton(
@@ -145,7 +185,7 @@ class _SignUpState extends State<SignUp> {
                 padding: const EdgeInsets.fromLTRB(14.0, 8.0, 14.0, 8.0),
                 child: Material(
                     borderRadius: BorderRadius.circular(20.0),
-                    color: Colors.green,
+                    color: Colors.deepOrange,
                     elevation: 0.0,
                     child: MaterialButton(
                       onPressed: _submit,
@@ -214,4 +254,9 @@ class _SignUpState extends State<SignUp> {
     }
     return null;
   }
+}
+
+class DataFeed {
+  RetRegister feed;
+  DataFeed({this.feed});
 }

@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:online_store/screens/home/home.dart';
-import 'package:online_store/screens/home/Cart_page.dart';
-import 'package:online_store/screens/home/cart_bloc.dart';
 import 'package:provider/provider.dart';
 
 class foodDetail extends StatelessWidget {
@@ -32,7 +30,7 @@ class foodDetail extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => CartPage(),
+                          builder: null,
                         ),
                       );
                     },

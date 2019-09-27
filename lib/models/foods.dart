@@ -2,11 +2,15 @@ class Menu{
   String ResultOk;
   String ErrorMessage;
   String CountMenu;
+  String restuarantName;
+  String imageRestuarant;
   List<Data> data;
 
   Menu  ({this.ResultOk,
     this.ErrorMessage,
     this.CountMenu,
+    this.restuarantName,
+    this.imageRestuarant,
     this.data});
 
   factory Menu.fromJson(Map<String, dynamic> parsedJson){
@@ -18,6 +22,8 @@ class Menu{
         ResultOk: parsedJson['ResultOk'],
         ErrorMessage: parsedJson['ErrorMessage'],
         CountMenu: parsedJson['CountMenu'],
+        restuarantName: parsedJson['restuarantName'],
+        imageRestuarant: parsedJson['imageRestuarant'],
         data: data
 
     );
@@ -39,7 +45,7 @@ class Data{
     this.foodsItems
   });
 
-  factory Data.fromJson(Map<String, dynamic> parsedJson){
+ factory  Data.fromJson(Map<String, dynamic> parsedJson){
 
     var list = parsedJson['foodsItems'] as List;
     List<foodsItem> foods = list.map((i) => foodsItem.fromJson(i)).toList();
@@ -59,27 +65,46 @@ class foodsItem{
   int foodID;
   String foodName;
   double price;
+  double priceS;
+  double priceM;
+  double priceL;
   String size;
   String description;
   String images;
+  int qty;
+  double totalPrice;
+  String taste;
+
 
   foodsItem({
     this.foodID,
     this.foodName,
     this.price,
+    this.priceS,
+    this.priceM,
+    this.priceL,
     this.size,
     this.description,
-    this.images
+    this.images,
+    this.qty,
+    this.totalPrice,
+    this.taste
   });
 
   factory foodsItem.fromJson(Map<String, dynamic> parsedJson){
     return foodsItem(
-        foodID: int.parse(parsedJson['foodID']),
-        foodName : parsedJson['foodName'],
-        price: double.parse(parsedJson['price']),
+        foodID: int.parse(parsedJson['foodsID']),
+        foodName : parsedJson['foodsName'],
+        price: parsedJson['price'],
+        priceS: parsedJson['priceS'],
+        priceM: parsedJson['priceM'],
+        priceL: parsedJson['priceL'],
         size : parsedJson['size'],
         description: parsedJson['description'],
-        images : parsedJson['images']
+        images : parsedJson['images'],
+        qty : parsedJson['qty'],
+        totalPrice : parsedJson['totalPrice'],
+        taste : parsedJson['taste'],
     );
   }
 
@@ -89,6 +114,9 @@ class detailFood{
   int foodID;
   String foodName;
   double price;
+  double priceS;
+  double priceM;
+  double priceL;
   String size;
   String description;
   String images;
@@ -98,6 +126,9 @@ class detailFood{
       this.foodID,
       this.foodName,
       this.price,
+      this.priceS,
+      this.priceM,
+      this.priceL,
       this.size,
       this.description,
       this.images

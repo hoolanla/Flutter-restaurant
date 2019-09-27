@@ -12,12 +12,47 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:online_store/services/authService.dart';
 import 'package:online_store/screens/home/home.dart';
 import 'package:validators/validators.dart';
+import 'package:online_store/screens/home/CafeLine.dart';
+import 'package:online_store/models/login.dart';
+import 'package:online_store/screens/Json/foods.dart';
+import 'package:online_store/models/register.dart';
+import 'package:online_store/screens/barcode/barcode.dart';
+import 'package:online_store/screens/home/FirstPage.dart';
+import 'package:online_store/globals.dart';
+import 'package:online_store/globals.dart' as globals;
 
 final User _user = new User();
 
 final String DISPLAYNAME = "displayName";
 final String IMAGEPATH = "imagePath";
+final String EMAIL = 'email';
+final String USERID = "userid";
 final String IS_LOGIN = "is_login";
+
+final FirebaseAuth _auth = FirebaseAuth.instance;
+final GoogleSignIn googleSignIn = GoogleSignIn();
+
+Future<String> signInWithGoogle() async {
+  final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
+  final GoogleSignInAuthentication googleSignInAuthentication =
+  await googleSignInAccount.authentication;
+
+  final AuthCredential credential = GoogleAuthProvider.getCredential(
+    accessToken: googleSignInAuthentication.accessToken,
+    idToken: googleSignInAuthentication.idToken,
+  );
+
+  final FirebaseUser user = await _auth.signInWithCredential(credential);
+
+  assert(!user.isAnonymous);
+  assert(await user.getIdToken() != null);
+
+  final FirebaseUser currentUser = await _auth.currentUser();
+  assert(user.uid == currentUser.uid);
+
+  return 'signInWithGoogle succeeded: $user';
+}
+
 
 void main() => runApp(Login());
 
@@ -28,8 +63,10 @@ class Login extends StatefulWidget {
 
 class _SignUpState extends State<Login> {
   AuthService authService = AuthService();
+  RetLogin _letLogin;
 
-  // Widget page = Login();
+String email;
+String password;
 
   final _formKey = GlobalKey<FormState>();
   bool hidePass = true;
@@ -42,26 +79,31 @@ class _SignUpState extends State<Login> {
     final GoogleSignInAccount googleUser = await _googlSignIn.signIn();
     _user.Displayname = googleUser.displayName;
     _user.imagePath = googleUser.photoUrl;
+    _user.email = googleUser.email;
+
+
+
 
     SharedPreferences _pref = await SharedPreferences.getInstance();
     _pref.setString(DISPLAYNAME, googleUser.displayName);
     _pref.setString(IMAGEPATH, googleUser.photoUrl);
+    _pref.setString(EMAIL, googleUser.email);
     _pref.setBool(IS_LOGIN, true);
 
     Navigator.push(
-        context, new MaterialPageRoute(builder: (context) => new Home()));
+        context, new MaterialPageRoute(builder: (context) => new FirstPage()));
   }
 
   @override
   Widget build(BuildContext context) {
 
 
-    void _showAlertDialog() async {
+    void _showAlertDialog({String strError}) async {
       showDialog(context: context,
       barrierDismissible: false,
         builder: (context){
         return AlertDialog(
-          title: Text("Username or Password is in correct"),
+          title: Text(strError),
           content: Text("Please try again."),
           actions: <Widget>[
             FlatButton(
@@ -76,28 +118,101 @@ class _SignUpState extends State<Login> {
     }
 
 
+    void SendtoJsonLogin({String email,String password,String type_}) async{
+
+      String strBody = '{"email":"${email}","password":"${password}","type":"${type_}"}';
+      var feed = await NetworkFoods.login(strBody: strBody);
+      var data = DataFeed(feed: feed);
+
+      if (data.feed.ResultOk.toString() == "true") {
+        SharedPreferences _pref = await SharedPreferences.getInstance();
+        _pref.setString(EMAIL, data.feed.email.toString());
+        _pref.setString(DISPLAYNAME, data.feed.userName.toString());
+        _pref.setString(USERID, data.feed.memberID.toString());
+        _pref.setBool(IS_LOGIN, true);
+        onLoginStatusChanged(true);
+        globals.userID = feed.memberID.toString();
+
+
+        Navigator.push(
+               context, new MaterialPageRoute(builder: (context) => new FirstPage()));
+      } else {
+
+        _showAlertDialog(strError: data.feed.ErrorMessage.toString());
+      }
+
+
+    }
+
+
+    void SendtoJsonReg({String email,String password,String username}) async {
+      String strBody = '{"email":"${email}","password":"${password}","username":"${username}"}';
+      var feed = await NetworkFoods.insertRegister(strBody: strBody);
+      var data = DataFeedReg(feed: feed);
+      if (data.feed.ResultOk.toString() == "true") {
+
+     //   globals.userID = feed..toString();
+
+
+      } else {
+
+      }
+    }
+
+
+
+
+    void initiateFacebookLogin(BuildContext context) async {
+      var facebookLogin = FacebookLogin();
+      var facebookLoginResult =
+      await facebookLogin.logInWithReadPermissions(['email']);
+      switch (facebookLoginResult.status) {
+        case FacebookLoginStatus.error:
+          print("Error");
+          onLoginStatusChanged(false);
+          break;
+        case FacebookLoginStatus.cancelledByUser:
+          print("CancelledByUser");
+          onLoginStatusChanged(false);
+          break;
+        case FacebookLoginStatus.loggedIn:
+          var graphResponse = await http.get(
+              'https://graph.facebook.com/v3.3/me?fields=name,first_name,last_name,email&access_token=${facebookLoginResult
+                  .accessToken.token}');
+          var profile = json.decode(graphResponse.body);
+
+          Map<String, dynamic> itemJson = profile;
+          print(itemJson['name']);
+          print(itemJson.toString());
+
+
+          SendtoJsonReg(email: itemJson['email'].toString(),password: "",username: itemJson['name'].toString());
+          SendtoJsonLogin(email: itemJson['email'].toString(),password: "",type_: "F" );
+
+
+
+          SharedPreferences _pref = await SharedPreferences.getInstance();
+          _pref.setString(EMAIL, itemJson['email']);
+          _pref.setString(DISPLAYNAME, itemJson['name']);
+
+          _pref.setString(IMAGEPATH,
+              'http://www.pathstoliteracy.org/sites/pathstoliteracy.perkinsdev1.org/files/styles/full_post_view/public/uploaded-images/squeaky.jpg?itok=LVyd5YPB');
+          _pref.setBool(IS_LOGIN, true);
+          onLoginStatusChanged(true);
+          Navigator.push(
+              context, new MaterialPageRoute(builder: (context) => FirstPage()));
+          //    Navigator.of(context).pushNamed('~/screens/home/home.dart');
+          break;
+      }
+    }
+
+
+
     void _submit() async {
       if (this._formKey.currentState.validate()) {
         _formKey.currentState.save();
         SharedPreferences _pref = await SharedPreferences.getInstance();
-        debugPrint(_user.email);
-        authService.LoginEmail(user: _user).then((result){
-          _result = result;
-          if (_result) {
-            _pref.setString(DISPLAYNAME, "MR.EMAIL");
-            _pref.setString(IMAGEPATH,
-                'http://www.pathstoliteracy.org/sites/pathstoliteracy.perkinsdev1.org/files/styles/full_post_view/public/uploaded-images/squeaky.jpg?itok=LVyd5YPB');
-            _pref.setBool(IS_LOGIN, true);
-            onLoginStatusChanged(true);
-            Navigator.push(
-                context, new MaterialPageRoute(builder: (context) => new Home()));
-
-
-          }
-          else {
-            _showAlertDialog();
-          }
-        });
+       SendtoJsonLogin(email:email,password: password,type_: "N");
       }
     }
     double height = MediaQuery
@@ -145,7 +260,7 @@ class _SignUpState extends State<Login> {
                                   ),
                                   validator: _validateEmail,
                                   onSaved: (String value) {
-                                    _user.email = value;
+                                    email = value;
                                   },
                                   onFieldSubmitted: (String value) {
                                     FocusScope.of(context)
@@ -179,7 +294,7 @@ class _SignUpState extends State<Login> {
                                     obscureText: hidePass,
                                     validator: _validatePassword,
                                     onSaved: (String value) {
-                                      _user.password = value;
+                                      password = value;
                                     },
                                     onFieldSubmitted: (String value) {},
 
@@ -200,7 +315,7 @@ class _SignUpState extends State<Login> {
                             const EdgeInsets.fromLTRB(14.0, 8.0, 14.0, 8.0),
                             child: Material(
                                 borderRadius: BorderRadius.circular(20.0),
-                                color: Colors.green,
+                                color: Colors.deepOrange,
                                 elevation: 0.0,
                                 child: MaterialButton(
                                   onPressed: _submit,
@@ -359,6 +474,7 @@ class _SignUpState extends State<Login> {
 }
 
 
+/*
 void initiateFacebookLogin(BuildContext context) async {
   var facebookLogin = FacebookLogin();
   var facebookLoginResult =
@@ -382,18 +498,26 @@ void initiateFacebookLogin(BuildContext context) async {
       print(itemJson['name']);
       print(itemJson.toString());
 
+
+    SendtoJsonReg(email: itemJson['email'].toString(),password: "",username: itemJson['name'].toString());
+
+
+
+
       SharedPreferences _pref = await SharedPreferences.getInstance();
+      _pref.setString(EMAIL, itemJson['email']);
       _pref.setString(DISPLAYNAME, itemJson['name']);
+
       _pref.setString(IMAGEPATH,
           'http://www.pathstoliteracy.org/sites/pathstoliteracy.perkinsdev1.org/files/styles/full_post_view/public/uploaded-images/squeaky.jpg?itok=LVyd5YPB');
       _pref.setBool(IS_LOGIN, true);
       onLoginStatusChanged(true);
       Navigator.push(
-          context, new MaterialPageRoute(builder: (context) => new Home()));
+          context, new MaterialPageRoute(builder: (context) => new Cafe_Line()));
       //    Navigator.of(context).pushNamed('~/screens/home/home.dart');
       break;
   }
-}
+}*/
 
 bool isLoggedIn = false;
 
@@ -416,4 +540,14 @@ class ProviderDetails {
   ProviderDetails(this.providerDetails);
 
   final String providerDetails;
+}
+
+class DataFeed {
+  RetLogin feed;
+  DataFeed({this.feed});
+}
+
+class DataFeedReg {
+  RetRegister feed;
+  DataFeedReg({this.feed});
 }

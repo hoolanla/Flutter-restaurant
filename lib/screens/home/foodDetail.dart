@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:online_store/screens/home/Cart_page.dart';
 import 'package:online_store/screens/home/CafeLine.dart';
-import 'package:online_store/screens/home/TestPage.dart';
-import 'cart_bloc.dart';
-import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 //void main() => runApp(foodDetail());
@@ -18,20 +14,18 @@ class foodDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<CartBloc>(
-        builder: (context) => CartBloc(),
-        child: MaterialApp(
-          title: ' Cart ',
-          theme: ThemeData(
-            primarySwatch: Colors.blue,
-          ),
-          home: MyHomePage(
-            foodName: foodName,
-            image: image,
-            description: description,
-            price: price,
-          ),
-        ));
+    return MaterialApp(
+      title: ' Cart ',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: MyHomePage(
+        foodName: foodName,
+        image: image,
+        description: description,
+        price: price,
+      ),
+    );
   }
 }
 
@@ -50,11 +44,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    var bloc = Provider.of<CartBloc>(context);
-    int totalCount = 0;
-    if (bloc.cart.length > 0) {
-      totalCount = bloc.cart.values.reduce((a, b) => a + b);
-    }
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -74,19 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 150.0,
               width: 30.0,
               child: new GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => TestPage(
-                            foodName: widget.foodName,
-                            image: widget.image,
-                            description: widget.description,
-                            price: widget.price,
-                          ),
-                    ),
-                  );
-                },
+                onTap: () {},
                 child: new Stack(
                   children: <Widget>[
                     new IconButton(
@@ -106,7 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             right: 7,
                             child: new Center(
                               child: new Text(
-                                '$totalCount',
+                                '111',
                                 style: new TextStyle(
                                     color: Colors.white,
                                     fontSize: 12.0,
@@ -129,7 +106,6 @@ class _MyHomePageState extends State<MyHomePage> {
         children: List.generate(1, (index) {
           return GestureDetector(
             onTap: () {
-              bloc.addToCart(index);
             },
             child: Card(
               child: Column(
@@ -208,8 +184,3 @@ Widget _footer() => Padding(
         ],
       ),
     );
-
-//              Container(
-//                height: 100,
-//                width: 100,
-//                child:  Image.network("https://enjoyjava.com/wp-content/uploads/2018/01/How-to-make-strong-coffee.jpg"),

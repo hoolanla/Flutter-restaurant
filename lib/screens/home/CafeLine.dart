@@ -9,14 +9,21 @@ import 'package:online_store/screens/login/login.dart';
 import 'package:online_store/screens/map/place.dart';
 import 'package:online_store/screens/barcode/barcode.dart';
 import 'package:online_store/screens/splash/splash.dart';
-import 'package:online_store/screens/home/Cart_page.dart';
+
 import 'package:online_store/screens/home/CafeLine2.dart';
 
 import 'package:online_store/screens/home/foodDetail.dart';
+import 'package:online_store/screens/home/status_order.dart';
 import 'package:online_store/models/foods.dart';
 import 'package:online_store/screens/Json/foods.dart';
+import 'package:online_store/screens/home/Showdata.dart';
 import 'dart:async' show Future;
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:online_store/screens/barcode/barcode.dart';
+import 'package:online_store/screens/map/place.dart';
+import 'package:online_store/screens/home/CafeLine_Recommend.dart';
+import 'package:online_store/services/authService.dart';
 
 void main() {
   runApp(Cafe_Line());
@@ -44,18 +51,35 @@ class MyStateful extends StatefulWidget {
   }
 }
 
+
+
 class _MyStatefulState extends State<MyStateful>
     with SingleTickerProviderStateMixin {
   TabController controller;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  final titleString = "THE CORR";
-  final urlJSONString = "http://203.150.203.74/foods1.json";
+  final titleString = "";
+  String restaurantID;
+  String strBody;
+
+
+  _loadCounter() async {
+    AuthService authService = AuthService();
+    // if(await authService.isLogin()){
+    restaurantID = await authService.getRestuarantID();
+    // }
+
+  }
+
+
+
+  // final urlJSONString = "http://203.150.203.74/foods1.json";
 
   @override
   void initState() {
     super.initState();
-    controller = new TabController(vsync: this, length: 5);
+    controller = new TabController(vsync: this, length: 2);
+    _loadCounter();
   }
 
   @override
@@ -66,6 +90,7 @@ class _MyStatefulState extends State<MyStateful>
 
   @override
   Widget build(BuildContext context) {
+
     return new Scaffold(
       appBar: new AppBar(
         textTheme: TextTheme(
@@ -88,24 +113,36 @@ class _MyStatefulState extends State<MyStateful>
             ),
           )
         ],
-        bottom: new TabBar(controller: controller, tabs: <Tab>[
-          new Tab(
-            icon: new Icon(
-              Icons.home,
-              color: Colors.black,
+        bottom: new TabBar(controller: controller, tabs: [
+          GestureDetector(
+            child: Tab(
+              icon: Icon(
+                Icons.home,
+                color: Colors.black54,
+              ),
             ),
+            onTap: () {
+
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Cafe_Line()),
+              );
+            },
           ),
-          new Tab(
-            icon: new Icon(Icons.center_focus_strong, color: Colors.black),
-          ),
-          new Tab(
-            icon: new Icon(Icons.map, color: Colors.white),
-          ),
-          new Tab(
-            icon: new Icon(Icons.comment, color: Colors.white),
-          ),
-          new Tab(
-            icon: new Icon(Icons.shopping_cart, color: Colors.white),
+          GestureDetector(
+            child: Tab(
+                icon: Icon(
+              Icons.restaurant,
+              color: Colors.black54,
+            )),
+            onTap: () {
+
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CafeLine_Recommend()),
+              );
+
+            },
           ),
         ]),
       ),
@@ -115,16 +152,54 @@ class _MyStatefulState extends State<MyStateful>
           mainAxisSize: MainAxisSize.max,
           children: <Widget>[
             new IconButton(
-                icon: new Icon(Icons.home), tooltip: 'test', onPressed: null),
+                icon: new Icon(Icons.home),
+                tooltip: 'test',
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Cafe_Line()),
+                  );
+                }),
             //   new IconButton(icon: new Text('SAVE'), onPressed: null),
-            new IconButton(icon: new Icon(Icons.star), onPressed: null),
-            new IconButton(icon: new Icon(Icons.list), onPressed: null),
-            new IconButton(icon: new Icon(Icons.alarm), onPressed: null),
+            new IconButton(
+                icon: new Icon(Icons.center_focus_strong),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Barcode()),
+                  );
+                }),
+
+            new IconButton(
+                icon: new Icon(Icons.map),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Mapgoogle()),
+                  );
+                }),
+
+            new IconButton(
+                icon: new Icon(Icons.list),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ShowData()),
+                  );
+                }),
+            new IconButton(
+                icon: new Icon(Icons.alarm),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Status_Order()),
+                  );
+                }),
           ],
         ),
       ),
       body: FutureBuilder<Menu>(
-          future: NetworkFoods.loadFoodsAsset(),
+          future: NetworkFoods.loadFoodsAsset('0'),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return new Container(
@@ -155,7 +230,7 @@ class _MyStatefulState extends State<MyStateful>
                             fontSize: 16.0,
                             fontWeight: FontWeight.bold)),
 
-                   // title: Text(menu.data[idx].foodsTypeNameLevel2),
+                    // title: Text(menu.data[idx].foodsTypeNameLevel2),
                     trailing: Text(
                       'ทั้งหมด (${menu.data[idx].foodsItems.length})',
                       style: TextStyle(
@@ -203,17 +278,21 @@ class _MyStatefulState extends State<MyStateful>
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => CafeLine2(
-                                    foodsID: menu.data[idx].foodsItems[index].foodID,
+                              builder: (context) => CafeLine2(
+                                    foodsID:
+                                        menu.data[idx].foodsItems[index].foodID,
                                     foodName: menu
                                         .data[idx].foodsItems[index].foodName,
                                     price:
                                         menu.data[idx].foodsItems[index].price,
                                     size: "size",
-                                    description: menu
-                                        .data[idx].foodsItems[index].description,
-                                    image: menu
-                                        .data[idx].foodsItems[index].images)),
+                                    description: menu.data[idx]
+                                        .foodsItems[index].description,
+                                    image:
+                                        menu.data[idx].foodsItems[index].images,
+                                    foodType: menu.data[idx].foodsTypeIDLevel2,
+                                  ),
+                            ),
                           );
                         },
                       ),

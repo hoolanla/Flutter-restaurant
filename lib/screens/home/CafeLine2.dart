@@ -172,7 +172,7 @@ class _MyHomePageState extends State<MyHomePage> {
       //    Fluttertoast.showToast(msg: taste, toastLength: Toast.LENGTH_SHORT);
           break;
         case 1:
-          _taste = 'สุกกลาง';
+          _taste = 'ปานกลาง';
        //   Fluttertoast.showToast(msg: taste, toastLength: Toast.LENGTH_SHORT);
           break;
         case 2:

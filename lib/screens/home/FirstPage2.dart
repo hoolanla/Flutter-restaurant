@@ -8,15 +8,18 @@ import 'package:online_store/screens/barcode/barcode.dart';
 import 'package:online_store/screens/map/place.dart';
 import 'package:online_store/screens/home/Showdata.dart';
 import 'package:online_store/screens/home/status_order.dart';
+import 'package:online_store/models/restaurant.dart';
+import 'package:online_store/screens/Json/foods.dart';
+import 'package:online_store/screens/home/DetailFirstPage.dart';
 
-void main() => runApp(FirstPage());
+void main() => runApp(FirstPage2());
 
-class FirstPage extends StatelessWidget {
+class FirstPage2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Resaurant Mobile App',
+      title: 'Restaurant Mobile App',
       home: MyHomePage(),
     );
   }
@@ -56,23 +59,120 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
-        //  bottomNavigationBar: MyAppbar(),
-        body: Container(
-      child: ListView(
-        children: <Widget>[
-          SizedBox(height: 16.0),
-          MyAppBar(),
-          SizedBox(height: 16.0),
-          FoodListview(),
-          SizedBox(height: 16.0),
-          SelectTypeSection(),
-          SizedBox(height: 16.0),
-          MenuItemsList()
-        ],
+      body: FutureBuilder<Restaurant>(
+        future: NetworkFoods.loadRestaurant(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return new Container(
+              child: _listCard(restaurant: snapshot.data),
+            );
+          } else {
+            print('========NO');
+          }
+        },
       ),
-    ));
+    );
   }
+
+  Widget _listCard({Restaurant restaurant}) => ListView.builder(
+      itemCount: restaurant.data.length,
+      itemBuilder: (context, int idx) {
+        return Padding(
+            padding: const EdgeInsets.fromLTRB(0.0, 2, 0.0, 2),
+            child: InkWell(
+              onTap: () {
+                print('======== on tab');
+              },
+              child: Container(
+                  height: 160.0,
+                  width: 380.0,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image: NetworkImage(restaurant.data[idx].images),
+                        fit: BoxFit.cover),
+                  ),
+                  child: Stack(
+                    children: <Widget>[
+                      Container(
+                        height: 160.0,
+                        width: 380.0,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                              colors: [
+                                Colors.black.withOpacity(0.1),
+                                Colors.black
+                              ],
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(2.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            // Spacer(),
+                            Text(
+                              '${restaurant.data[idx].restaurantName}',
+                              style: TextStyle(
+                                  color: textYellow,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 24.0,
+                                  letterSpacing: 1.1),
+                            ),
+                            Text(
+                              '${restaurant.data[idx].content}',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16.0,
+                                  letterSpacing: 1.1),
+                            ),
+                            Spacer(),
+
+                            ButtonTheme(
+                              height: 28,
+                              minWidth: 110,
+                              child: FlatButton(
+                                color: Colors.green,
+                                textColor: Colors.white,
+                                disabledColor: Colors.grey,
+                                disabledTextColor: Colors.black,
+                                padding: EdgeInsets.all(5.0),
+                                splashColor: Colors.green,
+                                shape: new RoundedRectangleBorder(
+                                  borderRadius: new BorderRadius.circular(30.0),
+                                ),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => DetailFirstPage(
+                                            restaurantID: restaurant
+                                                .data[idx].restaurantID,
+                                            restaurantName: restaurant
+                                                .data[idx].restaurantName,
+                                            content:
+                                                restaurant.data[idx].content,
+                                            description: restaurant
+                                                .data[idx].description,
+                                            images: restaurant.data[idx].images,
+                                          ),
+                                    ),
+                                  );
+                                },
+                                child: Text(
+                                  "รายละเอียด",
+                                  style: TextStyle(fontSize: 14.0),
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
+                  )),
+            ));
+      });
 }
 
 class MyAppbar extends StatelessWidget {
@@ -136,20 +236,17 @@ class MyAppbar extends StatelessWidget {
   }
 }
 
-/*
-class MyActionButton extends StatelessWidget {
+/*class MyActionButton extends StatelessWidget {
   const MyActionButton({
     Key key,
   }) : super(key: key);
 
- */
-/* @override
+ @override
   Widget build(BuildContext context) {
     return
-  }*/ /*
+  }
 
-}
-*/
+}*/
 
 class MenuItemsList extends StatelessWidget {
   const MenuItemsList({
@@ -163,15 +260,10 @@ class MenuItemsList extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(
-            'ร้านแนะนำ',
-            style: TextStyle(fontSize: 22.0, color: Colors.black54),
-          ),
-          SizedBox(height: 16.0),
-          MenuItem1(),
-          MenuItem2(),
-          MenuItem3(),
-          MenuItem4(),
+          ItemCard(),
+          ItemCard(),
+          ItemCard(),
+          ItemCard(),
         ],
       ),
     );
@@ -557,27 +649,23 @@ class ItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: const EdgeInsets.only(right: 10.0),
+        padding: const EdgeInsets.fromLTRB(0.0, 2, 0.0, 2),
         child: InkWell(
           onTap: () {
             print('======== on tab');
           },
           child: Container(
-
               height: 160.0,
-              width: 300.0,
+              width: 360.0,
               decoration: BoxDecoration(
                 image: DecorationImage(
                     image: NetworkImage(meatImage), fit: BoxFit.cover),
               ),
               child: Stack(
-                alignment: const Alignment(-0.8, -4.8),
-
-                children:
-                <Widget>[
+                children: <Widget>[
                   Container(
                     height: 160.0,
-                    width: 300.0,
+                    width: 360.0,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                           colors: [Colors.black.withOpacity(0.1), Colors.black],
@@ -586,13 +674,11 @@ class ItemCard extends StatelessWidget {
                     ),
                   ),
                   Padding(
-
                     padding: const EdgeInsets.all(2.0),
                     child: Column(
-
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                       // Spacer(),
+                        // Spacer(),
                         Text(
                           'ร้านนั่งเล่น ',
                           style: TextStyle(
@@ -608,13 +694,12 @@ class ItemCard extends StatelessWidget {
                               fontSize: 16.0,
                               letterSpacing: 1.1),
                         ),
-                         Spacer(),
+                        Spacer(),
 
                         ButtonTheme(
                           height: 28,
                           minWidth: 110,
-                          child:   FlatButton(
-
+                          child: FlatButton(
                             color: Colors.green,
                             textColor: Colors.white,
                             disabledColor: Colors.grey,
@@ -622,21 +707,17 @@ class ItemCard extends StatelessWidget {
                             padding: EdgeInsets.all(5.0),
                             splashColor: Colors.green,
                             shape: new RoundedRectangleBorder(
-                              borderRadius: new BorderRadius.circular(30.0),),
+                              borderRadius: new BorderRadius.circular(30.0),
+                            ),
                             onPressed: () {
                               /*...*/
                             },
-
                             child: Text(
                               "รายละเอียด",
                               style: TextStyle(fontSize: 14.0),
-
                             ),
-                          ) ,
+                          ),
                         )
-
-
-
                       ],
                     ),
                   ),

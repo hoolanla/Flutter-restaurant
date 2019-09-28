@@ -9,6 +9,8 @@ import 'package:online_store/screens/splash/splash.dart';
 import 'package:online_store/services/authService.dart';
 import 'package:online_store/screens/home/CafeLine.dart';
 import 'package:online_store/screens/home/FirstPage.dart';
+import 'package:online_store/screens/home/FirstPage2.dart';
+import 'package:online_store/screens/home/DetailFirstPage.dart';
 import 'package:online_store/screens/home/Showdata.dart';
 import 'package:online_store/screens/home/status_order.dart';
 import 'package:online_store/screens/home/Home_recomment.dart';
@@ -41,7 +43,7 @@ class _AppState extends State<App> {
         '/home': (context) => Login(),
         '/map': (context) => Mapgoogle(),
         '/barcode': (context) => Barcode(),
-        '/': (context) => FirstPage(),
+        '/': (context) => FirstPage2(),
       }
     );
   }

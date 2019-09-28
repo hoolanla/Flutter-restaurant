@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:online_store/screens/home/CafeLine.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-//void main() => runApp(foodDetail());
+void main() => runApp(foodDetail());
 
 class foodDetail extends StatelessWidget {
   String foodName;

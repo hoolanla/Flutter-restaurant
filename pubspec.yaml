@@ -66,19 +66,6 @@ dependencies:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -120,6 +107,7 @@ flutter:
     - assets/images/ggg.png
     - assets/foods.json
     - assets/foods2.json
+    - assets/firstpage.json
 
   #  - images/a_dot_ham.jpeg
 

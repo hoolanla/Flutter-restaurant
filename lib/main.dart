@@ -43,7 +43,7 @@ class _AppState extends State<App> {
         '/home': (context) => Login(),
         '/map': (context) => Mapgoogle(),
         '/barcode': (context) => Barcode(),
-        '/': (context) => FirstPage2(),
+        '/': (context) => Cafe_Line(),
       }
     );
   }

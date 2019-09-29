@@ -22,13 +22,36 @@ import 'package:online_store/screens/map/place.dart';
 import 'package:online_store/screens/home/CafeLine_Recommend.dart';
 import 'package:online_store/services/authService.dart';
 
+String restaurantID;
+String restaurantName;
+
 void main() {
   runApp(Cafe_Line());
 }
 
 class Cafe_Line extends StatelessWidget {
+
+
+  _loadCounter() async {
+    AuthService authService = AuthService();
+    restaurantID = await authService.getRestuarantID();
+  }
+
+  getRestaurantname() async {
+    var feed = await NetworkFoods.loadFoodsAsset('0');
+    var data = DataFeed(feed: feed);
+    if (data.feed.ResultOk.toString() == "true") {
+      restaurantName = data.feed.restuarantName.toString();
+    } else {}
+  }
+
   @override
   Widget build(BuildContext context) {
+
+    _loadCounter();
+    getRestaurantname();
+
+
     return new MaterialApp(
       title: '',
       home: new MyStateful(),
@@ -54,23 +77,13 @@ class _MyStatefulState extends State<MyStateful>
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final titleString = "";
-  String restaurantID;
+
   String strBody;
-
-  _loadCounter() async {
-    AuthService authService = AuthService();
-    // if(await authService.isLogin()){
-    restaurantID = await authService.getRestuarantID();
-    // }
-  }
-
-  // final urlJSONString = "http://203.150.203.74/foods1.json";
 
   @override
   void initState() {
     super.initState();
     controller = new TabController(vsync: this, length: 2);
-    _loadCounter();
   }
 
   @override
@@ -92,7 +105,7 @@ class _MyStatefulState extends State<MyStateful>
           color: Colors.black,
         ),
         backgroundColor: Colors.white,
-        title: Text('MENU'),
+         title: Text('MENU'),
         actions: <Widget>[
           new Padding(
             padding: const EdgeInsets.all(10.0),
@@ -140,7 +153,6 @@ class _MyStatefulState extends State<MyStateful>
           children: <Widget>[
             new IconButton(
                 icon: new Icon(Icons.home),
-                tooltip: 'test',
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -185,19 +197,37 @@ class _MyStatefulState extends State<MyStateful>
           ],
         ),
       ),
-      body: FutureBuilder<Menu>(
-          future: NetworkFoods.loadFoodsAsset('0'),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return new Container(
-                child: _ListSection(menu: snapshot.data),
-              );
-            } else if (snapshot.hasError) {
-              return Text("${snapshot.error}");
-            }
+      body: CustomScrollView(
+        slivers: <Widget>[
+          SliverAppBar(
+            expandedHeight: 100,
+            pinned: true,
+            floating: false,
+            flexibleSpace: new FlexibleSpaceBar(
+              title: Text('${restaurantName}'),
+              background: Image.network(
+                'https://images.unsplash.com/photo-1532597311687-5c2dc87fff52?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80',
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          SliverFillRemaining(
+            child: FutureBuilder<Menu>(
+                future: NetworkFoods.loadFoodsAsset('0'),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return new Container(
+                      child: _ListSection(menu: snapshot.data),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Text("${snapshot.error}");
+                  }
 
-            return CircularProgressIndicator();
-          }),
+                  return CircularProgressIndicator();
+                }),
+          )
+        ],
+      ),
     );
   }
 
@@ -303,4 +333,9 @@ class _MyStatefulState extends State<MyStateful>
         },
         itemCount: menu.data.length,
       );
+}
+
+class DataFeed {
+  Menu feed;
+  DataFeed({this.feed});
 }

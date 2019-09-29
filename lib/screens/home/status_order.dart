@@ -9,6 +9,7 @@ import 'package:online_store/screens/home/CafeLine2.dart';
 
 import 'package:online_store/screens/home/foodDetail.dart';
 import 'package:online_store/screens/home/CafeLine.dart';
+import 'package:online_store/screens/home/FirstPage2.dart';
 import 'package:online_store/models/foods.dart';
 import 'package:online_store/models/order.dart';
 import 'package:online_store/models/bill.dart';
@@ -17,6 +18,11 @@ import 'dart:async' show Future;
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:online_store/screens/home/Showdata.dart';
 import 'package:online_store/services/authService.dart';
+import 'package:online_store/globals.dart' as globals;
+
+String _restaurantID = globals.restaurantID;
+String _tableID = globals.tableID;
+String _userID = globals.userID;
 
 void main() {
   runApp(Status_Order());
@@ -46,29 +52,44 @@ class MyStateful extends StatefulWidget {
 
 class _MyStatefulState extends State<MyStateful>
     with SingleTickerProviderStateMixin {
+  _showAlertDialog({String strError}) async {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(strError),
+            content: Text(""),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Barcode()),
+                  );
+                },
+                child: Text("OK"),
+              )
+            ],
+          );
+        });
+  }
+
   TabController controller;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final titleString = "THE CORR";
 
-  String restuarantID = '';
-  String tableID = '';
-  String email = '';
-  String userid = '';
-
-  _loadCounter() async {
-    AuthService authService = AuthService();
-    if (await authService.isLogin()) {
-      restuarantID = await authService.getRestuarantID();
-      tableID = await authService.getTableID();
-      email = await authService.getEmail();
-      userid = await authService.getUserID();
-    }
-  }
-
   @override
   void initState() {
     super.initState();
+
+    if (_tableID == '') {
+      Future.delayed(Duration.zero, () {
+        _showAlertDialog(strError: 'คุณต้องแสกน QR CODE ก่อน');
+      });
+    }
+
     controller = new TabController(vsync: this, length: 5);
   }
 
@@ -80,12 +101,10 @@ class _MyStatefulState extends State<MyStateful>
 
   @override
   Widget build(BuildContext context) {
-    _loadCounter();
-
     String strBody;
 
-    // strBody = '{"restaurantID":"${restuarantID}","tableID":"${tableID}","userID":"${userid}"}';
-    strBody = '{"restaurantID":"1","tableID":"1","userID":"20"}';
+    strBody =
+        '{"restaurantID":"${_restaurantID}","tableID":"${_tableID}","userID":"${_userID}"}';
 
     void _showAlertDialog({String strError}) async {
       showDialog(
@@ -107,17 +126,14 @@ class _MyStatefulState extends State<MyStateful>
           });
     }
 
-    void SendtoJson(
+    void SendtoJsonCheckbill(
         {String restaurantID, String tableID, String userID}) async {
       String strBody =
-          '{"restaurantID":"${restaurantID}","tableID":"${tableID}","userID":"${userID}"}';
-      //   String strBody = '{"restaurantID":"1","tableID":"1","userID":"20"}';
-
+          '{"restaurantID":"${_restaurantID}","tableID":"${_tableID}","userID":"${_userID}"}';
       var feed = await NetworkFoods.checkBill(strBody: strBody);
       var data = DataFeed(feed: feed);
       if (data.feed.ResultOk.toString() == "true") {
       } else {
-//print('================================' + data.feed.ErrorMessage);
         _showAlertDialog(strError: 'กำลังเคลียร์โต๊ะ !!');
       }
     }
@@ -133,15 +149,26 @@ class _MyStatefulState extends State<MyStateful>
           color: Colors.black,
         ),
         backgroundColor: Colors.white,
-        title: Text('MENU'),
+        title: Text(
+          'MENU',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 20.0,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
 
       floatingActionButton: new FloatingActionButton.extended(
-        backgroundColor: Colors.deepOrangeAccent,
-        label: Text('CHECK BILL'),
+        backgroundColor: Colors.white,
+        label: Text(
+          'CHECK BILL',
+          style: TextStyle(color: Colors.black),
+        ),
         onPressed: () {
-          SendtoJson(
-              restaurantID: restuarantID, tableID: tableID, userID: userid);
+          SendtoJsonCheckbill(
+              restaurantID: _restaurantID, tableID: _tableID, userID: _userID);
         },
       ),
       //  floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat);
@@ -157,7 +184,7 @@ class _MyStatefulState extends State<MyStateful>
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => Cafe_Line()),
+                    MaterialPageRoute(builder: (context) => FirstPage2()),
                   );
                 }),
             //   new IconButton(icon: new Text('SAVE'), onPressed: null),
@@ -182,7 +209,7 @@ class _MyStatefulState extends State<MyStateful>
         ),
       ),
       body: FutureBuilder<StatusOrder>(
-          future: NetworkFoods.loadStatusOrder(),
+          future: NetworkFoods.loadStatusOrder(strBody),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               print('=========have');
@@ -199,6 +226,14 @@ class _MyStatefulState extends State<MyStateful>
   }
 
   List<detailFood> detailFoods = [];
+
+  SendtoJsonCancel({String orderID}) async {
+    String strBody = '{"restaurantID":"${orderID}"}';
+    var feed = await NetworkFoods.cancelOrder(strBody: strBody);
+    var data = DataFeedCancel(feed: feed);
+    if (data.feed.ResultOk.toString() == "true") {
+    } else {}
+  }
 
   Widget _ListSection({StatusOrder menu}) => ListView.builder(
         itemBuilder: (context, int idx) {
@@ -240,7 +275,10 @@ class _MyStatefulState extends State<MyStateful>
                                   Icons.delete,
                                   color: Colors.red,
                                 ),
-                                onPressed: null,
+                                onPressed: () {
+                                  SendtoJsonCancel(
+                                      orderID: menu.orderList[idx].orderID);
+                                },
                               ),
                             ),
                           ],
@@ -285,4 +323,10 @@ class DataFeed {
   RetBill feed;
 
   DataFeed({this.feed});
+}
+
+class DataFeedCancel {
+  RetCancelOrder feed;
+
+  DataFeedCancel({this.feed});
 }

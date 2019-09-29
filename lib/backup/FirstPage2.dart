@@ -62,9 +62,9 @@ class MyHomePage extends StatelessWidget {
       appBar: AppBar(
         textTheme: TextTheme(
             title: TextStyle(
-          color: Colors.black,
-          fontSize: 20.0,
-        )),
+              color: Colors.black,
+              fontSize: 20.0,
+            )),
         iconTheme: IconThemeData(
           color: Colors.black,
         ),
@@ -216,17 +216,17 @@ class MyHomePage extends StatelessWidget {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => Cafe_Line(
-                                            restaurantID: Mrestaurant
-                                                .data[idx].restaurantID,
-                                            restaurantName: Mrestaurant
-                                                .data[idx].restaurantName,
-                                            content:
-                                                Mrestaurant.data[idx].content,
-                                            description: Mrestaurant
-                                                .data[idx].description,
-                                            images:
-                                                Mrestaurant.data[idx].images,
-                                          ),
+                                        restaurantID: Mrestaurant
+                                            .data[idx].restaurantID,
+                                        restaurantName: Mrestaurant
+                                            .data[idx].restaurantName,
+                                        content:
+                                        Mrestaurant.data[idx].content,
+                                        description: Mrestaurant
+                                            .data[idx].description,
+                                        images:
+                                        Mrestaurant.data[idx].images,
+                                      ),
                                     ),
                                   );
                                 },

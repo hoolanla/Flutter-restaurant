@@ -13,19 +13,19 @@ import 'package:online_store/services/authService.dart';
 import 'package:online_store/globals.dart' as globals;
 
 class NetworkFoods {
-  static Future<Menu> loadFoodsAsset(String Recommend) async {
+  static Future<Menu> loadFoodsAsset({String RestaurantID,String Recommend}) async {
 //
 //      String jsonPage = await  rootBundle.loadString('assets/foods2.json');
 //    final jsonResponse = json.decode(jsonPage);
 //    Menu _menu = new Menu.fromJson(jsonResponse);
 //    return _menu;
-
+    print('===============${RestaurantID}');
 
    final String restaurantID = globals.restaurantID;
    final String tableID = globals.tableID;
    final String userID = globals.userID;
       String url = 'http://203.154.74.120/eMenuAPI/api/eMenu/geteMenu';
-      String body = '{"restaurantID":"${globals.restaurantID}","recommend":"${Recommend}"}';
+      String body = '{"restaurantID":"${RestaurantID}","recommend":"${Recommend}"}';
       var response = await http.post('$url',
           headers: {"Content-Type": "application/json"},
           body: body);
@@ -36,24 +36,25 @@ class NetworkFoods {
   }
 
   static Future<Restaurant> loadRestaurant() async {
-
-      String jsonPage = await  rootBundle.loadString('assets/firstpage.json');
-    final jsonResponse = json.decode(jsonPage);
+    String url = 'http://203.154.74.120/eMenuAPI/api/eMenu/getFirstPage';
+    String body = '';
+    var response = await http.post('$url',
+        headers: {"Content-Type": "application/json"},
+        body: body);
+    final jsonResponse = json.decode(response.body.toString());
     Restaurant _restaurant = new Restaurant.fromJson(jsonResponse);
-
-    print(_restaurant.data.length.toString());
-
+  //  print(_restaurant.data.length.toString());
     return _restaurant;
   }
 
-  static Future<StatusOrder> loadStatusOrder() async {
+  static Future<StatusOrder> loadStatusOrder(String strBody) async {
 //      String jsonPage = await  rootBundle.loadString('assets/foods2.json');
 //    final jsonResponse = json.decode(jsonPage);
 //    Menu _menu = new Menu.fromJson(jsonResponse);
 //    return _menu;
 
 
-   String strBody = '{"restaurantID":"${globals.restaurantID}","tableID":"${globals.tableID}","userID":"${globals.userID}"}';
+  // String strBody = '{"restaurantID":"${globals.restaurantID}","tableID":"${globals.tableID}","userID":"${globals.userID}"}';
 
     String url = 'http://203.154.74.120/eMenuAPI/api/eMenu/getOrder';
     var response = await http.post('$url',
@@ -108,6 +109,18 @@ class NetworkFoods {
     final jsonResponse = json.decode(response.body.toString());
     print(jsonResponse.toString());
     RetBill _ret = new RetBill.fromJson(jsonResponse);
+    return _ret;
+  }
+
+
+  static Future<RetCancelOrder> cancelOrder({String strBody}) async {
+    String url = 'http://203.154.74.120/eMenuAPI/api/eMenu/cancelOrder';
+    var response = await http.post('$url',
+        headers: {"Content-Type": "application/json"}, body: strBody);
+    final jsonResponse = json.decode(response.body.toString());
+    RetCancelOrder _ret = new RetCancelOrder.fromJson(jsonResponse);
+
+    print(jsonResponse.toString());
     return _ret;
   }
 }

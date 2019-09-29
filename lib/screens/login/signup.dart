@@ -185,13 +185,13 @@ class _SignUpState extends State<SignUp> {
                 padding: const EdgeInsets.fromLTRB(14.0, 8.0, 14.0, 8.0),
                 child: Material(
                     borderRadius: BorderRadius.circular(20.0),
-                    color: Colors.deepOrange,
+                    color: Colors.green,
                     elevation: 0.0,
                     child: MaterialButton(
                       onPressed: _submit,
                       minWidth: MediaQuery.of(context).size.width,
                       child: Text(
-                        "Sign up",
+                        'Sign up',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color: Colors.white,

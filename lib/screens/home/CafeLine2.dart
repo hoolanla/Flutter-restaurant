@@ -5,12 +5,21 @@ import 'package:online_store/services/foods.dart';
 import 'package:online_store/models/order.dart';
 import 'package:online_store/sqlite/db_helper.dart';
 import 'package:online_store/screens/home/Showdata.dart';
+import 'package:online_store/screens/home/FirstPage2.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:online_store/screens/barcode/barcode.dart';
+import 'package:online_store/main.dart';
 
 void main() => runApp(CafeLine2());
 
 class CafeLine2 extends StatelessWidget {
+  final String restaurantID;
+  final String restaurantName;
+  final String content;
+  final String descriptionRest;
+  final String imagesRest;
+
   final int foodsID;
   final String foodName;
   final double price;
@@ -23,7 +32,12 @@ class CafeLine2 extends StatelessWidget {
   final String foodType;
 
   CafeLine2(
-      {this.foodsID,
+      {this.restaurantID,
+      this.restaurantName,
+      this.content,
+      this.descriptionRest,
+      this.imagesRest,
+      this.foodsID,
       this.foodName,
       this.price,
       this.priceS,
@@ -44,6 +58,11 @@ class CafeLine2 extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: MyHomePage(
+        restaurantID: restaurantID,
+        restaurantName: restaurantName,
+        content: content,
+        descriptionRest: descriptionRest,
+        imagesRest: imagesRest,
         foodsID: foodsID,
         foodName: foodName,
         price: price,
@@ -60,6 +79,11 @@ class CafeLine2 extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
+  final String restaurantID;
+  final String restaurantName;
+  final String content;
+  final String descriptionRest;
+  final String imagesRest;
   final int foodsID;
   final String foodName;
   final double price;
@@ -72,6 +96,11 @@ class MyHomePage extends StatefulWidget {
   final String foodType;
 
   MyHomePage({
+    this.restaurantID,
+    this.restaurantName,
+    this.content,
+    this.descriptionRest,
+    this.imagesRest,
     this.foodsID,
     this.foodName,
     this.price,
@@ -113,10 +142,10 @@ class _MyHomePageState extends State<MyHomePage> {
   final formKey = new GlobalKey<FormState>();
   var dbHelper;
   int _radioValueSML = 0;
-  int _radioValueDrink = 0;  // ธรมดา หวาน
+  int _radioValueDrink = 0; // ธรมดา หวาน
   int _radioValueGrill = 0; // ธรรมดา สุก
   String _taste = 'ธรรมดา';
-  String _size='S';
+  String _size = 'S';
 
   double priceSml = 0;
 
@@ -149,15 +178,15 @@ class _MyHomePageState extends State<MyHomePage> {
       switch (_radioValueDrink) {
         case 0:
           _taste = 'ธรรมดา';
-       //   Fluttertoast.showToast(msg: taste, toastLength: Toast.LENGTH_SHORT);
+          //   Fluttertoast.showToast(msg: taste, toastLength: Toast.LENGTH_SHORT);
           break;
         case 1:
           _taste = 'ปานกลาง';
-      //    Fluttertoast.showToast(msg: taste, toastLength: Toast.LENGTH_SHORT);
+          //    Fluttertoast.showToast(msg: taste, toastLength: Toast.LENGTH_SHORT);
           break;
         case 2:
           _taste = 'หวาน';
-       //   Fluttertoast.showToast(msg: 'หวาน', toastLength: Toast.LENGTH_SHORT);
+          //   Fluttertoast.showToast(msg: 'หวาน', toastLength: Toast.LENGTH_SHORT);
           break;
       }
     });
@@ -169,15 +198,15 @@ class _MyHomePageState extends State<MyHomePage> {
       switch (_radioValueGrill) {
         case 0:
           _taste = 'ธรรมดา';
-      //    Fluttertoast.showToast(msg: taste, toastLength: Toast.LENGTH_SHORT);
+          //    Fluttertoast.showToast(msg: taste, toastLength: Toast.LENGTH_SHORT);
           break;
         case 1:
           _taste = 'ปานกลาง';
-       //   Fluttertoast.showToast(msg: taste, toastLength: Toast.LENGTH_SHORT);
+          //   Fluttertoast.showToast(msg: taste, toastLength: Toast.LENGTH_SHORT);
           break;
         case 2:
           _taste = 'สุกน้อย';
-      //    Fluttertoast.showToast(msg: taste, toastLength: Toast.LENGTH_SHORT);
+          //    Fluttertoast.showToast(msg: taste, toastLength: Toast.LENGTH_SHORT);
           break;
       }
     });
@@ -209,16 +238,34 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => Cafe_Line()),
+              MaterialPageRoute(
+                  builder: (context) => Cafe_Line(
+                        restaurantID: widget.restaurantID,
+                        restaurantName: widget.restaurantName,
+                        content: widget.content,
+                        description: widget.descriptionRest,
+                        images: widget.imagesRest,
+                      )),
             );
           },
         ),
-        title: Text('Detail'),
+        title: Text(
+          'Detail',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 20.0,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         actions: <Widget>[
           new Padding(
             padding: const EdgeInsets.all(10.0),
@@ -229,7 +276,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           new IconButton(
-            icon: new Icon(Icons.shopping_cart),
+            icon: new Icon(Icons.shopping_cart,color: Colors.black,),
             onPressed: () {
               Navigator.push(
                 context,
@@ -268,7 +315,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       bottomNavigationBar: Container(
-          margin: EdgeInsets.only(bottom: 18.0),
+          margin: EdgeInsets.only(bottom: 0.0),
           height: 60.0,
           decoration: BoxDecoration(
               color: Colors.white,
@@ -287,42 +334,68 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  void _showAlertDialog({String strError}) async {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(strError),
+            content: Text(""),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Barcode()),
+                  );
+                },
+                child: Text("OK"),
+              )
+            ],
+          );
+        });
+  }
+
   void _foo() async {
-    foodID = widget.foodsID;
-    HaveData = await dbHelper.getByID(foodID);
-
-    if (HaveData.length == 0) {
+    if (restaurantID != '' && restaurantID != null) {
       foodID = widget.foodsID;
-      foodsName = widget.foodName;
-      if(priceSml < 1) {
-        price = widget.priceS;
+      HaveData = await dbHelper.getByID(foodID);
+
+      if (HaveData.length == 0) {
+        foodID = widget.foodsID;
+        foodsName = widget.foodName;
+        if (priceSml < 1) {
+          price = widget.priceS;
+        } else {
+          price = priceSml;
+        }
+
+        size = _size;
+        description = widget.description;
+        images = widget.image;
+        qty = 1;
+        totalPrice = qty * price;
+        taste = _taste;
+
+        Order e = Order(foodID, foodsName, price, size, description, images,
+            qty, totalPrice, taste);
+
+        print('=======' + e.size);
+
+        dbHelper.save(e);
+        showSnak();
+      } else {
+        foodID = widget.foodsID;
+        dbHelper.updateBySQL(foodsID: foodID);
+        showSnak();
       }
-      else {
-        price = priceSml;
+
+      if (priceSml < 1) {
+        priceSml = widget.priceS;
       }
-
-      size = _size;
-      description = widget.description;
-      images = widget.image;
-      qty = 1;
-      totalPrice = qty * price;
-      taste = _taste;
-
-      Order e = Order(foodID, foodsName, price, size, description, images, qty,
-          totalPrice, taste);
-
-      print('=======' + e.size);
-
-      dbHelper.save(e);
-      showSnak();
     } else {
-      foodID = widget.foodsID;
-      dbHelper.updateBySQL(foodsID: foodID);
-      showSnak();
-    }
-
-    if (priceSml < 1) {
-      priceSml = widget.priceS;
+      _showAlertDialog(strError: 'คุณต้องแสกน QR CODE ก่อน');
     }
 
 //      dbHelper.deleteAll();
@@ -332,7 +405,7 @@ class _MyHomePageState extends State<MyHomePage> {
   RaisedButton _ButtonAdd() {
     return new RaisedButton(
       onPressed: () => _foo(),
-      color: Colors.deepOrange,
+      color: Colors.green,
       child: Text(
         'ADD TO CART',
         style: TextStyle(

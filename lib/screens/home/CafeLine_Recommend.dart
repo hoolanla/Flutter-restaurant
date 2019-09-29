@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-
 import 'package:online_store/screens/login/login.dart';
 import 'package:online_store/screens/map/place.dart';
 import 'package:online_store/screens/barcode/barcode.dart';
@@ -21,7 +20,7 @@ import 'package:online_store/screens/barcode/barcode.dart';
 import 'package:online_store/screens/map/place.dart';
 import 'package:online_store/screens/home/CafeLine.dart';
 import 'package:online_store/services/authService.dart';
-
+import 'package:online_store/screens/home/FirstPage2.dart';
 
 String restaurantID;
 String restaurantName;
@@ -31,35 +30,30 @@ void main() {
 }
 
 class CafeLine_Recommend extends StatelessWidget {
+  final String restaurantID;
+  final String restaurantName;
+  final String content;
+  final String description;
+  final String images;
 
-
-
-  _loadCounter() async {
-    AuthService authService = AuthService();
-    restaurantID = await authService.getRestuarantID();
-  }
-
-  getRestaurantname() async {
-    var feed = await NetworkFoods.loadFoodsAsset('0');
-    var data = DataFeed(feed: feed);
-    if (data.feed.ResultOk.toString() == "true") {
-      restaurantName = data.feed.restuarantName.toString();
-    } else {}
-  }
-
-
-
-
+  CafeLine_Recommend(
+      {this.restaurantID,
+      this.restaurantName,
+      this.content,
+      this.description,
+      this.images});
 
   @override
   Widget build(BuildContext context) {
-
-    _loadCounter();
-    getRestaurantname();
-
     return new MaterialApp(
       title: '',
-      home: new MyStateful(),
+      home: new MyStateful(
+        restaurantID: restaurantID,
+        restaurantName: restaurantName,
+        content: content,
+        description: description,
+        images: images,
+      ),
 //      initialRoute: '/',
 //      routes: {
 //        '/home': (context) => Home(),
@@ -69,6 +63,19 @@ class CafeLine_Recommend extends StatelessWidget {
 }
 
 class MyStateful extends StatefulWidget {
+  final String restaurantID;
+  final String restaurantName;
+  final String content;
+  final String description;
+  final String images;
+
+  MyStateful(
+      {this.restaurantID,
+      this.restaurantName,
+      this.content,
+      this.description,
+      this.images});
+
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -84,10 +91,9 @@ class _MyStatefulState extends State<MyStateful>
   final titleString = "";
   String strBody;
 
-
   _loadCounter() async {
     AuthService authService = AuthService();
-    if(await authService.isLogin()){
+    if (await authService.isLogin()) {
       restaurantID = await authService.getRestuarantID();
     }
   }
@@ -112,14 +118,22 @@ class _MyStatefulState extends State<MyStateful>
       appBar: new AppBar(
         textTheme: TextTheme(
             title: TextStyle(
-              color: Colors.black,
-              fontSize: 20.0,
-            )),
+          color: Colors.black,
+          fontSize: 20.0,
+        )),
         iconTheme: IconThemeData(
           color: Colors.black,
         ),
         backgroundColor: Colors.white,
-        title: Text('Recommend'),
+        title: Text(
+          'Recommend',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            fontSize: 20.0,
+          ),
+        ),
         actions: <Widget>[
           new Padding(
             padding: const EdgeInsets.all(10.0),
@@ -130,38 +144,48 @@ class _MyStatefulState extends State<MyStateful>
             ),
           )
         ],
-        bottom: new TabBar(controller: controller,
-            tabs:[
-              GestureDetector(
-                child: Tab(
-                  icon: Icon(
-                    Icons.home,
-                    color: Colors.black54,
-                  ),
-                ),
-                onTap: () {
-
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Cafe_Line()),
-                  );
-                },
+        bottom: new TabBar(controller: controller, tabs: [
+          GestureDetector(
+            child: Tab(
+              icon: Icon(
+                Icons.home,
+                color: Colors.black54,
               ),
-              GestureDetector(
-                child: Tab(
-                    icon: Icon(
-                      Icons.restaurant,
-                      color: Colors.black54,
-                    )),
-                onTap: () {
-
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => CafeLine_Recommend()),
-                  );
-
-                },
-              ),
+            ),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => Cafe_Line(
+                          restaurantID: widget.restaurantID,
+                          restaurantName: widget.restaurantName,
+                          content: widget.content,
+                          description: widget.description,
+                          images: widget.images,
+                        )),
+              );
+            },
+          ),
+          GestureDetector(
+            child: Tab(
+                icon: Icon(
+              Icons.restaurant,
+              color: Colors.black54,
+            )),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => CafeLine_Recommend(
+                          restaurantID: widget.restaurantID,
+                          restaurantName: widget.restaurantName,
+                          content: widget.content,
+                          description: widget.description,
+                          images: widget.images,
+                        )),
+              );
+            },
+          ),
         ]),
       ),
       bottomNavigationBar: new BottomAppBar(
@@ -174,24 +198,28 @@ class _MyStatefulState extends State<MyStateful>
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => Cafe_Line()),
+                    MaterialPageRoute(builder: (context) => FirstPage2()),
                   );
                 }),
+
             //   new IconButton(icon: new Text('SAVE'), onPressed: null),
-            new IconButton(icon: new Icon(Icons.center_focus_strong), onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => Barcode()),
-              );
-            }),
+            new IconButton(
+                icon: new Icon(Icons.center_focus_strong),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Barcode()),
+                  );
+                }),
 
-
-            new IconButton(icon: new Icon(Icons.map), onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => Mapgoogle()),
-              );
-            }),
+            new IconButton(
+                icon: new Icon(Icons.map),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Mapgoogle()),
+                  );
+                }),
 
             new IconButton(
                 icon: new Icon(Icons.list),
@@ -212,23 +240,28 @@ class _MyStatefulState extends State<MyStateful>
           ],
         ),
       ),
-      body:  CustomScrollView(
+      body: CustomScrollView(
         slivers: <Widget>[
           SliverAppBar(
             expandedHeight: 100,
             pinned: true,
             floating: false,
             flexibleSpace: new FlexibleSpaceBar(
-              title: Text('${restaurantName}'),
+              title: Text(
+                '${widget.restaurantName}',
+                style: TextStyle(
+                    color: Colors.deepOrange, fontWeight: FontWeight.bold),
+              ),
               background: Image.network(
-                'https://images.unsplash.com/photo-1532597311687-5c2dc87fff52?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80',
+                '${widget.images}',
                 fit: BoxFit.cover,
               ),
             ),
           ),
           SliverFillRemaining(
             child: FutureBuilder<Menu>(
-                future: NetworkFoods.loadFoodsAsset('0'),
+                future: NetworkFoods.loadFoodsAsset(
+                    RestaurantID: widget.restaurantID, Recommend: '1'),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return new Container(
@@ -249,32 +282,32 @@ class _MyStatefulState extends State<MyStateful>
   List<detailFood> detailFoods = [];
 
   Widget _ListSection({Menu menu}) => ListView.builder(
-    itemBuilder: (context, int idx) {
-      return Padding(
-        padding: EdgeInsets.symmetric(vertical: 16.0),
-        child: Column(
-          children: <Widget>[
-            Container(
-              child: new ListTile(
-                leading: Text(menu.data[idx].foodsTypeNameLevel2,
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.bold)),
+        itemBuilder: (context, int idx) {
+          return Padding(
+            padding: EdgeInsets.symmetric(vertical: 16.0),
+            child: Column(
+              children: <Widget>[
+                Container(
+                  child: new ListTile(
+                    leading: Text(menu.data[idx].foodsTypeNameLevel2,
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold)),
 
-                // title: Text(menu.data[idx].foodsTypeNameLevel2),
-                trailing: Text(
-                  'ทั้งหมด (${menu.data[idx].foodsItems.length})',
-                  style: TextStyle(
-                      color: Colors.green,
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.bold),
+                    // title: Text(menu.data[idx].foodsTypeNameLevel2),
+                    trailing: Text(
+                      'ทั้งหมด (${menu.data[idx].foodsItems.length})',
+                      style: TextStyle(
+                          color: Colors.green,
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            ListView.builder(
-              itemBuilder: (context, index) {
-                /*    detailFoods.add(detailFood(
+                ListView.builder(
+                  itemBuilder: (context, index) {
+                    /*    detailFoods.add(detailFood(
                         menu.data[idx].foodsList[index].foodsID,
                         menu.data[idx].foodsList[index].foodsName,
                         menu.data[idx].foodsList[index].price,
@@ -285,67 +318,67 @@ class _MyStatefulState extends State<MyStateful>
                     print(
                         "${idx}  ${detailFoods[index].foodsName}   ${detailFoods.length.toString()}");*/
 
-                return Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 16.0,
-                    vertical: 8.0,
-                  ),
-                  child: ListTile(
-                    leading: Container(
-                      height: 50,
-                      width: 50,
-                      child: ClipOval(
-                        child: Image.network(
-                          menu.data[idx].foodsItems[index].images,
-                          fit: BoxFit.cover,
-                        ),
+                    return Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                        vertical: 8.0,
                       ),
-                    ),
-                    title: Text(menu.data[idx].foodsItems[index].foodName),
-                    subtitle: Text(
-                      menu.data[idx].foodsItems[index].price.toString(),
-                    ),
-                    onTap: () {
-                      setState(() {});
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => CafeLine2(
-                            foodsID:
-                            menu.data[idx].foodsItems[index].foodID,
-                            foodName: menu
-                                .data[idx].foodsItems[index].foodName,
-                            price:
-                            menu.data[idx].foodsItems[index].price,
-                            size: "size",
-                            description: menu.data[idx]
-                                .foodsItems[index].description,
-                            image:
-                            menu.data[idx].foodsItems[index].images,
-                            foodType:
-                            menu.data[idx].foodsTypeIDLevel2,
+                      child: ListTile(
+                        leading: Container(
+                          height: 50,
+                          width: 50,
+                          child: ClipOval(
+                            child: Image.network(
+                              menu.data[idx].foodsItems[index].images,
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
-                      );
-                    },
-                  ),
-                );
-              },
-              itemCount: menu.data[idx].foodsItems.length,
-              shrinkWrap: true,
-              // todo comment this out and check the result
-              physics:
-              ClampingScrollPhysics(), // todo comment this out and check the result
-            )
-          ],
-        ),
+                        title: Text(menu.data[idx].foodsItems[index].foodName),
+                        subtitle: Text(
+                          menu.data[idx].foodsItems[index].price.toString(),
+                        ),
+                        onTap: () {
+                          setState(() {});
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CafeLine2(
+                                    foodsID:
+                                        menu.data[idx].foodsItems[index].foodID,
+                                    foodName: menu
+                                        .data[idx].foodsItems[index].foodName,
+                                    price:
+                                        menu.data[idx].foodsItems[index].price,
+                                    size: "size",
+                                    description: menu.data[idx]
+                                        .foodsItems[index].description,
+                                    image:
+                                        menu.data[idx].foodsItems[index].images,
+                                    foodType: menu.data[idx].foodsTypeIDLevel2,
+                                  ),
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  },
+                  itemCount: menu.data[idx].foodsItems.length,
+                  shrinkWrap: true,
+                  // todo comment this out and check the result
+                  physics:
+                      ClampingScrollPhysics(), // todo comment this out and check the result
+                )
+              ],
+            ),
+          );
+        },
+        itemCount: menu.data.length,
       );
-    },
-    itemCount: menu.data.length,
-  );
 }
 
 class DataFeed {
   Menu feed;
+
   DataFeed({this.feed});
 }

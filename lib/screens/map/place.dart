@@ -5,6 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart' as LocationManager;
 import 'place_detail.dart';
+import 'package:online_store/screens/home/FirstPage2.dart';
+import 'package:online_store/screens/home/Showdata.dart';
+import 'package:online_store/screens/barcode/barcode.dart';
+import 'package:online_store/screens/home/status_order.dart';
 
 const kGoogleApiKey = "AIzaSyAZZQMknD9tUApMWLYZvZ4mmlVIdb_QquI";
 GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: kGoogleApiKey);
@@ -23,8 +27,6 @@ class Mapgoogle extends StatefulWidget {
     return HomeState();
   }
 }
-
-
 
 class HomeState extends State<Mapgoogle> {
   final homeScaffoldKey = GlobalKey<ScaffoldState>();
@@ -49,20 +51,36 @@ class HomeState extends State<Mapgoogle> {
     return Scaffold(
         key: homeScaffoldKey,
         appBar: AppBar(
-          backgroundColor: Colors.deepOrange,
-          title: const Text("eMENU"),
+          textTheme: TextTheme(
+              title: TextStyle(
+            color: Colors.black,
+            fontSize: 20.0,
+          )),
+          iconTheme: IconThemeData(
+            color: Colors.black,
+          ),
+          backgroundColor: Colors.white,
+          title: const Text(
+            'MAP',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 20.0,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           actions: <Widget>[
             isLoading
                 ? IconButton(
-              icon: Icon(Icons.timer),
-              onPressed: () {},
-            )
+                    icon: Icon(Icons.timer),
+                    onPressed: () {},
+                  )
                 : IconButton(
-              icon: Icon(Icons.refresh),
-              onPressed: () {
-                refresh();
-              },
-            ),
+                    icon: Icon(Icons.refresh),
+                    onPressed: () {
+                      refresh();
+                    },
+                  ),
             IconButton(
               icon: Icon(Icons.search),
               onPressed: () {
@@ -70,6 +88,57 @@ class HomeState extends State<Mapgoogle> {
               },
             ),
           ],
+        ),
+        bottomNavigationBar: new BottomAppBar(
+          child: new Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              new IconButton(
+                  icon: new Icon(Icons.home),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => FirstPage2()),
+                    );
+                  }),
+              //   new IconButton(icon: new Text('SAVE'), onPressed: null),
+              new IconButton(
+                  icon: new Icon(Icons.center_focus_strong),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Barcode()),
+                    );
+                  }),
+
+              new IconButton(
+                  icon: new Icon(Icons.map),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Mapgoogle()),
+                    );
+                  }),
+
+              new IconButton(
+                  icon: new Icon(Icons.list),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ShowData()),
+                    );
+                  }),
+              new IconButton(
+                  icon: new Icon(Icons.alarm),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Status_Order()),
+                    );
+                  }),
+            ],
+          ),
         ),
         body: Column(
           children: <Widget>[
@@ -81,7 +150,7 @@ class HomeState extends State<Mapgoogle> {
                       options: GoogleMapOptions(
                           myLocationEnabled: true,
                           cameraPosition:
-                          const CameraPosition(target: LatLng(0.0, 0.0))))),
+                              const CameraPosition(target: LatLng(0.0, 0.0))))),
             ),
             Expanded(child: expandedChild)
           ],
@@ -131,7 +200,7 @@ class HomeState extends State<Mapgoogle> {
         result.results.forEach((f) {
           final markerOptions = MarkerOptions(
               position:
-              LatLng(f.geometry.location.lat, f.geometry.location.lng),
+                  LatLng(f.geometry.location.lat, f.geometry.location.lng),
               infoWindowText: InfoWindowText("${f.name}", "${f.types?.first}"));
           mapController.addMarker(markerOptions);
         });
@@ -172,7 +241,7 @@ class HomeState extends State<Mapgoogle> {
     if (placeId != null) {
       Navigator.push(
         context,
-      MaterialPageRoute(builder: (context) => PlaceDetailWidget(placeId)),
+        MaterialPageRoute(builder: (context) => PlaceDetailWidget(placeId)),
       );
     }
   }

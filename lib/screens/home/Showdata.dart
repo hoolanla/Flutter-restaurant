@@ -2,29 +2,44 @@ import 'package:flutter/material.dart';
 import 'package:online_store/models/order.dart';
 import 'dart:async';
 import 'package:online_store/screens/home/CafeLine.dart';
+import 'package:online_store/screens/home/FirstPage2.dart';
 import 'package:online_store/screens/home/status_order.dart';
 import 'package:online_store/screens/Json/foods.dart';
 import 'package:online_store/sqlite/db_helper.dart';
 import 'package:online_store/services/Dialogs.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:online_store/services/authService.dart';
+import 'package:online_store/screens/barcode/barcode.dart';
+import 'package:online_store/globals.dart' as globals;
 
 //import 'package:json_serializable/json_serializable.dart';
 import 'dart:convert';
 
-String restuarantID = '';
-String tableID = '';
-String email = '';
-String userid = '';
+String _tableID = globals.tableID;
+String _restaurantID = globals.restaurantID;
+String _userID = globals.userID;
 
+Future<List<Order>> orders;
+List<Order> _order;
+Future<double> _totals;
+Future<RetStatusInsertOrder> retInsert;
 
+int foodsID;
+String foodsName;
+double price;
+String size;
+String description;
+String images;
+int qty;
+String taste;
 
+String iTest = '';
+
+void main() {
+  runApp(ShowData());
+}
 
 class ShowData extends StatefulWidget {
-  final String title;
-
-  ShowData({Key key, this.title}) : super(key: key);
-
   @override
   State<StatefulWidget> createState() {
     return _ShowData();
@@ -32,35 +47,28 @@ class ShowData extends StatefulWidget {
 }
 
 class _ShowData extends State<ShowData> {
-
-  _loadCounter() async {
-    AuthService authService = AuthService();
-    if(await authService.isLogin()){
-      restuarantID = await authService.getRestuarantID();
-      tableID = await authService.getTableID();
-      email = await authService.getEmail();
-      userid = await authService.getUserID();
-    }
+  _showAlertDialog({String strError}) async {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(strError),
+            content: Text(""),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Barcode()),
+                  );
+                },
+                child: Text("OK"),
+              )
+            ],
+          );
+        });
   }
-
-
-
-  Future<List<Order>> orders;
-  List<Order> _order;
-
-  Future<double> _totals;
-  Future<RetStatusInsertOrder> retInsert;
-
-  int foodsID;
-  String foodsName;
-  double price;
-  String size;
-  String description;
-  String images;
-  int qty;
-  String taste;
-
-  String iTest = '';
 
   final formKey = new GlobalKey<FormState>();
   var dbHelper;
@@ -68,36 +76,35 @@ class _ShowData extends State<ShowData> {
 
   @override
   void initState() {
+    if (_tableID == '') {
+      Future.delayed(Duration.zero, () {
+        _showAlertDialog(strError: 'คุณต้องแสกน QR CODE ก่อน');
+      });
+    } else {
+      dbHelper = DBHelper();
+      refreshList();
+      refreshTotal();
+    }
+
     super.initState();
-    dbHelper = DBHelper();
-    refreshList();
-    refreshTotal();
   }
 
-
-  Timer _Timer;
-
   refreshList() {
-
-      setState(() {
-        orders = dbHelper.getOrders();
-      });
-
+    setState(() {
+      orders = dbHelper.getOrders();
+    });
   }
 
   refreshTotal() {
-
-      setState(() {
-        _totals = dbHelper.calculateTotal();
-      });
-
+    setState(() {
+      _totals = dbHelper.calculateTotal();
+    });
   }
 
   void _removeQty({int foodsID}) async {
     int i;
 
     i = await dbHelper.removeQty(foodsID);
-
 
     refreshTotal();
     refreshList();
@@ -106,7 +113,6 @@ class _ShowData extends State<ShowData> {
   void _addQty({int foodsID}) async {
     int i;
     i = await dbHelper.addQty(foodsID);
-
     refreshTotal();
     refreshList();
   }
@@ -129,7 +135,7 @@ class _ShowData extends State<ShowData> {
             return Text("No Data Found");
           }
 
-        //  return CircularProgressIndicator();
+          //  return CircularProgressIndicator();
         },
       ),
     );
@@ -154,7 +160,9 @@ class _ShowData extends State<ShowData> {
             orders[idx].qty.toString() +
             ',"totalPrice":' +
             orders[idx].totalPrice.toString() +
-            ',"taste":"' + orders[idx].taste + '"},';
+            ',"taste":"' +
+            orders[idx].taste +
+            '"},';
 
         return ListTile(
           leading: ClipOval(
@@ -176,11 +184,11 @@ class _ShowData extends State<ShowData> {
                   ),
                   Padding(
                     padding: const EdgeInsets.all(0.0),
-                    child: Text(orders[idx].price.toString(),
+                    child: Text(
+                      orders[idx].price.toString(),
                       style: TextStyle(color: Colors.green),
                     ),
                   ),
-
                   Padding(
                     padding: const EdgeInsets.fromLTRB(20.0, 8.0, 8.0, 8.0),
                     child: Text('รวม:'),
@@ -198,20 +206,17 @@ class _ShowData extends State<ShowData> {
                 children: <Widget>[
                   new Row(
                     children: <Widget>[
-
                       Padding(
                         padding: const EdgeInsets.all(0.0),
                         child: Text('ขนาด: '),
                       ),
-
                       Padding(
                         padding: const EdgeInsets.all(0.0),
-                        child: Text('${orders[idx].size}    (${orders[idx].taste})',
+                        child: Text(
+                          '${orders[idx].size}    (${orders[idx].taste})',
                           style: TextStyle(color: Colors.green),
                         ),
                       ),
-
-
                       Padding(
                         padding: const EdgeInsets.all(0.0),
                         child: IconButton(
@@ -222,15 +227,16 @@ class _ShowData extends State<ShowData> {
                             onPressed: () =>
                                 _removeQty(foodsID: orders[idx].foodsID)),
                       ),
-
                       Padding(
                         padding: const EdgeInsets.all(0.0),
                         child: Text(
                           orders[idx].qty.toString(),
-                          style: TextStyle(color: Colors.deepOrange,fontWeight: FontWeight.bold,fontSize: 16),
+                          style: TextStyle(
+                              color: Colors.deepOrange,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16),
                         ),
                       ),
-
                       Padding(
                         padding: const EdgeInsets.all(0.0),
                         child: IconButton(
@@ -253,11 +259,26 @@ class _ShowData extends State<ShowData> {
 
   @override
   Widget build(BuildContext context) {
-    _loadCounter();
-
     return new Scaffold(
         appBar: new AppBar(
-          title: new Text('BASKET'),
+          textTheme: TextTheme(
+              title: TextStyle(
+            color: Colors.black,
+            fontSize: 20.0,
+          )),
+          iconTheme: IconThemeData(
+            color: Colors.black,
+          ),
+          backgroundColor: Colors.white,
+          title: new Text(
+            'BASKET',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+              fontSize: 20.0,
+            ),
+          ),
         ),
         bottomNavigationBar: new BottomAppBar(
           child: new Row(
@@ -266,11 +287,10 @@ class _ShowData extends State<ShowData> {
             children: <Widget>[
               new IconButton(
                   icon: new Icon(Icons.home),
-
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => Cafe_Line()),
+                      MaterialPageRoute(builder: (context) => FirstPage2()),
                     );
                   }),
               //   new IconButton(icon: new Text('SAVE'), onPressed: null),
@@ -311,11 +331,14 @@ class _ShowData extends State<ShowData> {
 
       ),*/
         floatingActionButton: new FloatingActionButton.extended(
-          backgroundColor: Colors.deepOrangeAccent,
+          backgroundColor: Colors.white,
           label: FutureBuilder(
               future: _totals,
               builder: (context, snapshot) {
-                return Text('Total  ${snapshot.data}   CHECK OUT');
+                return Text(
+                  'Total  ${snapshot.data}   CHECK OUT',
+                  style: TextStyle(color: Colors.black),
+                );
               }),
           onPressed: () {
             /*   String _Header = '{"restaurantID":"${restuarantID}","userID":"${email}","tableID":"${tableID}","orderList":[';
@@ -324,7 +347,8 @@ class _ShowData extends State<ShowData> {
             _All = _Header + iTest + _Tail;
             _showAlert(context,'');*/
 
-            String _Header =    '{"restaurantID":"${restuarantID}","userID":"${userid}","tableID":"${tableID}","orderList":[';
+            String _Header =
+                '{"restaurantID":"${_restaurantID}","userID":"${_userID}","tableID":"${_tableID}","orderList":[';
             String _Tail = ']}';
             String _All = '';
             _All = _Header + iTest + _Tail;
@@ -340,7 +364,6 @@ class _ShowData extends State<ShowData> {
               );
             }
           },
-
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat);
   }

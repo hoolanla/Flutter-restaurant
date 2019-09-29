@@ -1,5 +1,6 @@
 library online_store.globals;
 
-String  restaurantID = '1';
-String  tableID = '1';
-String  userID = '20';
+String  restaurantID = '';
+String  tableID = '';
+String  userID = '';
+String  imageRestaurant = '';

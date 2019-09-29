@@ -9,6 +9,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:online_store/services/authService.dart';
 import 'package:online_store/screens/home/CafeLine.dart';
 import 'package:online_store/globals.dart' as globals;
+import 'package:online_store/screens/map/place.dart';
+import 'package:online_store/screens/home/Showdata.dart';
+import 'package:online_store/screens/home/FirstPage2.dart';
+import 'package:online_store/screens/home/status_order.dart';
 
 void main() {
   runApp(new Barcode());
@@ -20,7 +24,6 @@ class Barcode extends StatefulWidget {
 }
 
 class _MyAppState extends State<Barcode> {
-
   AuthService authService = AuthService();
   String barcode = "";
   Qrcode qrcode;
@@ -28,7 +31,6 @@ class _MyAppState extends State<Barcode> {
   @override
   initState() {
     super.initState();
-
   }
 
   @override
@@ -36,6 +38,57 @@ class _MyAppState extends State<Barcode> {
     return new MaterialApp(
       debugShowCheckedModeBanner: false,
       home: new Scaffold(
+        bottomNavigationBar: new BottomAppBar(
+          child: new Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              new IconButton(
+                  icon: new Icon(Icons.home),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => FirstPage2()),
+                    );
+                  }),
+              //   new IconButton(icon: new Text('SAVE'), onPressed: null),
+              new IconButton(
+                  icon: new Icon(Icons.center_focus_strong),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Barcode()),
+                    );
+                  }),
+
+              new IconButton(
+                  icon: new Icon(Icons.map),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Mapgoogle()),
+                    );
+                  }),
+
+              new IconButton(
+                  icon: new Icon(Icons.list),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ShowData()),
+                    );
+                  }),
+              new IconButton(
+                  icon: new Icon(Icons.alarm),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Status_Order()),
+                    );
+                  }),
+            ],
+          ),
+        ),
         body: Center(
           child: Column(
             children: <Widget>[
@@ -43,17 +96,20 @@ class _MyAppState extends State<Barcode> {
                 padding: EdgeInsets.all(8.0),
               ),
               Text(''),
-
-
-
             ],
           ),
         ),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: scan,
-          label: Text("Scan"),
-          icon: Icon(Icons.camera_alt),
-          backgroundColor: Colors.deepOrange,
+          label: Text(
+            'Scan',
+            style: TextStyle(color: Colors.black),
+          ),
+          icon: Icon(
+            Icons.camera_alt,
+            color: Colors.black,
+          ),
+          backgroundColor: Colors.white,
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       ),
@@ -65,7 +121,6 @@ class _MyAppState extends State<Barcode> {
       String barcode = await BarcodeScanner.scan();
       qrcode = NetworkQrcode.loadQrcode(qrcode: barcode);
 
-
       bool _result;
       authService.SetRestuarant(qrcode: qrcode).then((result) {
         _result = result;
@@ -73,19 +128,13 @@ class _MyAppState extends State<Barcode> {
         globals.restaurantID = qrcode.restuarantID;
         globals.tableID = qrcode.tableID;
 
-        if(_result) {
-          Navigator.push(
-              context, new MaterialPageRoute(builder: (context) => new Cafe_Line()));
+        if (_result) {
+          Navigator.push(context,
+              new MaterialPageRoute(builder: (context) => new Cafe_Line()));
         }
-
-
-        });
+      });
 
       setState(() => this.barcode = barcode);
-
-
-
-
     } on PlatformException catch (e) {
       if (e.code == BarcodeScanner.CameraAccessDenied) {
         // The user did not grant the camera permission.

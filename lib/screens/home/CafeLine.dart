@@ -14,6 +14,7 @@ import 'package:online_store/screens/home/status_order.dart';
 import 'package:online_store/models/foods.dart';
 import 'package:online_store/screens/Json/foods.dart';
 import 'package:online_store/screens/home/Showdata.dart';
+import 'package:online_store/screens/home/FirstPage2.dart';
 import 'dart:async' show Future;
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,46 +25,56 @@ import 'package:online_store/services/authService.dart';
 
 String restaurantID;
 String restaurantName;
+String userID;
+String tableID;
 
 void main() {
   runApp(Cafe_Line());
 }
 
 class Cafe_Line extends StatelessWidget {
+  final String restaurantID;
+  final String restaurantName;
+  final String content;
+  final String description;
+  final String images;
 
-
-  _loadCounter() async {
-    AuthService authService = AuthService();
-    restaurantID = await authService.getRestuarantID();
-  }
-
-  getRestaurantname() async {
-    var feed = await NetworkFoods.loadFoodsAsset('0');
-    var data = DataFeed(feed: feed);
-    if (data.feed.ResultOk.toString() == "true") {
-      restaurantName = data.feed.restuarantName.toString();
-    } else {}
-  }
+  Cafe_Line(
+      {this.restaurantID,
+      this.restaurantName,
+      this.content,
+      this.description,
+      this.images});
 
   @override
   Widget build(BuildContext context) {
-
-    _loadCounter();
-    getRestaurantname();
-
-
     return new MaterialApp(
       title: '',
-      home: new MyStateful(),
-//      initialRoute: '/',
-//      routes: {
-//        '/home': (context) => Home(),
-//      },
+      home: new MyStateful(
+        restaurantID: restaurantID,
+        restaurantName: restaurantName,
+        content: content,
+        description: description,
+        images: images,
+      ),
     );
   }
 }
 
 class MyStateful extends StatefulWidget {
+  final String restaurantID;
+  final String restaurantName;
+  final String content;
+  final String description;
+  final String images;
+
+  MyStateful(
+      {this.restaurantID,
+      this.restaurantName,
+      this.content,
+      this.description,
+      this.images});
+
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -73,6 +84,18 @@ class MyStateful extends StatefulWidget {
 
 class _MyStatefulState extends State<MyStateful>
     with SingleTickerProviderStateMixin {
+  var textYellow = Color(0xFFf6c24d);
+  var iconYellow = Color(0xFFf4bf47);
+
+  var green = Color(0xFF4caf6a);
+  var greenLight = Color(0xFFd8ebde);
+
+  var red = Color(0xFFf36169);
+  var redLight = Color(0xFFf2dcdf);
+
+  var blue = Color(0xFF398bcf);
+  var blueLight = Color(0xFFc1dbee);
+
   TabController controller;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -105,7 +128,15 @@ class _MyStatefulState extends State<MyStateful>
           color: Colors.black,
         ),
         backgroundColor: Colors.white,
-         title: Text('MENU'),
+        title: Text(
+          'MENU',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 20.0,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         actions: <Widget>[
           new Padding(
             padding: const EdgeInsets.all(10.0),
@@ -127,7 +158,14 @@ class _MyStatefulState extends State<MyStateful>
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => Cafe_Line()),
+                MaterialPageRoute(
+                    builder: (context) => Cafe_Line(
+                          restaurantID: widget.restaurantID,
+                          restaurantName: widget.restaurantName,
+                          content: widget.content,
+                          description: widget.description,
+                          images: widget.images,
+                        )),
               );
             },
           ),
@@ -140,7 +178,14 @@ class _MyStatefulState extends State<MyStateful>
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => CafeLine_Recommend()),
+                MaterialPageRoute(
+                    builder: (context) => CafeLine_Recommend(
+                          restaurantID: widget.restaurantID,
+                          restaurantName: widget.restaurantName,
+                          content: widget.content,
+                          description: widget.description,
+                          images: widget.images,
+                        )),
               );
             },
           ),
@@ -156,7 +201,7 @@ class _MyStatefulState extends State<MyStateful>
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => Cafe_Line()),
+                    MaterialPageRoute(builder: (context) => FirstPage2()),
                   );
                 }),
             //   new IconButton(icon: new Text('SAVE'), onPressed: null),
@@ -204,23 +249,39 @@ class _MyStatefulState extends State<MyStateful>
             pinned: true,
             floating: false,
             flexibleSpace: new FlexibleSpaceBar(
-              title: Text('${restaurantName}'),
-              background: Image.network(
-                'https://images.unsplash.com/photo-1532597311687-5c2dc87fff52?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80',
-                fit: BoxFit.cover,
-              ),
-            ),
+                title: Text(
+                  '${widget.restaurantName}',
+                  style: TextStyle(
+                      color: Colors.red,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18.0),
+                ),
+                background: Container(
+                  height: 100.0,
+                  width: 420.0,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                        colors: [Colors.black.withOpacity(0.1), Colors.black],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter),
+                  ),
+                  child: Image.network(
+                    widget.images,
+                    fit: BoxFit.cover,
+                  ),
+                )),
           ),
           SliverFillRemaining(
             child: FutureBuilder<Menu>(
-                future: NetworkFoods.loadFoodsAsset('0'),
+                future: NetworkFoods.loadFoodsAsset(
+                    RestaurantID: widget.restaurantID, Recommend: '0'),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return new Container(
                       child: _ListSection(menu: snapshot.data),
                     );
                   } else if (snapshot.hasError) {
-                    return Text("${snapshot.error}");
+                    return Text('${snapshot.error}');
                   }
 
                   return CircularProgressIndicator();
@@ -296,6 +357,11 @@ class _MyStatefulState extends State<MyStateful>
                             context,
                             MaterialPageRoute(
                               builder: (context) => CafeLine2(
+                                    restaurantID: widget.restaurantID,
+                                    restaurantName: widget.restaurantName,
+                                    content: widget.content,
+                                    descriptionRest: widget.description,
+                                    imagesRest: widget.images,
                                     foodsID:
                                         menu.data[idx].foodsItems[index].foodID,
                                     foodName: menu
@@ -337,5 +403,6 @@ class _MyStatefulState extends State<MyStateful>
 
 class DataFeed {
   Menu feed;
+
   DataFeed({this.feed});
 }

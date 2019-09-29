@@ -7,10 +7,10 @@ class Order {
   String images;
   int qty;
   double totalPrice;
- String taste;
+  String taste;
 
   Order(this.foodsID, this.foodsName, this.price, this.size, this.description,
-      this.images, this.qty, this.totalPrice,this.taste);
+      this.images, this.qty, this.totalPrice, this.taste);
 
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
@@ -149,7 +149,28 @@ class RetStatusInsertOrder {
   }
 }
 
+class RetCancelOrder {
+  String ResultOk;
+  String ErrorMessage;
+  String ReturnMessage;
+
+  RetCancelOrder({
+    this.ResultOk,
+    this.ErrorMessage,
+    this.ReturnMessage,
+  });
+
+  factory RetCancelOrder.fromJson(Map<String, dynamic> parsedJson) {
+    return RetCancelOrder(
+      ResultOk: parsedJson['ResultOk'],
+      ErrorMessage: parsedJson['ErrorMessage'],
+      ReturnMessage: parsedJson['ReturnMessage'],
+    );
+  }
+}
+
 class StatusOrderlist {
+  String orderID;
   String restuarantID;
   String userID;
   String tableID;
@@ -161,7 +182,8 @@ class StatusOrderlist {
   String status;
 
   StatusOrderlist(
-      {this.restuarantID,
+      {this.orderID,
+      this.restuarantID,
       this.userID,
       this.tableID,
       this.foodsID,
@@ -173,6 +195,7 @@ class StatusOrderlist {
 
   factory StatusOrderlist.fromJson(Map<String, dynamic> parsedJson) {
     return StatusOrderlist(
+      orderID: parsedJson['orderID'],
       restuarantID: parsedJson['restuarantID'],
       userID: parsedJson['userID'],
       tableID: parsedJson['tableID'],

@@ -13,7 +13,7 @@ import 'package:online_store/screens/home/FirstPage2.dart';
 import 'package:online_store/screens/home/DetailFirstPage.dart';
 import 'package:online_store/screens/home/Showdata.dart';
 import 'package:online_store/screens/home/status_order.dart';
-import 'package:online_store/screens/home/Home_recomment.dart';
+
 
 
 main()  {
@@ -40,10 +40,11 @@ class _AppState extends State<App> {
       routes: <String, Widget Function(BuildContext)>{
         //  '/': (context) => SplashScreen(),
         '/login': (context) => Login(),
-        '/home': (context) => Login(),
+        '/firstpage2': (context) => FirstPage2(),
+        '/cafeline': (context) => Cafe_Line(),
         '/map': (context) => Mapgoogle(),
         '/barcode': (context) => Barcode(),
-        '/': (context) => Cafe_Line(),
+        '/': (context) => Login(),
       }
     );
   }

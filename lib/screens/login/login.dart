@@ -18,6 +18,7 @@ import 'package:online_store/screens/Json/foods.dart';
 import 'package:online_store/models/register.dart';
 import 'package:online_store/screens/barcode/barcode.dart';
 import 'package:online_store/screens/home/FirstPage.dart';
+import 'package:online_store/screens/home/FirstPage2.dart';
 import 'package:online_store/globals.dart';
 import 'package:online_store/globals.dart' as globals;
 
@@ -91,7 +92,7 @@ String password;
     _pref.setBool(IS_LOGIN, true);
 
     Navigator.push(
-        context, new MaterialPageRoute(builder: (context) => new FirstPage()));
+        context, new MaterialPageRoute(builder: (context) => new FirstPage2()));
   }
 
   @override
@@ -135,7 +136,7 @@ String password;
 
 
         Navigator.push(
-               context, new MaterialPageRoute(builder: (context) => new FirstPage()));
+               context, new MaterialPageRoute(builder: (context) => new FirstPage2()));
       } else {
 
         _showAlertDialog(strError: data.feed.ErrorMessage.toString());
@@ -200,7 +201,7 @@ String password;
           _pref.setBool(IS_LOGIN, true);
           onLoginStatusChanged(true);
           Navigator.push(
-              context, new MaterialPageRoute(builder: (context) => FirstPage()));
+              context, new MaterialPageRoute(builder: (context) => FirstPage2()));
           //    Navigator.of(context).pushNamed('~/screens/home/home.dart');
           break;
       }
@@ -315,7 +316,7 @@ String password;
                             const EdgeInsets.fromLTRB(14.0, 8.0, 14.0, 8.0),
                             child: Material(
                                 borderRadius: BorderRadius.circular(20.0),
-                                color: Colors.deepOrange,
+                                color: Colors.green,
                                 elevation: 0.0,
                                 child: MaterialButton(
                                   onPressed: _submit,
@@ -325,7 +326,7 @@ String password;
                                       .size
                                       .width,
                                   child: Text(
-                                    "Login",
+                                    'Login',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                         color: Colors.white,

@@ -104,7 +104,7 @@ class _MyStatefulState extends State<MyStateful>
     String strBody;
 
     strBody =
-        '{"restaurantID":"${_restaurantID}","tableID":"${_tableID}","userID":"${_userID}"}';
+    '{"restaurantID":"${_restaurantID}","tableID":"${_tableID}","userID":"${_userID}"}';
 
     void _showAlertDialog({String strError}) async {
       showDialog(
@@ -142,9 +142,9 @@ class _MyStatefulState extends State<MyStateful>
       appBar: new AppBar(
         textTheme: TextTheme(
             title: TextStyle(
-          color: Colors.black,
-          fontSize: 20.0,
-        )),
+              color: Colors.black,
+              fontSize: 20.0,
+            )),
         iconTheme: IconThemeData(
           color: Colors.black,
         ),
@@ -252,58 +252,58 @@ class _MyStatefulState extends State<MyStateful>
   }
 
   Widget _ListSection({StatusOrder menu}) => ListView.builder(
-        itemBuilder: (context, int idx) {
-          return Padding(
-            padding: EdgeInsets.symmetric(vertical: 16.0),
-            child: Column(
-              children: <Widget>[
-                Container(
-                  child: new ListTile(
-                    leading: Image.network('${menu.orderList[idx].image}'),
-                    title: Text('ราคา: ' +
-                        menu.orderList[idx].price.toString() +
-                        '    จำนวนวน: ' +
-                        menu.orderList[idx].qty.toString()),
-                    subtitle: new Column(
+    itemBuilder: (context, int idx) {
+      return Padding(
+        padding: EdgeInsets.symmetric(vertical: 16.0),
+        child: Column(
+          children: <Widget>[
+            Container(
+              child: new ListTile(
+                leading: Image.network('${menu.orderList[idx].image}'),
+                title: Text('ราคา: ' +
+                    menu.orderList[idx].price.toString() +
+                    '    จำนวนวน: ' +
+                    menu.orderList[idx].qty.toString()),
+                subtitle: new Column(
+                  children: <Widget>[
+                    new Row(
                       children: <Widget>[
-                        new Row(
-                          children: <Widget>[
-                            Text('รวมราคา: ' +
-                                menu.orderList[idx].totalPrice.toString())
-                          ],
-                        ),
-                        new Row(
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.all(0.0),
-                              child: Text('CANCEL: '),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(0.0),
-                              child: IconButton(
-                                icon: Icon(
-                                  Icons.delete,
-                                  color: Colors.red,
-                                ),
-                                onPressed: () {
-                                  SendtoJsonCancel(
-                                      orderID: menu.orderList[idx].orderID);
-                                },
-                              ),
-                            ),
-                          ],
-                        )
+                        Text('รวมราคา: ' +
+                            menu.orderList[idx].totalPrice.toString())
                       ],
                     ),
-                    trailing: changeIcon(status: menu.orderList[idx].status),
-                  ),
+                    new Row(
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.all(0.0),
+                          child: Text('CANCEL: '),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(0.0),
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.delete,
+                              color: Colors.red,
+                            ),
+                            onPressed: () {
+                              SendtoJsonCancel(
+                                  orderID: menu.orderList[idx].orderID);
+                            },
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
                 ),
-              ],
+                trailing: changeIcon(status: menu.orderList[idx].status),
+              ),
             ),
-          );
-        },
-        itemCount: menu.orderList.length,
+          ],
+        ),
       );
+    },
+    itemCount: menu.orderList.length,
+  );
 }
 
 Widget changeIcon({String status}) {
@@ -337,5 +337,6 @@ class DataFeed {
 
 class DataFeedCancel {
   RetCancelOrder feed;
+
   DataFeedCancel({this.feed});
 }

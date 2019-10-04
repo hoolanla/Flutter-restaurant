@@ -13,14 +13,6 @@ import 'package:online_store/screens/map/place.dart';
 import 'package:online_store/screens/home/Showdata.dart';
 import 'package:online_store/screens/home/FirstPage2.dart';
 import 'package:online_store/screens/home/status_order.dart';
-import 'package:online_store/screens/home/DetailRestaurant.dart';
-import 'package:online_store/screens/home/newOrder.dart';
-import 'package:online_store/screens/Json/foods.dart';
-import 'package:online_store/models/restaurant.dart';
-import 'package:online_store/screens/home/history.dart';
-
-String mImage;
-String mRestaurantName;
 
 void main() {
   runApp(new Barcode());
@@ -35,52 +27,6 @@ class _MyAppState extends State<Barcode> {
   AuthService authService = AuthService();
   String barcode = "";
   Qrcode qrcode;
-
-   refreshRestaurant(String restaurantID) async {
-    String strBody = '{"restaurantID":"${restaurantID}"}';
-
-    var feed = await NetworkFoods.loadRestaurantByID(strBody: strBody);
-    if(feed != null){
-      var data = DataFeed(feed: feed);
-      if (data.feed.ResultOk.toString() == "true") {
-        if(data.feed.data.length > 0)
-        {
-          globals.imageRestaurant = data.feed.data[0].images;
-          globals.restaurantName = data.feed.data[0].restaurantName;
-        }
-      }
-    }
-    else
-      {
-        return CircularProgressIndicator();
-      }
-
-
-
-  }
-
-  _showAlertDialog() async {
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) {
-          return AlertDialog(
-            title: Text('คุณต้องแสกน QR CODE ก่อน'),
-            content: Text(""),
-            actions: <Widget>[
-              FlatButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Barcode()),
-                  );
-                },
-                child: Text("OK"),
-              )
-            ],
-          );
-        });
-  }
 
   @override
   initState() {
@@ -106,52 +52,38 @@ class _MyAppState extends State<Barcode> {
                     );
                   }),
               //   new IconButton(icon: new Text('SAVE'), onPressed: null),
-
               new IconButton(
-                  icon: new Icon(Icons.restaurant),
-                  onPressed: () {
-                    if (globals.restaurantID != null) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => DetailRestaurant(
-                              restaurantID: globals.restaurantID,
-                            )),
-                      );
-                    } else {
-                      _showAlertDialog();
-                    }
-                  }),
-
-
-
-              new IconButton(
-                  icon: new Icon(Icons.list),
-                  onPressed: () {
-                    if (globals.restaurantID != null) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => newOrder()),
-                      );
-                    } else {
-                      _showAlertDialog();
-                    }
-                  }),
-
-              new IconButton(
-                  icon: new Icon(Icons.history),
+                  icon: new Icon(Icons.center_focus_strong),
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => History()),
+                      MaterialPageRoute(builder: (context) => Barcode()),
                     );
                   }),
+
               new IconButton(
                   icon: new Icon(Icons.map),
                   onPressed: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => Mapgoogle()),
+                    );
+                  }),
+
+              new IconButton(
+                  icon: new Icon(Icons.list),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ShowData()),
+                    );
+                  }),
+              new IconButton(
+                  icon: new Icon(Icons.alarm),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Status_Order()),
                     );
                   }),
             ],
@@ -189,23 +121,19 @@ class _MyAppState extends State<Barcode> {
       String barcode = await BarcodeScanner.scan();
       qrcode = NetworkQrcode.loadQrcode(qrcode: barcode);
 
-
-
-      globals.restaurantID = qrcode.restuarantID;
-      globals.tableID = qrcode.tableID;
-
-
-
-      if (globals.tableID !='') {
-        Navigator.push(context,
-            new MaterialPageRoute(builder: (context) => new DetailRestaurant(restaurantID: qrcode.restuarantID,)));
-      }
-
-
       bool _result;
       authService.SetRestuarant(qrcode: qrcode).then((result) {
         _result = result;
 
+        globals.restaurantID = '1';
+        globals.tableID = '1';
+
+        print('==========' + qrcode.tableID);
+
+        if (globals.tableID !='') {
+          Navigator.push(context,
+              new MaterialPageRoute(builder: (context) => new FirstPage2()));
+        }
       });
 
       setState(() => this.barcode = barcode);
@@ -221,9 +149,4 @@ class _MyAppState extends State<Barcode> {
       // Unknown error.
     }
   }
-}
-
-class DataFeed {
-  Restaurant feed;
-  DataFeed({this.feed});
 }

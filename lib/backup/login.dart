@@ -36,7 +36,7 @@ final GoogleSignIn googleSignIn = GoogleSignIn();
 Future<String> signInWithGoogle() async {
   final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
   final GoogleSignInAuthentication googleSignInAuthentication =
-      await googleSignInAccount.authentication;
+  await googleSignInAccount.authentication;
 
   final AuthCredential credential = GoogleAuthProvider.getCredential(
     accessToken: googleSignInAuthentication.accessToken,
@@ -54,6 +54,7 @@ Future<String> signInWithGoogle() async {
   return 'signInWithGoogle succeeded: $user';
 }
 
+
 void main() => runApp(Login());
 
 class Login extends StatefulWidget {
@@ -64,8 +65,6 @@ class Login extends StatefulWidget {
 class _SignUpState extends State<Login> {
   AuthService authService = AuthService();
   RetLogin _letLogin;
-
-  static final TextEditingController _textEmail = TextEditingController();
 
   String email;
   String password;
@@ -83,27 +82,27 @@ class _SignUpState extends State<Login> {
     _user.imagePath = googleUser.photoUrl;
     _user.email = googleUser.email;
 
+
+
+
     SharedPreferences _pref = await SharedPreferences.getInstance();
     _pref.setString(DISPLAYNAME, googleUser.displayName);
     _pref.setString(IMAGEPATH, googleUser.photoUrl);
     _pref.setString(EMAIL, googleUser.email);
     _pref.setBool(IS_LOGIN, true);
 
-//    Navigator.push(
-//      context,
-//      new MaterialPageRoute(
-//        builder: (context) => new FirstPage2(),
-//      ),
-//    );
+    Navigator.push(
+        context, new MaterialPageRoute(builder: (context) => new FirstPage2()));
   }
 
   @override
   Widget build(BuildContext context) {
+
+
     void _showAlertDialog({String strError}) async {
-      showDialog(
-          context: context,
+      showDialog(context: context,
           barrierDismissible: false,
-          builder: (context) {
+          builder: (context){
             return AlertDialog(
               title: Text(strError),
               content: Text("Please try again."),
@@ -119,9 +118,10 @@ class _SignUpState extends State<Login> {
           });
     }
 
-    void SendtoJsonLogin({String email, String password, String type_}) async {
-      String strBody =
-          '{"email":"${email}","password":"${password}","type":"${type_}"}';
+
+    void SendtoJsonLogin({String email,String password,String type_}) async{
+
+      String strBody = '{"email":"${email}","password":"${password}","type":"${type_}"}';
       var feed = await NetworkFoods.login(strBody: strBody);
       var data = DataFeed(feed: feed);
 
@@ -134,30 +134,39 @@ class _SignUpState extends State<Login> {
         onLoginStatusChanged(true);
         globals.userID = feed.memberID.toString();
 
-        Navigator.push(context,
-            new MaterialPageRoute(builder: (context) => new FirstPage2()));
+
+        Navigator.push(
+            context, new MaterialPageRoute(builder: (context) => new FirstPage2()));
       } else {
+
         _showAlertDialog(strError: data.feed.ErrorMessage.toString());
       }
+
+
     }
 
-    void SendtoJsonReg({String email, String password, String username}) async {
-      String strBody =
-          '{"email":"${email}","password":"${password}","username":"${username}"}';
+
+    void SendtoJsonReg({String email,String password,String username}) async {
+      String strBody = '{"email":"${email}","password":"${password}","username":"${username}"}';
       var feed = await NetworkFoods.insertRegister(strBody: strBody);
       var data = DataFeedReg(feed: feed);
       if (data.feed.ResultOk.toString() == "true") {
+
         //   globals.userID = feed..toString();
 
-      } else {}
+
+      } else {
+
+      }
     }
+
 
 //////////  FACEBOOK LOGIN   /////////////////
 
     void initiateFacebookLogin(BuildContext context) async {
       var facebookLogin = FacebookLogin();
       var facebookLoginResult =
-          await facebookLogin.logInWithReadPermissions(['email']);
+      await facebookLogin.logInWithReadPermissions(['email']);
       switch (facebookLoginResult.status) {
         case FacebookLoginStatus.error:
           print("Error");
@@ -169,19 +178,19 @@ class _SignUpState extends State<Login> {
           break;
         case FacebookLoginStatus.loggedIn:
           var graphResponse = await http.get(
-              'https://graph.facebook.com/v3.3/me?fields=name,first_name,last_name,email&access_token=${facebookLoginResult.accessToken.token}');
+              'https://graph.facebook.com/v3.3/me?fields=name,first_name,last_name,email&access_token=${facebookLoginResult
+                  .accessToken.token}');
           var profile = json.decode(graphResponse.body);
 
           Map<String, dynamic> itemJson = profile;
           print(itemJson['name']);
           print(itemJson.toString());
 
-//          SendtoJsonReg(
-//              email: itemJson['email'].toString(),
-//              password: "",
-//              username: itemJson['name'].toString());
-//          SendtoJsonLogin(
-//              email: itemJson['email'].toString(), password: "", type_: "F");
+
+          SendtoJsonReg(email: itemJson['email'].toString(),password: "",username: itemJson['name'].toString());
+          SendtoJsonLogin(email: itemJson['email'].toString(),password: "",type_: "F" );
+
+
 
           SharedPreferences _pref = await SharedPreferences.getInstance();
           _pref.setString(EMAIL, itemJson['email']);
@@ -191,29 +200,26 @@ class _SignUpState extends State<Login> {
               'http://www.pathstoliteracy.org/sites/pathstoliteracy.perkinsdev1.org/files/styles/full_post_view/public/uploaded-images/squeaky.jpg?itok=LVyd5YPB');
           _pref.setBool(IS_LOGIN, true);
           onLoginStatusChanged(true);
-          globals.emaillFB = itemJson['email'].toString();
-          globals.fullName = itemJson['name'].toString();
-          _textEmail.text = itemJson['email'].toString();
-
-
-
-/*
           Navigator.push(
-              context, new MaterialPageRoute(builder: (context) => FirstPage2()));*/
-
+              context, new MaterialPageRoute(builder: (context) => FirstPage2()));
+          //    Navigator.of(context).pushNamed('~/screens/home/home.dart');
           break;
       }
     }
+
+
 
     void _submit() async {
       if (this._formKey.currentState.validate()) {
         _formKey.currentState.save();
         SharedPreferences _pref = await SharedPreferences.getInstance();
-        SendtoJsonLogin(email: email, password: password, type_: "N");
+        SendtoJsonLogin(email:email,password: password,type_: "N");
       }
     }
-
-    double height = MediaQuery.of(context).size.height / 3;
+    double height = MediaQuery
+        .of(context)
+        .size
+        .height / 3;
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -239,7 +245,7 @@ class _SignUpState extends State<Login> {
                         children: <Widget>[
                           Padding(
                             padding:
-                                const EdgeInsets.fromLTRB(14.0, 8.0, 14.0, 8.0),
+                            const EdgeInsets.fromLTRB(14.0, 8.0, 14.0, 8.0),
                             child: Material(
                               borderRadius: BorderRadius.circular(10.0),
                               color: Colors.grey.withOpacity(0.2),
@@ -254,7 +260,6 @@ class _SignUpState extends State<Login> {
                                       icon: Icon(Icons.alternate_email),
                                     ),
                                     validator: _validateEmail,
-                                    controller: _textEmail,
                                     onSaved: (String value) {
                                       email = value;
                                     },
@@ -269,21 +274,23 @@ class _SignUpState extends State<Login> {
                           ),
                           Padding(
                             padding:
-                                const EdgeInsets.fromLTRB(14.0, 8.0, 14.0, 8.0),
+                            const EdgeInsets.fromLTRB(14.0, 8.0, 14.0, 8.0),
                             child: Material(
                               borderRadius: BorderRadius.circular(10.0),
                               color: Colors.grey.withOpacity(0.2),
                               elevation: 0.0,
                               child: Padding(
+
                                 padding: const EdgeInsets.only(left: 12.0),
                                 child: ListTile(
                                   title: TextFormField(
-                                    //  controller: _passwordTextController,
+                                    // controller: _passwordTextController,
                                     focusNode: passwordFocusNode,
                                     decoration: InputDecoration(
                                       border: InputBorder.none,
                                       hintText: "Password",
                                       icon: Icon(Icons.lock_outline),
+
                                     ),
                                     obscureText: hidePass,
                                     validator: _validatePassword,
@@ -291,6 +298,7 @@ class _SignUpState extends State<Login> {
                                       password = value;
                                     },
                                     onFieldSubmitted: (String value) {},
+
                                   ),
                                   trailing: IconButton(
                                       icon: Icon(Icons.remove_red_eye),
@@ -305,14 +313,18 @@ class _SignUpState extends State<Login> {
                           ),
                           Padding(
                             padding:
-                                const EdgeInsets.fromLTRB(14.0, 8.0, 14.0, 8.0),
+                            const EdgeInsets.fromLTRB(14.0, 8.0, 14.0, 8.0),
                             child: Material(
                                 borderRadius: BorderRadius.circular(20.0),
                                 color: Colors.green,
                                 elevation: 0.0,
                                 child: MaterialButton(
                                   onPressed: _submit,
-                                  minWidth: MediaQuery.of(context).size.width,
+
+                                  minWidth: MediaQuery
+                                      .of(context)
+                                      .size
+                                      .width,
                                   child: Text(
                                     'Login',
                                     textAlign: TextAlign.center,
@@ -401,10 +413,11 @@ class _SignUpState extends State<Login> {
                                     14.0, 8.0, 14.0, 8.0),
                                 child: Material(
                                     child: MaterialButton(
-                                        onPressed: () => _signIn(context)
-                                            .then((FirebaseUser user) =>
+                                        onPressed: () =>
+                                            _signIn(context)
+                                                .then((FirebaseUser user) =>
                                                 print(user))
-                                            .catchError((e) => print(e)),
+                                                .catchError((e) => print(e)),
                                         child: Image.asset(
                                           "assets/images/ggg.png",
                                           width: 60,
@@ -433,7 +446,13 @@ class _SignUpState extends State<Login> {
         ),
       ),
     );
+
+
   }
+
+
+
+
 
   String _validateEmail(String value) {
     if (value.isEmpty) {
@@ -451,7 +470,10 @@ class _SignUpState extends State<Login> {
     }
     return null;
   }
+
+
 }
+
 
 /*
 void initiateFacebookLogin(BuildContext context) async {
@@ -523,12 +545,10 @@ class ProviderDetails {
 
 class DataFeed {
   RetLogin feed;
-
   DataFeed({this.feed});
 }
 
 class DataFeedReg {
   RetRegister feed;
-
   DataFeedReg({this.feed});
 }

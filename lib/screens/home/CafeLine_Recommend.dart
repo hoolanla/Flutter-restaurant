@@ -21,6 +21,10 @@ import 'package:online_store/screens/map/place.dart';
 import 'package:online_store/screens/home/CafeLine.dart';
 import 'package:online_store/services/authService.dart';
 import 'package:online_store/screens/home/FirstPage2.dart';
+import 'package:online_store/screens/home/DetailRestaurant.dart';
+import 'package:online_store/globals.dart' as globals;
+import 'package:online_store/screens/home/newOrder.dart';
+import 'package:online_store/screens/home/history.dart';
 
 String restaurantID;
 String restaurantName;
@@ -98,7 +102,28 @@ class _MyStatefulState extends State<MyStateful>
     }
   }
 
-  // final urlJSONString = "http://203.150.203.74/foods1.json";
+  _showAlertDialog() async {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('คุณต้องแสกน QR CODE ก่อน'),
+            content: Text(""),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Barcode()),
+                  );
+                },
+                child: Text("OK"),
+              )
+            ],
+          );
+        });
+  }
 
   @override
   void initState() {
@@ -201,40 +226,53 @@ class _MyStatefulState extends State<MyStateful>
                     MaterialPageRoute(builder: (context) => FirstPage2()),
                   );
                 }),
-
             //   new IconButton(icon: new Text('SAVE'), onPressed: null),
+
             new IconButton(
-                icon: new Icon(Icons.center_focus_strong),
+                icon: new Icon(Icons.restaurant),
+                onPressed: () {
+                  if (globals.restaurantID != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => DetailRestaurant(
+                            restaurantID: globals.restaurantID,
+                          )),
+                    );
+                  } else {
+                    _showAlertDialog();
+                  }
+                }),
+
+
+
+            new IconButton(
+                icon: new Icon(Icons.list),
+                onPressed: () {
+                  if (globals.restaurantID != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => newOrder()),
+                    );
+                  } else {
+                    _showAlertDialog();
+                  }
+                }),
+
+            new IconButton(
+                icon: new Icon(Icons.history),
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => Barcode()),
+                    MaterialPageRoute(builder: (context) => History()),
                   );
                 }),
-
             new IconButton(
                 icon: new Icon(Icons.map),
                 onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => Mapgoogle()),
-                  );
-                }),
-
-            new IconButton(
-                icon: new Icon(Icons.list),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ShowData()),
-                  );
-                }),
-            new IconButton(
-                icon: new Icon(Icons.alarm),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Status_Order()),
                   );
                 }),
           ],
@@ -264,14 +302,48 @@ class _MyStatefulState extends State<MyStateful>
                     RestaurantID: widget.restaurantID, Recommend: '1'),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    return new Container(
-                      child: _ListSection(menu: snapshot.data),
-                    );
+                    if(snapshot.data != null) {
+                      return new Container(
+                        child: _ListSection(menu: snapshot.data),
+                      );
+                    }
+                    else
+                      {
+                        return Container(
+                          child: Center(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                SizedBox(
+                                  child: CircularProgressIndicator(),
+                                  height: 10.0,
+                                  width: 10.0,
+                                )
+                              ],
+                            ),
+                          ),
+                        );
+
+                      }
+
+
                   } else if (snapshot.hasError) {
                     return Text("${snapshot.error}");
                   }
-
-                  return CircularProgressIndicator();
+                  return Container(
+                    child: Center(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          SizedBox(
+                            child: CircularProgressIndicator(),
+                            height: 10.0,
+                            width: 10.0,
+                          )
+                        ],
+                      ),
+                    ),
+                  );
                 }),
           )
         ],

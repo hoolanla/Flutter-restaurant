@@ -9,6 +9,11 @@ import 'package:online_store/screens/home/FirstPage2.dart';
 import 'package:online_store/screens/home/Showdata.dart';
 import 'package:online_store/screens/barcode/barcode.dart';
 import 'package:online_store/screens/home/status_order.dart';
+import 'package:online_store/globals.dart' as globals;
+import 'package:online_store/screens/home/DetailRestaurant.dart';
+import 'package:online_store/screens/home/newOrder.dart';
+import 'package:online_store/screens/home/history.dart';
+
 
 const kGoogleApiKey = "AIzaSyAZZQMknD9tUApMWLYZvZ4mmlVIdb_QquI";
 GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: kGoogleApiKey);
@@ -34,6 +39,34 @@ class HomeState extends State<Mapgoogle> {
   List<PlacesSearchResult> places = [];
   bool isLoading = false;
   String errorMessage;
+
+
+
+
+  _showAlertDialog() async {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('คุณต้องแสกน QR CODE ก่อน'),
+            content: Text(""),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Barcode()),
+                  );
+                },
+                child: Text("OK"),
+              )
+            ],
+          );
+        });
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -103,38 +136,52 @@ class HomeState extends State<Mapgoogle> {
                     );
                   }),
               //   new IconButton(icon: new Text('SAVE'), onPressed: null),
+
               new IconButton(
-                  icon: new Icon(Icons.center_focus_strong),
+                  icon: new Icon(Icons.restaurant),
+                  onPressed: () {
+                    if (globals.restaurantID != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => DetailRestaurant(
+                              restaurantID: globals.restaurantID,
+                            )),
+                      );
+                    } else {
+                      _showAlertDialog();
+                    }
+                  }),
+
+
+
+              new IconButton(
+                  icon: new Icon(Icons.list),
+                  onPressed: () {
+                    if (globals.restaurantID != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => newOrder()),
+                      );
+                    } else {
+                      _showAlertDialog();
+                    }
+                  }),
+
+              new IconButton(
+                  icon: new Icon(Icons.history),
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => Barcode()),
+                      MaterialPageRoute(builder: (context) => History()),
                     );
                   }),
-
               new IconButton(
                   icon: new Icon(Icons.map),
                   onPressed: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => Mapgoogle()),
-                    );
-                  }),
-
-              new IconButton(
-                  icon: new Icon(Icons.list),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ShowData()),
-                    );
-                  }),
-              new IconButton(
-                  icon: new Icon(Icons.alarm),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Status_Order()),
                     );
                   }),
             ],

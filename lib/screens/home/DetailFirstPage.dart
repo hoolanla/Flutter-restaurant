@@ -8,6 +8,10 @@ import 'package:online_store/screens/Json/foods.dart';
 
 void main() => runApp(DetailFirstPage());
 
+
+
+
+
 class DetailFirstPage extends StatelessWidget {
   final String restaurantID;
   final String restaurantName;

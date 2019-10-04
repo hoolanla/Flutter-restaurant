@@ -11,18 +11,22 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:online_store/services/authService.dart';
 import 'package:online_store/screens/barcode/barcode.dart';
 import 'package:online_store/globals.dart' as globals;
+import 'package:online_store/screens/map/place.dart';
 
 //import 'package:json_serializable/json_serializable.dart';
 import 'dart:convert';
 
-String _tableID = globals.tableID;
 String _restaurantID = globals.restaurantID;
+String _tableID = globals.tableID;
 String _userID = globals.userID;
+
+
 
 Future<List<Order>> orders;
 List<Order> _order;
 Future<double> _totals;
 Future<RetStatusInsertOrder> retInsert;
+Future<List<StatusOrder>> statusOrders;
 
 int foodsID;
 String foodsName;
@@ -47,6 +51,7 @@ class ShowData extends StatefulWidget {
 }
 
 class _ShowData extends State<ShowData> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   _showAlertDialog({String strError}) async {
     showDialog(
         context: context,
@@ -70,13 +75,16 @@ class _ShowData extends State<ShowData> {
         });
   }
 
-  final formKey = new GlobalKey<FormState>();
+//  final formKey = new GlobalKey<FormState>();
   var dbHelper;
   bool isUpdating;
 
   @override
   void initState() {
+    super.initState();
+
     if (_tableID == '') {
+      print('============>' + _tableID);
       Future.delayed(Duration.zero, () {
         _showAlertDialog(strError: 'คุณต้องแสกน QR CODE ก่อน');
       });
@@ -86,7 +94,17 @@ class _ShowData extends State<ShowData> {
       refreshTotal();
     }
 
-    super.initState();
+
+  }
+
+
+
+  showSnak() {
+    _scaffoldKey.currentState.showSnackBar(SnackBar(
+      content: Text("ไม่สามารถสั่งได้ กำลงัเคลียร์โต๊ะ"),
+      backgroundColor: Colors.deepOrange,
+      duration: Duration(seconds: 2),
+    ));
   }
 
   refreshList() {
@@ -144,6 +162,7 @@ class _ShowData extends State<ShowData> {
   Widget _ListSection({List<Order> orders}) => ListView.builder(
       itemCount: orders.length,
       itemBuilder: (context, int idx) {
+        iTest = '';
         iTest += '{"foodsID":' +
             orders[idx].foodsID.toString() +
             ',"foodsName":"' +
@@ -294,7 +313,24 @@ class _ShowData extends State<ShowData> {
                     );
                   }),
               //   new IconButton(icon: new Text('SAVE'), onPressed: null),
-              new IconButton(icon: new Icon(Icons.star), onPressed: null),
+              new IconButton(
+                  icon: new Icon(Icons.center_focus_strong),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Barcode()),
+                    );
+                  }),
+
+              new IconButton(
+                  icon: new Icon(Icons.map),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Mapgoogle()),
+                    );
+                  }),
+
               new IconButton(
                   icon: new Icon(Icons.list),
                   onPressed: () {
@@ -325,11 +361,7 @@ class _ShowData extends State<ShowData> {
             ],
           ),
         ),
-        /*   bottomNavigationBar: BottomAppBar(
-      child: Text('ccc'),
-        color: Colors.deepOrange,
 
-      ),*/
         floatingActionButton: new FloatingActionButton.extended(
           backgroundColor: Colors.white,
           label: FutureBuilder(
@@ -346,17 +378,18 @@ class _ShowData extends State<ShowData> {
             String _All = '';
             _All = _Header + iTest + _Tail;
             _showAlert(context,'');*/
-
             String _Header =
                 '{"restaurantID":"${_restaurantID}","userID":"${_userID}","tableID":"${_tableID}","orderList":[';
             String _Tail = ']}';
             String _All = '';
             _All = _Header + iTest + _Tail;
 
-            print(_All);
-
             if (iTest == '') {
-            } else {
+
+            }
+            else
+              {
+                iTest = '';
               ttt(_All);
               Navigator.push(
                 context,
@@ -446,7 +479,11 @@ class _ShowData extends State<ShowData> {
       iTest = '';
       refreshList();
       refreshTotal();
-    } else {}
+    } else {
+
+      showSnak();
+
+    }
   }
 
   TestFuture({String strAll}) {

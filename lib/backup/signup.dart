@@ -3,17 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:validators/validators.dart';
 import 'package:online_store/models/register.dart';
 import 'package:online_store/screens/Json/foods.dart';
-import 'package:online_store/globals.dart' as globals;
-import 'package:online_store/screens/home/FirstPage2.dart';
+
+
 
 class SignUp extends StatefulWidget {
   final String userName;
   final String email;
 
-  SignUp({
-    this.userName,
-    this.email,
-  });
+
+  SignUp(
+      {this.userName,
+        this.email,
+      });
+
+
 
   @override
   _SignUpState createState() => _SignUpState();
@@ -21,9 +24,6 @@ class SignUp extends StatefulWidget {
 
 class _SignUpState extends State<SignUp> {
   final _formKey = GlobalKey<FormState>();
-
-  static final TextEditingController _textFullName = TextEditingController();
-  static final TextEditingController _textEmail = TextEditingController();
 
   Register _reg;
   String username;
@@ -39,35 +39,15 @@ class _SignUpState extends State<SignUp> {
 
   @override
   Widget build(BuildContext context) {
-    void _showAlertDialogComplete({String strReturn,String strContent}) async {
-      showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) {
-            return AlertDialog(
-              title: Text(strReturn),
-              content: Text(strContent),
-              actions: <Widget>[
-                FlatButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context, new MaterialPageRoute(builder: (context) => new FirstPage2()));
-                  },
-                  child: Text("OK"),
-                )
-              ],
-            );
-          });
-    }
 
-    void _showAlertDialogNotComplete({String strReturn,String strContent}) async {
-      showDialog(
-          context: context,
+
+    void _showAlertDialog() async {
+      showDialog(context: context,
           barrierDismissible: false,
-          builder: (context) {
+          builder: (context){
             return AlertDialog(
-              title: Text(strReturn),
-              content: Text(strContent),
+              title: Text("Account is registration success."),
+              content: Text("Thank you."),
               actions: <Widget>[
                 FlatButton(
                   onPressed: () {
@@ -80,20 +60,23 @@ class _SignUpState extends State<SignUp> {
           });
     }
 
+    void ttt(String strAll) async {
+      var feed = await NetworkFoods.insertRegister(strBody: strAll);
+      var data = DataFeed(feed: feed);
+      if (data.feed.ResultOk.toString() == "true") {
 
-    void SendtoJson({String email, String password, String username}) async {
-      String strBody =
-          '{"email":"${email}","password":"${password}","username":"${username}"}';
+      } else {}
+    }
+
+    void SendtoJson({String email,String password,String username}) async{
+
+      String strBody = '{"email":"${email}","password":"${password}","username":"${username}"}';
       var feed = await NetworkFoods.insertRegister(strBody: strBody);
       var data = DataFeed(feed: feed);
+      if (data.feed.ResultOk.toString() == "true") {
 
-
-      print(data.feed.ResultOk);
-
-      if (data.feed.ResultOk == "true") {
-        _showAlertDialogComplete(strReturn: 'Account is registration success. ',strContent: 'Thank you');
       } else {
-        _showAlertDialogNotComplete(strReturn: data.feed.ErrorMessage,strContent: 'Please try again.');
+
       }
     }
 
@@ -101,12 +84,15 @@ class _SignUpState extends State<SignUp> {
       if (this._formKey.currentState.validate()) {
         _formKey.currentState.save();
         //todo
-        SendtoJson(email: email, password: password, username: username);
+
+
+        SendtoJson(email:  email,password: password,username: username);
+
+        _showAlertDialog();
       }
     }
 
-    _textFullName.text = globals.fullName;
-    _textEmail.text = globals.emaillFB;
+
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -126,7 +112,6 @@ class _SignUpState extends State<SignUp> {
                     padding: const EdgeInsets.only(left: 12.0),
                     child: ListTile(
                       title: TextFormField(
-                        controller: _textFullName,
                         decoration: InputDecoration(
                             hintText: "Full name",
                             icon: Icon(Icons.person_outline),
@@ -136,7 +121,7 @@ class _SignUpState extends State<SignUp> {
                             return "The name field cannot be empty";
                           }
                         },
-                        onSaved: (String value) {
+                        onSaved: (String value){
                           username = value;
                         },
                         onFieldSubmitted: (String value) {
@@ -157,7 +142,6 @@ class _SignUpState extends State<SignUp> {
                     padding: const EdgeInsets.only(left: 12.0),
                     child: ListTile(
                       title: TextFormField(
-                        controller: _textEmail,
                         decoration: InputDecoration(
                             hintText: "Email",
                             icon: Icon(Icons.alternate_email),
@@ -285,6 +269,5 @@ class _SignUpState extends State<SignUp> {
 
 class DataFeed {
   RetRegister feed;
-
   DataFeed({this.feed});
 }

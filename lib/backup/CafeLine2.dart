@@ -37,20 +37,20 @@ class CafeLine2 extends StatelessWidget {
 
   CafeLine2(
       {this.restaurantID,
-      this.restaurantName,
-      this.content,
-      this.descriptionRest,
-      this.imagesRest,
-      this.foodsID,
-      this.foodName,
-      this.price,
-      this.priceS,
-      this.priceM,
-      this.priceL,
-      this.size,
-      this.description,
-      this.image,
-      this.foodType})
+        this.restaurantName,
+        this.content,
+        this.descriptionRest,
+        this.imagesRest,
+        this.foodsID,
+        this.foodName,
+        this.price,
+        this.priceS,
+        this.priceM,
+        this.priceL,
+        this.size,
+        this.description,
+        this.image,
+        this.foodType})
       : super(key: null);
 
   // CafeLine2({Key key}) : super(key: key);
@@ -240,10 +240,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-
-
-
-
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -258,17 +254,17 @@ class _MyHomePageState extends State<MyHomePage> {
               context,
               MaterialPageRoute(
                   builder: (context) => Cafe_Line(
-                        restaurantID: widget.restaurantID,
-                        restaurantName: widget.restaurantName,
-                        content: widget.content,
-                        description: widget.descriptionRest,
-                        images: widget.imagesRest,
-                      )),
+                    restaurantID: widget.restaurantID,
+                    restaurantName: widget.restaurantName,
+                    content: widget.content,
+                    description: widget.descriptionRest,
+                    images: widget.imagesRest,
+                  )),
             );
           },
         ),
         title: Text(
-          'Detail1',
+          'Detail',
           style: TextStyle(
             color: Colors.black,
             fontSize: 20.0,
@@ -323,7 +319,7 @@ class _MyHomePageState extends State<MyHomePage> {
           decoration: BoxDecoration(
               color: Colors.white,
               border:
-                  Border(top: BorderSide(color: Colors.grey[300], width: 1.0))),
+              Border(top: BorderSide(color: Colors.grey[300], width: 1.0))),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
@@ -385,7 +381,7 @@ class _MyHomePageState extends State<MyHomePage> {
         Order e = Order(foodID, foodsName, price, size, description, images,
             qty, totalPrice, taste,comment);
 
-       // print('=======' + e.size);
+        // print('=======' + e.size);
 
         dbHelper.save(e);
         showSnak();
@@ -449,7 +445,7 @@ class _MyHomePageState extends State<MyHomePage> {
               groupValue: _radioValueSML,
               onChanged: _handleRadioValueChangeSML,
             ),
-            new Text('S ' +
+            new Text(
               priceS.toString(),
               style: new TextStyle(fontSize: 14.0),
             ),
@@ -458,7 +454,7 @@ class _MyHomePageState extends State<MyHomePage> {
               groupValue: _radioValueSML,
               onChanged: _handleRadioValueChangeSML,
             ),
-            new Text('M ' +
+            new Text(
               priceM.toString(),
               style: new TextStyle(
                 fontSize: 14.0,
@@ -469,7 +465,7 @@ class _MyHomePageState extends State<MyHomePage> {
               groupValue: _radioValueSML,
               onChanged: _handleRadioValueChangeSML,
             ),
-            new Text('L ' +
+            new Text(
               priceL.toString(),
               style: new TextStyle(fontSize: 14.0),
             ),
@@ -583,18 +579,18 @@ Widget _header({String image, String price, String foodName}) {
 }
 
 Widget _detailCafe({String desc}) => Padding(
-      padding: new EdgeInsets.all(8.0),
-      child: new Text(desc),
-    );
+  padding: new EdgeInsets.all(8.0),
+  child: new Text(desc),
+);
 
 Widget _header2({String image}) => Padding(
-      padding: new EdgeInsets.all(8.0),
-      child: Image.network(
-        image,
-        fit: BoxFit.fill,
-        height: 300,
-      ),
-    );
+  padding: new EdgeInsets.all(8.0),
+  child: Image.network(
+    image,
+    fit: BoxFit.fill,
+    height: 300,
+  ),
+);
 
 //              Container(
 //                height: 100,

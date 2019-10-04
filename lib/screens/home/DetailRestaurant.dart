@@ -23,32 +23,32 @@ import 'package:online_store/screens/map/place.dart';
 import 'package:online_store/screens/home/CafeLine_Recommend.dart';
 import 'package:online_store/services/authService.dart';
 import 'package:online_store/screens/home/newOrder.dart';
-import 'package:online_store/globals.dart' as globals;
-import 'package:online_store/screens/home/DetailRestaurant.dart';
 import 'package:online_store/screens/home/history.dart';
+import 'package:online_store/globals.dart' as globals;
+import 'package:online_store/models/restaurant.dart';
+import 'package:online_store/screens/home/DetailRestaurant2.dart';
+import 'package:online_store/screens/home/DetailRestaurant_Recommend.dart';
 
 String restaurantID;
 String restaurantName;
 String userID;
 String tableID;
 
+String mImage;
+String mRestaurantName;
+
+Future<Restaurant> _restaurant;
+
 void main() {
-  runApp(Cafe_Line());
+  runApp(DetailRestaurant());
 }
 
-class Cafe_Line extends StatelessWidget {
+class DetailRestaurant extends StatelessWidget {
   final String restaurantID;
-  final String restaurantName;
-  final String content;
-  final String description;
-  final String images;
 
-  Cafe_Line(
-      {this.restaurantID,
-      this.restaurantName,
-      this.content,
-      this.description,
-      this.images});
+  DetailRestaurant({
+    this.restaurantID,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -56,10 +56,6 @@ class Cafe_Line extends StatelessWidget {
       title: '',
       home: new MyStateful(
         restaurantID: restaurantID,
-        restaurantName: restaurantName,
-        content: content,
-        description: description,
-        images: images,
       ),
     );
   }
@@ -67,17 +63,10 @@ class Cafe_Line extends StatelessWidget {
 
 class MyStateful extends StatefulWidget {
   final String restaurantID;
-  final String restaurantName;
-  final String content;
-  final String description;
-  final String images;
 
-  MyStateful(
-      {this.restaurantID,
-      this.restaurantName,
-      this.content,
-      this.description,
-      this.images});
+  MyStateful({
+    this.restaurantID,
+  });
 
   @override
   State<StatefulWidget> createState() {
@@ -88,6 +77,29 @@ class MyStateful extends StatefulWidget {
 
 class _MyStatefulState extends State<MyStateful>
     with SingleTickerProviderStateMixin {
+  _showAlertDialog({String strError}) async {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(strError),
+            content: Text(""),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Barcode()),
+                  );
+                },
+                child: Text("OK"),
+              )
+            ],
+          );
+        });
+  }
+
   var textYellow = Color(0xFFf6c24d);
   var iconYellow = Color(0xFFf4bf47);
 
@@ -105,36 +117,24 @@ class _MyStatefulState extends State<MyStateful>
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final titleString = "";
 
-  String strBody;
+  void refreshRestaurant() async {
+    String strBody = '{"restaurantID":"${globals.restaurantID}"}';
 
-
-  _showAlertDialog() async {
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) {
-          return AlertDialog(
-            title: Text('คุณต้องแสกน QR CODE ก่อน'),
-            content: Text(""),
-            actions: <Widget>[
-              FlatButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Barcode()),
-                  );
-                },
-                child: Text("OK"),
-              )
-            ],
-          );
-        });
+    var feed = await NetworkFoods.loadRestaurantByID(strBody: strBody);
+    var data = DataFeed(feed: feed);
+    if (data.feed.ResultOk.toString() == "true") {
+      if (data.feed.data.length > 0) {
+        mImage = data.feed.data[0].images;
+        mRestaurantName = data.feed.data[0].restaurantName;
+      }
+    } else {}
   }
 
   @override
   void initState() {
     super.initState();
     controller = new TabController(vsync: this, length: 2);
+    refreshRestaurant();
   }
 
   @override
@@ -187,12 +187,8 @@ class _MyStatefulState extends State<MyStateful>
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => Cafe_Line(
+                    builder: (context) => DetailRestaurant(
                           restaurantID: widget.restaurantID,
-                          restaurantName: widget.restaurantName,
-                          content: widget.content,
-                          description: widget.description,
-                          images: widget.images,
                         )),
               );
             },
@@ -207,12 +203,8 @@ class _MyStatefulState extends State<MyStateful>
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => CafeLine_Recommend(
+                    builder: (context) => DetailRestaurant_Recommend(
                           restaurantID: widget.restaurantID,
-                          restaurantName: widget.restaurantName,
-                          content: widget.content,
-                          description: widget.description,
-                          images: widget.images,
                         )),
               );
             },
@@ -242,15 +234,13 @@ class _MyStatefulState extends State<MyStateful>
                       context,
                       MaterialPageRoute(
                           builder: (context) => DetailRestaurant(
-                            restaurantID: globals.restaurantID,
-                          )),
+                                restaurantID: globals.restaurantID,
+                              )),
                     );
                   } else {
                     _showAlertDialog();
                   }
                 }),
-
-
 
             new IconButton(
                 icon: new Icon(Icons.list),
@@ -291,13 +281,34 @@ class _MyStatefulState extends State<MyStateful>
             pinned: true,
             floating: false,
             flexibleSpace: new FlexibleSpaceBar(
-                title: Text(
-                  '${widget.restaurantName}',
-                  style: TextStyle(
-                      color: Colors.red,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18.0),
-                ),
+                title: FutureBuilder<Restaurant>(
+                    future: NetworkFoods.loadRestaurantByID(
+                        strBody: '{"restaurantID":"${globals.restaurantID}"}'),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return new Text(
+                          snapshot.data.data[0].restaurantName,
+                          style: TextStyle(
+                              color: Colors.red, fontWeight: FontWeight.bold),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Text("${snapshot.error}");
+                      }
+                      return Container(
+                        child: Center(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              SizedBox(
+                                child: CircularProgressIndicator(),
+                                height: 10.0,
+                                width: 10.0,
+                              )
+                            ],
+                          ),
+                        ),
+                      );
+                    }),
                 background: Container(
                   height: 100.0,
                   width: 420.0,
@@ -307,10 +318,34 @@ class _MyStatefulState extends State<MyStateful>
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter),
                   ),
-                  child: Image.network(
-                    widget.images,
-                    fit: BoxFit.cover,
-                  ),
+                  child: FutureBuilder<Restaurant>(
+                      future: NetworkFoods.loadRestaurantByID(
+                          strBody:
+                              '{"restaurantID":"${globals.restaurantID}"}'),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return new Image.network(
+                            snapshot.data.data[0].images,
+                            fit: BoxFit.cover,
+                          );
+                        } else if (snapshot.hasError) {
+                          return Text("${snapshot.error}");
+                        }
+                        return Container(
+                          child: Center(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                SizedBox(
+                                  child: CircularProgressIndicator(),
+                                  height: 10.0,
+                                  width: 10.0,
+                                )
+                              ],
+                            ),
+                          ),
+                        );
+                      }),
                 )),
           ),
           SliverFillRemaining(
@@ -417,12 +452,12 @@ class _MyStatefulState extends State<MyStateful>
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => CafeLine2(
+                              builder: (context) => DetailRestaurant2(
                                     restaurantID: widget.restaurantID,
-                                    restaurantName: widget.restaurantName,
-                                    content: widget.content,
-                                    descriptionRest: widget.description,
-                                    imagesRest: widget.images,
+                                    restaurantName: '',
+                                    content: '',
+                                    descriptionRest: '',
+                                    imagesRest: '',
                                     foodsID:
                                         menu.data[idx].foodsItems[index].foodID,
                                     foodName: menu
@@ -463,7 +498,7 @@ class _MyStatefulState extends State<MyStateful>
 }
 
 class DataFeed {
-  Menu feed;
+  Restaurant feed;
 
   DataFeed({this.feed});
 }

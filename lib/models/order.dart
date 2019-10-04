@@ -8,9 +8,10 @@ class Order {
   int qty;
   double totalPrice;
   String taste;
+  String comme;
 
   Order(this.foodsID, this.foodsName, this.price, this.size, this.description,
-      this.images, this.qty, this.totalPrice, this.taste);
+      this.images, this.qty, this.totalPrice, this.taste,this.comme);
 
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
@@ -23,6 +24,7 @@ class Order {
       'qty': qty,
       'totalprice': totalPrice,
       'taste': taste,
+      'comme': comme,
     };
     return map;
   }
@@ -37,6 +39,7 @@ class Order {
     qty = map['qty'];
     totalPrice = map['totalprice'];
     taste = map['taste'];
+    comme = map['comme'];
   }
 }
 
@@ -111,10 +114,12 @@ class StatusOrder {
   String ResultOk;
   String ErrorMessage;
   String ReturnMessage;
+  String orderNo;
+  String orderStatus;
   List<StatusOrderlist> orderList;
 
   StatusOrder(
-      {this.ResultOk, this.ErrorMessage, this.ReturnMessage, this.orderList});
+      {this.ResultOk, this.ErrorMessage, this.ReturnMessage,this.orderNo,this.orderStatus, this.orderList});
 
   factory StatusOrder.fromJson(Map<String, dynamic> parsedJson) {
     var list = parsedJson['orderList'] as List;
@@ -125,8 +130,15 @@ class StatusOrder {
         ResultOk: parsedJson['ResultOk'],
         ErrorMessage: parsedJson['ErrorMessage'],
         ReturnMessage: parsedJson['ReturnMessage'],
+        orderNo: parsedJson['orderNo'],
+        orderStatus: parsedJson['orderStatus'],
         orderList: orderList);
   }
+}
+
+class strJsonOrder{
+  String strJson;
+  strJsonOrder({this.strJson});
 }
 
 class RetStatusInsertOrder {
@@ -180,6 +192,8 @@ class StatusOrderlist {
   String price;
   String totalPrice;
   String status;
+  String comment;
+  String image;
 
   StatusOrderlist(
       {this.orderID,
@@ -191,7 +205,9 @@ class StatusOrderlist {
       this.qty,
       this.price,
       this.totalPrice,
-      this.status});
+      this.status,
+      this.comment,
+      this.image});
 
   factory StatusOrderlist.fromJson(Map<String, dynamic> parsedJson) {
     return StatusOrderlist(
@@ -205,6 +221,8 @@ class StatusOrderlist {
       price: parsedJson['price'],
       totalPrice: parsedJson['totalPrice'],
       status: parsedJson['status'],
+      comment: parsedJson['comment'],
+      image: parsedJson['image'],
     );
   }
 }

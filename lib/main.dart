@@ -13,6 +13,9 @@ import 'package:online_store/screens/home/FirstPage2.dart';
 import 'package:online_store/screens/home/DetailFirstPage.dart';
 import 'package:online_store/screens/home/Showdata.dart';
 import 'package:online_store/screens/home/status_order.dart';
+import 'package:online_store/globals.dart' as globals;
+
+
 
 
 
@@ -31,10 +34,17 @@ class _AppState extends State<App> {
       accentColor: Colors.black45,
       primaryColor: Colors.green);
 
+
+
+
+
   @override
   Widget build(BuildContext context) {
+
+
+
     return new MaterialApp(
-      title: 'ti',
+      title: 'eMenu',
       theme: androidTheme,
       initialRoute: '/',
       routes: <String, Widget Function(BuildContext)>{

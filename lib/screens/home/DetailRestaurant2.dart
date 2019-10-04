@@ -11,13 +11,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:online_store/screens/barcode/barcode.dart';
 import 'package:online_store/main.dart';
 import 'package:online_store/globals.dart' as globals;
+import 'package:online_store/screens/home/DetailRestaurant.dart';
+import 'package:online_store/screens/home/newOrder.dart';
+import 'package:online_store/screens/home/history.dart';
+import 'package:online_store/screens/map/place.dart';
 
 String _tableID = globals.tableID;
 String _restaurantID = globals.restaurantID;
 String _userID = globals.userID;
-void main() => runApp(CafeLine2());
 
-class CafeLine2 extends StatelessWidget {
+void main() => runApp(DetailRestaurant2());
+
+class DetailRestaurant2 extends StatelessWidget {
   final String restaurantID;
   final String restaurantName;
   final String content;
@@ -35,7 +40,7 @@ class CafeLine2 extends StatelessWidget {
   final String image;
   final String foodType;
 
-  CafeLine2(
+  DetailRestaurant2(
       {this.restaurantID,
       this.restaurantName,
       this.content,
@@ -140,7 +145,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int qty;
   double totalPrice;
   String taste;
-  String comment;
+  String comment = '';
 
   List<Order> HaveData;
 
@@ -202,7 +207,7 @@ class _MyHomePageState extends State<MyHomePage> {
       _radioValueGrill = value;
       switch (_radioValueGrill) {
         case 0:
-          _taste = 'สุกน้อย';
+          _taste = 'ธรรมดา';
           //    Fluttertoast.showToast(msg: taste, toastLength: Toast.LENGTH_SHORT);
           break;
         case 1:
@@ -240,10 +245,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-
-
-
-
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -257,18 +258,14 @@ class _MyHomePageState extends State<MyHomePage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => Cafe_Line(
-                        restaurantID: widget.restaurantID,
-                        restaurantName: widget.restaurantName,
-                        content: widget.content,
-                        description: widget.descriptionRest,
-                        images: widget.imagesRest,
+                  builder: (context) => DetailRestaurant(
+                        restaurantID: globals.restaurantID,
                       )),
             );
           },
         ),
         title: Text(
-          'Detail1',
+          'Detail2 TEST',
           style: TextStyle(
             color: Colors.black,
             fontSize: 20.0,
@@ -284,11 +281,8 @@ class _MyHomePageState extends State<MyHomePage> {
               child: null,
             ),
           ),
-
         ],
       ),
-
-
       body: Center(
         child: ListView(
           shrinkWrap: true,
@@ -311,29 +305,77 @@ class _MyHomePageState extends State<MyHomePage> {
                       priceL: widget.priceL),
                   _textTaste(foodsTyp: widget.foodType),
                   _radioTaste(foodsTyp: widget.foodType),
+                  txtComment(),
+                  ButtonAddCart(),
                 ],
               ),
             ),
           ],
         ),
       ),
-      bottomNavigationBar: Container(
-          margin: EdgeInsets.only(bottom: 0.0),
-          height: 60.0,
-          decoration: BoxDecoration(
-              color: Colors.white,
-              border:
-                  Border(top: BorderSide(color: Colors.grey[300], width: 1.0))),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              Container(
-                child: Row(
-                  children: <Widget>[_ButtonAdd()],
-                ),
-              ),
-            ],
-          )),
+      bottomNavigationBar: new BottomAppBar(
+        child: new Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.max,
+          children: <Widget>[
+            new IconButton(
+                icon: new Icon(Icons.home),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => FirstPage2()),
+                  );
+                }),
+            //   new IconButton(icon: new Text('SAVE'), onPressed: null),
+
+            new IconButton(
+                icon: new Icon(Icons.restaurant),
+                onPressed: () {
+                  if (globals.restaurantID != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => DetailRestaurant(
+                                restaurantID: globals.restaurantID,
+                              )),
+                    );
+                  } else {
+                    _showAlertDialog();
+                  }
+                }),
+
+            new IconButton(
+                icon: new Icon(Icons.list),
+                onPressed: () {
+                  if (globals.restaurantID != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => newOrder()),
+                    );
+                  } else {
+                    _showAlertDialog();
+                  }
+                }),
+
+            new IconButton(
+                icon: new Icon(Icons.history),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => History()),
+                  );
+                }),
+            new IconButton(
+                icon: new Icon(Icons.map),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Mapgoogle()),
+                  );
+                }),
+          ],
+        ),
+      ),
     );
   }
 
@@ -380,12 +422,9 @@ class _MyHomePageState extends State<MyHomePage> {
         qty = 1;
         totalPrice = qty * price;
         taste = _taste;
-        comment = 'comment';
 
         Order e = Order(foodID, foodsName, price, size, description, images,
-            qty, totalPrice, taste,comment);
-
-       // print('=======' + e.size);
+            qty, totalPrice, taste, comment);
 
         dbHelper.save(e);
         showSnak();
@@ -406,7 +445,7 @@ class _MyHomePageState extends State<MyHomePage> {
 //      refreshList();
   }
 
-  RaisedButton _ButtonAdd() {
+/*  RaisedButton _ButtonAdd() {
     return new RaisedButton(
       onPressed: () => _foo(),
       color: Colors.green,
@@ -414,6 +453,52 @@ class _MyHomePageState extends State<MyHomePage> {
         'ADD TO ORDER',
         style: TextStyle(
           color: Colors.white,
+        ),
+      ),
+    );
+  }*/
+
+  //CODE HERE
+  Widget ButtonAddCart() {
+    return new RaisedButton(
+        child: Text(
+          'ADD TO ORDER',
+          style: TextStyle(color: Colors.white),
+        ),
+        color: Colors.green,
+        onPressed: () => _foo());
+  }
+
+  Widget txtComment() {
+//    return TextFormField(
+//        decoration: InputDecoration(
+//          border:
+//              OutlineInputBorder(borderSide: BorderSide(color: Colors.black)),
+//          hintText: "Comment",
+//          icon: Icon(
+//            Icons.note,
+//            color: Colors.green,
+//          ),
+//        ),
+//        onSaved: (String value) {
+//          comment = value;
+//          print('=========== on save' + comment);
+//        },
+//        onFieldSubmitted: (String value) {});
+
+    return TextField(
+      onChanged: (text) {
+        comment = text;
+        print(comment);
+      },
+      decoration: InputDecoration(
+        border: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.green),
+        ),
+        hintText: "Comment",
+        icon: Icon(
+          Icons.note,
+          color: Colors.green,
         ),
       ),
     );
@@ -429,7 +514,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget _textTaste({String foodsTyp}) {
     if (foodsTyp == "7" || foodsTyp == "8") {
-      return Text('เลือกรสชาติ');
+      return Text('เลือกความหวาน');
     } else if (foodsTyp == "1") {
       return Text('เลือกความสุก');
     } else {
@@ -449,8 +534,8 @@ class _MyHomePageState extends State<MyHomePage> {
               groupValue: _radioValueSML,
               onChanged: _handleRadioValueChangeSML,
             ),
-            new Text('S ' +
-              priceS.toString(),
+            new Text(
+              'S ' + priceS.toString(),
               style: new TextStyle(fontSize: 14.0),
             ),
             new Radio(
@@ -458,8 +543,8 @@ class _MyHomePageState extends State<MyHomePage> {
               groupValue: _radioValueSML,
               onChanged: _handleRadioValueChangeSML,
             ),
-            new Text('M ' +
-              priceM.toString(),
+            new Text(
+              'M ' + priceM.toString(),
               style: new TextStyle(
                 fontSize: 14.0,
               ),
@@ -469,8 +554,8 @@ class _MyHomePageState extends State<MyHomePage> {
               groupValue: _radioValueSML,
               onChanged: _handleRadioValueChangeSML,
             ),
-            new Text('L ' +
-              priceL.toString(),
+            new Text(
+              'L ' + priceL.toString(),
               style: new TextStyle(fontSize: 14.0),
             ),
           ],
@@ -494,7 +579,7 @@ class _MyHomePageState extends State<MyHomePage> {
               onChanged: _handleRadioValueChangeDrink,
             ),
             new Text(
-              'หวานน้อย',
+              'น้อย',
               style: new TextStyle(fontSize: 14.0),
             ),
             new Radio(
@@ -514,7 +599,7 @@ class _MyHomePageState extends State<MyHomePage> {
               onChanged: _handleRadioValueChangeDrink,
             ),
             new Text(
-              'หวานมาก',
+              'มาก',
               style: new TextStyle(fontSize: 14.0),
             ),
           ],

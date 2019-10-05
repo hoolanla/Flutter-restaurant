@@ -13,7 +13,7 @@ import 'package:online_store/globals.dart' as globals;
 import 'package:online_store/screens/home/DetailRestaurant.dart';
 import 'package:online_store/screens/home/newOrder.dart';
 import 'package:online_store/screens/home/history.dart';
-
+import 'package:online_store/screens/home/DetailCommendPage.dart';
 
 const kGoogleApiKey = "AIzaSyAZZQMknD9tUApMWLYZvZ4mmlVIdb_QquI";
 GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: kGoogleApiKey);
@@ -40,9 +40,6 @@ class HomeState extends State<Mapgoogle> {
   bool isLoading = false;
   String errorMessage;
 
-
-
-
   _showAlertDialog() async {
     showDialog(
         context: context,
@@ -66,8 +63,6 @@ class HomeState extends State<Mapgoogle> {
         });
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     Widget expandedChild;
@@ -85,12 +80,10 @@ class HomeState extends State<Mapgoogle> {
         key: homeScaffoldKey,
         appBar: AppBar(
           textTheme: TextTheme(
-              title: TextStyle(
-            color: Colors.black,
-            fontSize: 20.0,
-          )),
-          iconTheme: IconThemeData(
-            color: Colors.black,
+            title: TextStyle(
+              color: Colors.black,
+              fontSize: 20.0,
+            ),
           ),
           backgroundColor: Colors.white,
           title: const Text(
@@ -144,16 +137,14 @@ class HomeState extends State<Mapgoogle> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => DetailRestaurant(
-                              restaurantID: globals.restaurantID,
-                            )),
+                            builder: (context) => DetailCommendPage(
+                                  restaurantID: globals.restaurantID,
+                                )),
                       );
                     } else {
                       _showAlertDialog();
                     }
                   }),
-
-
 
               new IconButton(
                   icon: new Icon(Icons.list),

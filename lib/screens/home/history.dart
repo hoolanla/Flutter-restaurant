@@ -22,6 +22,7 @@ import 'package:online_store/services/authService.dart';
 import 'package:online_store/globals.dart' as globals;
 import 'package:online_store/screens/home/DetailRestaurant.dart';
 import 'package:online_store/screens/home/newOrder.dart';
+import 'package:online_store/screens/home/DetailCommendPage.dart';
 
 
 Future<double> _totals;
@@ -87,7 +88,7 @@ class _MyStatefulState extends State<MyStateful>
   void initState() {
     super.initState();
     refreshTotal();
-    controller = new TabController(vsync: this, length: 5);
+ //   controller = new TabController(vsync: this, length: 5);
   }
 
 
@@ -103,7 +104,7 @@ class _MyStatefulState extends State<MyStateful>
 
   @override
   void dispose() {
-    controller.dispose();
+  //  controller.dispose();
     super.dispose();
   }
 
@@ -156,14 +157,16 @@ class _MyStatefulState extends State<MyStateful>
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => DetailRestaurant(
-                                restaurantID: globals.restaurantID,
-                              )),
+                          builder: (context) => DetailCommendPage(
+                            restaurantID: globals.restaurantID,
+                          )),
                     );
                   } else {
                     _showAlertDialog();
                   }
                 }),
+
+
 
             new IconButton(
                 icon: new Icon(Icons.list),

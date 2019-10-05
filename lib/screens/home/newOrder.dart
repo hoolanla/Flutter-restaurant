@@ -16,6 +16,7 @@ import 'package:online_store/models/foods.dart';
 import 'package:online_store/screens/home/DetailRestaurant.dart';
 import 'package:online_store/screens/home/history.dart';
 import 'package:online_store/models/bill.dart';
+import 'package:online_store/screens/home/DetailCommendPage.dart';
 
 //import 'package:json_serializable/json_serializable.dart';
 import 'dart:convert';
@@ -261,64 +262,58 @@ class _ShowData extends State<newOrder> {
   /// CODE1
 
   listStatusOrder() {
-
     return Expanded(
       child: FutureBuilder<StatusOrder>(
           future: statusOrders,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               if (snapshot.data != null) {
-
-                if (snapshot.data.orderList.length == 0)
-                  {
-                    return _noOrder();
-                  }
-                else
-                  {
-                    return new Column(
-                      mainAxisSize: MainAxisSize.max,
-                      children: <Widget>[
-                        new Expanded(
-                          child: _ListSectionStatus(menu: snapshot.data),
-                        ),
-                        new ButtonBar(
-                          children: <Widget>[
-                            new RaisedButton(
-                              color: Colors.white,
-                              child: FutureBuilder(
-                                  future: _totals,
-                                  builder: (context, snapshot) {
-                                    return Text(
-                                      'REFRESH',
-                                      style: TextStyle(color: Colors.black),
-                                    );
-                                  }),
-                              onPressed: () {
-                                refreshStatusOrder();
-                              },
-                            ),
-                            new RaisedButton(
-                              child: FutureBuilder(
-                                  future: _totals,
-                                  builder: (context, snapshot) {
-                                    return Text(
-                                      'CHECK BILL',
-                                      style: TextStyle(color: Colors.black),
-                                    );
-                                  }),
-                              onPressed: () {
-                                SendtoJsonCheckbill(
-                                    restaurantID: globals.restaurantID,
-                                    tableID: globals.tableID,
-                                    userID: globals.userID);
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
-                    );
-                  }
-
+                if (snapshot.data.orderList.length == 0) {
+                  return _noOrder();
+                } else {
+                  return new Column(
+                    mainAxisSize: MainAxisSize.max,
+                    children: <Widget>[
+                      new Expanded(
+                        child: _ListSectionStatus(menu: snapshot.data),
+                      ),
+                      new ButtonBar(
+                        children: <Widget>[
+                          new RaisedButton(
+                            color: Colors.white,
+                            child: FutureBuilder(
+                                future: _totals,
+                                builder: (context, snapshot) {
+                                  return Text(
+                                    'REFRESH',
+                                    style: TextStyle(color: Colors.black),
+                                  );
+                                }),
+                            onPressed: () {
+                              refreshStatusOrder();
+                            },
+                          ),
+                          new RaisedButton(
+                            child: FutureBuilder(
+                                future: _totals,
+                                builder: (context, snapshot) {
+                                  return Text(
+                                    'CHECK BILL',
+                                    style: TextStyle(color: Colors.black),
+                                  );
+                                }),
+                            onPressed: () {
+                              SendtoJsonCheckbill(
+                                  restaurantID: globals.restaurantID,
+                                  tableID: globals.tableID,
+                                  userID: globals.userID);
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                }
               } else {
                 return Container(
                   child: Center(
@@ -589,16 +584,14 @@ class _ShowData extends State<newOrder> {
     return new Scaffold(
         appBar: new AppBar(
           textTheme: TextTheme(
-              title: TextStyle(
-            color: Colors.black,
-            fontSize: 20.0,
-          )),
-          iconTheme: IconThemeData(
-            color: Colors.black,
+            title: TextStyle(
+              color: Colors.black,
+              fontSize: 20.0,
+            ),
           ),
           backgroundColor: Colors.white,
           title: new Text(
-            'BASKET',
+            'MY ORDER',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.black,
@@ -629,7 +622,7 @@ class _ShowData extends State<newOrder> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => DetailRestaurant(
+                            builder: (context) => DetailCommendPage(
                                   restaurantID: globals.restaurantID,
                                 )),
                       );
@@ -779,7 +772,6 @@ class _ShowData extends State<newOrder> {
   }
 
   void ttt(String strAll) async {
-
     print('================> ' + strAll);
 
     var feed = await NetworkFoods.inSertOrder(strBody: strAll);

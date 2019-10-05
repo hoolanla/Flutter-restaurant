@@ -11,10 +11,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:online_store/screens/barcode/barcode.dart';
 import 'package:online_store/main.dart';
 import 'package:online_store/globals.dart' as globals;
+import 'package:online_store/screens/home/DetailCommendPage.dart';
+import 'package:online_store/screens/home/history.dart';
+import 'package:online_store/screens/home/DetailCommendPage.dart';
+import 'package:online_store/screens/home/newOrder.dart';
+import 'package:online_store/screens/map/place.dart';
 
-String _tableID = globals.tableID;
-String _restaurantID = globals.restaurantID;
-String _userID = globals.userID;
+
 void main() => runApp(CafeLine2());
 
 class CafeLine2 extends StatelessWidget {
@@ -268,7 +271,7 @@ class _MyHomePageState extends State<MyHomePage> {
           },
         ),
         title: Text(
-          'Detail1',
+          'Detail2',
           style: TextStyle(
             color: Colors.black,
             fontSize: 20.0,
@@ -311,29 +314,108 @@ class _MyHomePageState extends State<MyHomePage> {
                       priceL: widget.priceL),
                   _textTaste(foodsTyp: widget.foodType),
                   _radioTaste(foodsTyp: widget.foodType),
+                  txtComment(),
+                  ButtonAddCart(),
                 ],
               ),
             ),
           ],
         ),
       ),
-      bottomNavigationBar: Container(
-          margin: EdgeInsets.only(bottom: 0.0),
-          height: 60.0,
-          decoration: BoxDecoration(
-              color: Colors.white,
-              border:
-                  Border(top: BorderSide(color: Colors.grey[300], width: 1.0))),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              Container(
-                child: Row(
-                  children: <Widget>[_ButtonAdd()],
-                ),
-              ),
-            ],
-          )),
+      bottomNavigationBar: new BottomAppBar(
+        child: new Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.max,
+          children: <Widget>[
+            new IconButton(
+                icon: new Icon(Icons.home),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => FirstPage2()),
+                  );
+                }),
+            //   new IconButton(icon: new Text('SAVE'), onPressed: null),
+
+            new IconButton(
+                icon: new Icon(Icons.restaurant),
+                onPressed: () {
+                  if (globals.restaurantID != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => DetailCommendPage(
+                            restaurantID: globals.restaurantID,
+                          )),
+                    );
+                  } else {
+                    _showAlertDialog();
+                  }
+                }),
+
+
+
+            new IconButton(
+                icon: new Icon(Icons.list),
+                onPressed: () {
+                  if (globals.restaurantID != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => newOrder()),
+                    );
+                  } else {
+                    _showAlertDialog();
+                  }
+                }),
+
+            new IconButton(
+                icon: new Icon(Icons.history),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => History()),
+                  );
+                }),
+            new IconButton(
+                icon: new Icon(Icons.map),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Mapgoogle()),
+                  );
+                }),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget ButtonAddCart() {
+    return new RaisedButton(
+        child: Text(
+          'ADD TO ORDER',
+          style: TextStyle(color: Colors.white),
+        ),
+        color: Colors.green,
+        onPressed: () => _foo());
+  }
+
+  Widget txtComment() {
+    return TextField(
+      onChanged: (text) {
+        comment = text;
+        print(comment);
+      },
+      decoration: InputDecoration(
+        border: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.green),
+        ),
+        hintText: "Comment",
+        icon: Icon(
+          Icons.note,
+          color: Colors.green,
+        ),
+      ),
     );
   }
 
@@ -362,42 +444,46 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _foo() async {
     if (globals.tableID != null) {
-      foodID = widget.foodsID;
-      HaveData = await dbHelper.getByID(foodID);
+      if (widget.restaurantID != globals.restaurantID) {
 
-      if (HaveData.length == 0) {
-        foodID = widget.foodsID;
-        foodsName = widget.foodName;
-        if (priceSml < 1) {
-          price = widget.priceS;
-        } else {
-          price = priceSml;
-        }
-
-        size = _size;
-        description = widget.description;
-        images = widget.image;
-        qty = 1;
-        totalPrice = qty * price;
-        taste = _taste;
-        comment = 'comment';
-
-        Order e = Order(foodID, foodsName, price, size, description, images,
-            qty, totalPrice, taste,comment);
-
-       // print('=======' + e.size);
-
-        dbHelper.save(e);
-        showSnak();
+        _showAlertDialog(strError: 'ร้านนี้ไม่ตรงกับที่คุณแสกน QR CODE คุณต้องแสกน QR CODE ใหม่');
       } else {
         foodID = widget.foodsID;
-        dbHelper.updateBySQL(foodsID: foodID);
-        showSnak();
+        HaveData = await dbHelper.getByID(foodID);
+
+        if (HaveData.length == 0) {
+          foodID = widget.foodsID;
+          foodsName = widget.foodName;
+          if (priceSml < 1) {
+            price = widget.priceS;
+          } else {
+            price = priceSml;
+          }
+
+          size = _size;
+          description = widget.description;
+          images = widget.image;
+          qty = 1;
+          totalPrice = qty * price;
+          taste = _taste;
+
+          Order e = Order(foodID, foodsName, price, size, description, images,
+              qty, totalPrice, taste, comment);
+
+          dbHelper.save(e);
+          showSnak();
+        } else {
+          foodID = widget.foodsID;
+          dbHelper.updateBySQL(foodsID: foodID);
+          showSnak();
+        }
+
+        if (priceSml < 1) {
+          priceSml = widget.priceS;
+        }
       }
 
-      if (priceSml < 1) {
-        priceSml = widget.priceS;
-      }
+
     } else {
       _showAlertDialog(strError: 'คุณต้องแสกน QR CODE ก่อน');
     }

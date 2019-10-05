@@ -15,10 +15,7 @@ import 'package:online_store/screens/home/DetailRestaurant.dart';
 import 'package:online_store/screens/home/newOrder.dart';
 import 'package:online_store/screens/home/history.dart';
 import 'package:online_store/screens/map/place.dart';
-
-String _tableID = globals.tableID;
-String _restaurantID = globals.restaurantID;
-String _userID = globals.userID;
+import 'package:online_store/screens/home/DetailCommendPage.dart';
 
 void main() => runApp(DetailRestaurant2());
 
@@ -265,7 +262,7 @@ class _MyHomePageState extends State<MyHomePage> {
           },
         ),
         title: Text(
-          'Detail2 TEST',
+          'Detail',
           style: TextStyle(
             color: Colors.black,
             fontSize: 20.0,
@@ -335,7 +332,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => DetailRestaurant(
+                          builder: (context) => DetailCommendPage(
                                 restaurantID: globals.restaurantID,
                               )),
                     );
@@ -402,41 +399,49 @@ class _MyHomePageState extends State<MyHomePage> {
         });
   }
 
+  //CODEH
   void _foo() async {
     if (globals.tableID != null) {
-      foodID = widget.foodsID;
-      HaveData = await dbHelper.getByID(foodID);
+      if (widget.restaurantID != globals.restaurantID) {
 
-      if (HaveData.length == 0) {
-        foodID = widget.foodsID;
-        foodsName = widget.foodName;
-        if (priceSml < 1) {
-          price = widget.priceS;
-        } else {
-          price = priceSml;
-        }
-
-        size = _size;
-        description = widget.description;
-        images = widget.image;
-        qty = 1;
-        totalPrice = qty * price;
-        taste = _taste;
-
-        Order e = Order(foodID, foodsName, price, size, description, images,
-            qty, totalPrice, taste, comment);
-
-        dbHelper.save(e);
-        showSnak();
+        _showAlertDialog(strError: 'ร้านนี้ไม่ตรงกับที่คุณแสกน QR CODE คุณต้องแสกน QR CODE ใหม่');
       } else {
         foodID = widget.foodsID;
-        dbHelper.updateBySQL(foodsID: foodID);
-        showSnak();
+        HaveData = await dbHelper.getByID(foodID);
+
+        if (HaveData.length == 0) {
+          foodID = widget.foodsID;
+          foodsName = widget.foodName;
+          if (priceSml < 1) {
+            price = widget.priceS;
+          } else {
+            price = priceSml;
+          }
+
+          size = _size;
+          description = widget.description;
+          images = widget.image;
+          qty = 1;
+          totalPrice = qty * price;
+          taste = _taste;
+
+          Order e = Order(foodID, foodsName, price, size, description, images,
+              qty, totalPrice, taste, comment);
+
+          dbHelper.save(e);
+          showSnak();
+        } else {
+          foodID = widget.foodsID;
+          dbHelper.updateBySQL(foodsID: foodID);
+          showSnak();
+        }
+
+        if (priceSml < 1) {
+          priceSml = widget.priceS;
+        }
       }
 
-      if (priceSml < 1) {
-        priceSml = widget.priceS;
-      }
+
     } else {
       _showAlertDialog(strError: 'คุณต้องแสกน QR CODE ก่อน');
     }
@@ -470,22 +475,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget txtComment() {
-//    return TextFormField(
-//        decoration: InputDecoration(
-//          border:
-//              OutlineInputBorder(borderSide: BorderSide(color: Colors.black)),
-//          hintText: "Comment",
-//          icon: Icon(
-//            Icons.note,
-//            color: Colors.green,
-//          ),
-//        ),
-//        onSaved: (String value) {
-//          comment = value;
-//          print('=========== on save' + comment);
-//        },
-//        onFieldSubmitted: (String value) {});
-
     return TextField(
       onChanged: (text) {
         comment = text;

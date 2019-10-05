@@ -17,6 +17,8 @@ import 'package:online_store/screens/home/newOrder.dart';
 import 'package:online_store/models/restaurant.dart';
 import 'package:online_store/screens/home/DetailRestaurant.dart';
 import 'package:online_store/screens/home/history.dart';
+import 'package:online_store/screens/home/CafeCommendPage.dart';
+import 'package:online_store/screens/home/DetailCommendPage.dart';
 
 
 //import 'package:json_serializable/json_serializable.dart';
@@ -191,7 +193,7 @@ class _ShowData extends State<FirstPage2> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => Cafe_Line(
+                                  builder: (context) => CafeCommendPage(
                                         restaurantID:
                                             Mrestaurant.data[idx].restaurantID,
                                         restaurantName: Mrestaurant
@@ -257,7 +259,7 @@ class _ShowData extends State<FirstPage2> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => DetailRestaurant(
+                          builder: (context) => DetailCommendPage(
                                 restaurantID: globals.restaurantID,
                               )),
                     );

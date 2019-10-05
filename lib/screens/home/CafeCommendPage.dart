@@ -28,23 +28,18 @@ import 'package:online_store/screens/home/DetailRestaurant.dart';
 import 'package:online_store/screens/home/history.dart';
 import 'package:online_store/screens/home/DetailCommendPage.dart';
 
-String restaurantID;
-String restaurantName;
-String userID;
-String tableID;
-
 void main() {
-  runApp(Cafe_Line());
+  runApp(CafeCommendPage());
 }
 
-class Cafe_Line extends StatelessWidget {
+class CafeCommendPage extends StatelessWidget {
   final String restaurantID;
   final String restaurantName;
   final String content;
   final String description;
   final String images;
 
-  Cafe_Line(
+  CafeCommendPage(
       {this.restaurantID,
       this.restaurantName,
       this.content,
@@ -54,8 +49,9 @@ class Cafe_Line extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      title: '',
-      home: new MyStateful(
+      title: "DETAIL",
+      debugShowCheckedModeBanner: false,
+      home: new HomePage(
         restaurantID: restaurantID,
         restaurantName: restaurantName,
         content: content,
@@ -66,14 +62,14 @@ class Cafe_Line extends StatelessWidget {
   }
 }
 
-class MyStateful extends StatefulWidget {
+class HomePage extends StatefulWidget {
   final String restaurantID;
   final String restaurantName;
   final String content;
   final String description;
   final String images;
 
-  MyStateful(
+  HomePage(
       {this.restaurantID,
       this.restaurantName,
       this.content,
@@ -81,34 +77,14 @@ class MyStateful extends StatefulWidget {
       this.images});
 
   @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    return new _MyStatefulState();
-  }
+  _HomePageState createState() => _HomePageState();
 }
 
-class _MyStatefulState extends State<MyStateful>
+class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
-  var textYellow = Color(0xFFf6c24d);
-  var iconYellow = Color(0xFFf4bf47);
+  TabController _tabController;
 
-  var green = Color(0xFF4caf6a);
-  var greenLight = Color(0xFFd8ebde);
-
-  var red = Color(0xFFf36169);
-  var redLight = Color(0xFFf2dcdf);
-
-  var blue = Color(0xFF398bcf);
-  var blueLight = Color(0xFFc1dbee);
-
-  TabController controller;
-
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  final titleString = "";
-
-  String strBody;
-
-
+////// ALL FUNCTION
   _showAlertDialog() async {
     showDialog(
         context: context,
@@ -134,14 +110,8 @@ class _MyStatefulState extends State<MyStateful>
 
   @override
   void initState() {
+    _tabController = new TabController(length: 2, vsync: this);
     super.initState();
-    controller = new TabController(vsync: this, length: 2);
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
   }
 
   @override
@@ -149,10 +119,11 @@ class _MyStatefulState extends State<MyStateful>
     return new Scaffold(
       appBar: new AppBar(
         textTheme: TextTheme(
-            title: TextStyle(
-          color: Colors.black,
-          fontSize: 20.0,
-        )),
+          title: TextStyle(
+            color: Colors.black,
+            fontSize: 20.0,
+          ),
+        ),
         iconTheme: IconThemeData(
           color: Colors.black,
         ),
@@ -166,137 +137,34 @@ class _MyStatefulState extends State<MyStateful>
             fontWeight: FontWeight.bold,
           ),
         ),
-        actions: <Widget>[
-          new Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: new Container(
-              height: 150.0,
-              width: 30.0,
-              child: null,
-            ),
-          )
-        ],
-        bottom: new TabBar(controller: controller, tabs: [
-          GestureDetector(
-            child: Tab(
-              icon: Icon(
-                Icons.home,
+        bottom: TabBar(
+          unselectedLabelColor: Colors.white,
+          labelColor: Colors.amber,
+          tabs: [
+            new Tab(
+                icon: Icon(
+              Icons.home,
+              color: Colors.black54,
+            )),
+            new Tab(
+              icon: new Icon(
+                Icons.restaurant,
                 color: Colors.black54,
               ),
             ),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => Cafe_Line(
-                          restaurantID: widget.restaurantID,
-                          restaurantName: widget.restaurantName,
-                          content: widget.content,
-                          description: widget.description,
-                          images: widget.images,
-                        )),
-              );
-            },
-          ),
-          GestureDetector(
-            child: Tab(
-                icon: Icon(
-              Icons.restaurant,
-              color: Colors.black54,
-            )),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => CafeLine_Recommend(
-                          restaurantID: widget.restaurantID,
-                          restaurantName: widget.restaurantName,
-                          content: widget.content,
-                          description: widget.description,
-                          images: widget.images,
-                        )),
-              );
-            },
-          ),
-        ]),
+          ],
+          controller: _tabController,
+          indicatorColor: Colors.white,
+          indicatorSize: TabBarIndicatorSize.tab,
+        ),
+        bottomOpacity: 1,
       ),
-
-      body: CustomScrollView(
-        slivers: <Widget>[
-          SliverAppBar(
-            expandedHeight: 100,
-            pinned: true,
-            floating: false,
-            flexibleSpace: new FlexibleSpaceBar(
-                title: Text(
-                  '${widget.restaurantName}',
-                  style: TextStyle(
-                      color: Colors.red,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18.0),
-                ),
-                background: Container(
-                  height: 100.0,
-                  width: 420.0,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                        colors: [Colors.black.withOpacity(0.1), Colors.black],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter),
-                  ),
-                  child: Image.network(
-                    widget.images,
-                    fit: BoxFit.cover,
-                  ),
-                )),
-          ),
-          SliverFillRemaining(
-            child: FutureBuilder<Menu>(
-                future: NetworkFoods.loadFoodsAsset(
-                    RestaurantID: widget.restaurantID, Recommend: '0'),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    if (snapshot.data != null) {
-                      return new Container(
-                        child: _ListSection(menu: snapshot.data),
-                      );
-                    } else {
-                      return Container(
-                        child: Center(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              SizedBox(
-                                child: CircularProgressIndicator(),
-                                height: 10.0,
-                                width: 10.0,
-                              )
-                            ],
-                          ),
-                        ),
-                      );
-                    }
-                  } else if (snapshot.hasError) {
-                    return Text('${snapshot.error}');
-                  } else {
-                    return Container(
-                      child: Center(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            SizedBox(
-                              child: CircularProgressIndicator(),
-                              height: 10.0,
-                              width: 10.0,
-                            )
-                          ],
-                        ),
-                      ),
-                    );
-                  }
-                }),
-          )
+      body: TabBarView(
+        children: [
+          Page1(),
+          Page2(),
         ],
+        controller: _tabController,
       ),
       bottomNavigationBar: new BottomAppBar(
         child: new Row(
@@ -366,7 +234,171 @@ class _MyStatefulState extends State<MyStateful>
     );
   }
 
+  // ALL WIDGET
+
   List<detailFood> detailFoods = [];
+
+  Widget Page1() {
+    return CustomScrollView(
+      slivers: <Widget>[
+        SliverAppBar(
+          expandedHeight: 100,
+          pinned: true,
+          floating: false,
+          flexibleSpace: new FlexibleSpaceBar(
+              title: Text(
+                '${widget.restaurantName}',
+                style: TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18.0),
+              ),
+              background: Container(
+                height: 100.0,
+                width: 420.0,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                      colors: [Colors.black.withOpacity(0.1), Colors.black],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter),
+                ),
+                child: Image.network(
+                  widget.images,
+                  fit: BoxFit.cover,
+                ),
+              )),
+        ),
+        SliverFillRemaining(
+          child: FutureBuilder<Menu>(
+              future: NetworkFoods.loadFoodsAsset(
+                  RestaurantID: widget.restaurantID, Recommend: '0'),
+              builder: (context, snapshot) {
+                print('Step==========1');
+
+                if (snapshot.hasData) {
+                  if (snapshot.data != null) {
+                    return new Container(
+                      child: _ListSection(menu: snapshot.data),
+                    );
+                  } else {
+                    return Container(
+                      child: Center(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            SizedBox(
+                              child: CircularProgressIndicator(),
+                              height: 10.0,
+                              width: 10.0,
+                            )
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+                } else if (snapshot.hasError) {
+                  return Text('${snapshot.error}');
+                } else {
+                  return Container(
+                    child: Center(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          SizedBox(
+                            child: CircularProgressIndicator(),
+                            height: 10.0,
+                            width: 10.0,
+                          )
+                        ],
+                      ),
+                    ),
+                  );
+                }
+              }),
+        )
+      ],
+    );
+  }
+
+  Widget Page2() {
+    return CustomScrollView(
+      slivers: <Widget>[
+        SliverAppBar(
+          expandedHeight: 100,
+          pinned: true,
+          floating: false,
+          flexibleSpace: new FlexibleSpaceBar(
+              title: Text(
+                '${widget.restaurantName}',
+                style: TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18.0),
+              ),
+              background: Container(
+                height: 100.0,
+                width: 420.0,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                      colors: [Colors.black.withOpacity(0.1), Colors.black],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter),
+                ),
+                child: Image.network(
+                  widget.images,
+                  fit: BoxFit.cover,
+                ),
+              )),
+        ),
+        SliverFillRemaining(
+          child: FutureBuilder<Menu>(
+              future: NetworkFoods.loadFoodsAsset(
+                  RestaurantID: widget.restaurantID, Recommend: '1'),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  if (snapshot.data != null) {
+                    return new Container(
+                      child: _ListSection(menu: snapshot.data),
+                    );
+                  } else {
+                    return Container(
+                      child: Center(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            SizedBox(
+                              child: CircularProgressIndicator(),
+                              height: 10.0,
+                              width: 10.0,
+                            )
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+                } else if (snapshot.hasError) {
+                  return Text('${snapshot.error}');
+                } else {
+                  return Container(
+                    child: Center(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          SizedBox(
+                            child: CircularProgressIndicator(),
+                            height: 10.0,
+                            width: 10.0,
+                          )
+                        ],
+                      ),
+                    ),
+                  );
+                }
+              }),
+        )
+      ],
+    );
+  }
 
   Widget _ListSection({Menu menu}) => ListView.builder(
         itemBuilder: (context, int idx) {

@@ -28,6 +28,7 @@ import 'package:online_store/globals.dart' as globals;
 import 'package:online_store/models/restaurant.dart';
 import 'package:online_store/screens/home/DetailRestaurant2.dart';
 import 'package:online_store/screens/home/DetailRestaurant_Recommend.dart';
+import 'package:online_store/screens/home/DetailCommendPage.dart';
 
 String restaurantID;
 String restaurantName;
@@ -63,7 +64,6 @@ class DetailRestaurant extends StatelessWidget {
 
 class MyStateful extends StatefulWidget {
   final String restaurantID;
-
   MyStateful({
     this.restaurantID,
   });
@@ -71,12 +71,17 @@ class MyStateful extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
-    return new _MyStatefulState();
+    return new _MyStatefulState(restaurantID: restaurantID);
   }
 }
 
 class _MyStatefulState extends State<MyStateful>
     with SingleTickerProviderStateMixin {
+  final String restaurantID;
+  _MyStatefulState({
+    this.restaurantID,
+  });
+
   _showAlertDialog({String strError}) async {
     showDialog(
         context: context,
@@ -233,14 +238,16 @@ class _MyStatefulState extends State<MyStateful>
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => DetailRestaurant(
-                                restaurantID: globals.restaurantID,
-                              )),
+                          builder: (context) => DetailCommendPage(
+                            restaurantID: globals.restaurantID,
+                          )),
                     );
                   } else {
                     _showAlertDialog();
                   }
                 }),
+
+
 
             new IconButton(
                 icon: new Icon(Icons.list),

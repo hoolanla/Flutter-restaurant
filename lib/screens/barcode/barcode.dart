@@ -18,6 +18,7 @@ import 'package:online_store/screens/home/newOrder.dart';
 import 'package:online_store/screens/Json/foods.dart';
 import 'package:online_store/models/restaurant.dart';
 import 'package:online_store/screens/home/history.dart';
+import 'package:online_store/screens/home/DetailCommendPage.dart';
 
 String mImage;
 String mRestaurantName;
@@ -114,7 +115,7 @@ class _MyAppState extends State<Barcode> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => DetailRestaurant(
+                            builder: (context) => DetailCommendPage(
                               restaurantID: globals.restaurantID,
                             )),
                       );
@@ -198,7 +199,7 @@ class _MyAppState extends State<Barcode> {
 
       if (globals.tableID !='') {
         Navigator.push(context,
-            new MaterialPageRoute(builder: (context) => new DetailRestaurant(restaurantID: qrcode.restuarantID,)));
+            new MaterialPageRoute(builder: (context) => new DetailCommendPage(restaurantID: qrcode.restuarantID,)));
       }
 
 

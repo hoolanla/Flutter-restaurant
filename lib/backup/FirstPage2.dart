@@ -1,126 +1,145 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
-//import 'package:polygon_clipper/polygon_clipper.dart';
-import 'package:online_store/screens/home/CafeLine.dart';
-import 'package:online_store/screens/home/CafeLine_Recommend.dart';
-import 'package:online_store/screens/barcode/barcode.dart';
-import 'package:online_store/screens/map/place.dart';
-import 'package:online_store/screens/home/Showdata.dart';
+import 'package:online_store/models/order.dart';
+import 'dart:async';
+import 'package:online_store/screens/home/FirstPage2.dart';
 import 'package:online_store/screens/home/status_order.dart';
-import 'package:online_store/models/restaurant.dart';
 import 'package:online_store/screens/Json/foods.dart';
-import 'package:online_store/screens/home/DetailFirstPage.dart';
-import 'dart:async' show Future;
-import 'package:online_store/screens/home/newOrder2.dart';
+import 'package:online_store/sqlite/db_helper.dart';
+import 'package:online_store/services/Dialogs.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:online_store/services/authService.dart';
+import 'package:online_store/screens/barcode/barcode.dart';
+import 'package:online_store/globals.dart' as globals;
+import 'package:online_store/screens/map/place.dart';
+import 'package:online_store/screens/home/newOrder.dart';
+import 'package:online_store/models/restaurant.dart';
+import 'package:online_store/screens/home/history.dart';
+import 'package:online_store/screens/home/CafeCommendPage.dart';
+import 'package:online_store/screens/home/DetailCommendPage.dart';
 
-void main() => runApp(FirstPage2());
+//import 'package:json_serializable/json_serializable.dart';
+import 'dart:convert';
 
-class FirstPage2 extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: MyStateful(),
-    );
-  }
+int foodsID;
+String foodsName;
+double price;
+String size;
+String description;
+String images;
+int qty;
+String taste;
+
+String iTest = '';
+
+String _restaurantID = globals.restaurantID;
+
+void main() {
+  runApp(FirstPage2());
 }
 
-class MyStateful extends StatefulWidget {
+class FirstPage2 extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
-    return new MyHomePage();
+    return _ShowData();
   }
 }
 
-class MyHomePage extends State<MyStateful> with SingleTickerProviderStateMixin {
-  var textYellow = Color(0xFFf6c24d);
+class _ShowData extends State<FirstPage2> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        textTheme: TextTheme(
-            title: TextStyle(
-              color: Colors.black,
-              fontSize: 20.0,
-            )),
-        iconTheme: IconThemeData(
-          color: Colors.black,
-        ),
-        backgroundColor: Colors.white,
-        title: Text(
-          'eMENU',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 20.0,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-      bottomNavigationBar: new BottomAppBar(
-        child: new Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          mainAxisSize: MainAxisSize.max,
-          children: <Widget>[
-            new IconButton(
-                icon: new Icon(Icons.home),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => FirstPage2()),
-                  );
-                }),
-            //   new IconButton(icon: new Text('SAVE'), onPressed: null),
-            new IconButton(
-                icon: new Icon(Icons.center_focus_strong),
+  _showAlertDialog() async {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('คุณต้องแสกน QR CODE ก่อน'),
+            content: Text(""),
+            actions: <Widget>[
+              FlatButton(
                 onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => Barcode()),
                   );
-                }),
+                },
+                child: Text("OK"),
+              )
+            ],
+          );
+        });
+  }
 
-
-
-            new IconButton(
-                icon: new Icon(Icons.list),
+  _showAlertLogout() async {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('อยู่ระหว่างเช็คบิล ไม่สามารถ Log out ตอนนี้ได้'),
+            content: Text(""),
+            actions: <Widget>[
+              FlatButton(
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => newOrder2()),
+                    MaterialPageRoute(builder: (context) => newOrder()),
                   );
-                }),
-            new IconButton(
-                icon: new Icon(Icons.alarm),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Status_Order()),
-                  );
-                }),
+                },
+                child: Text("OK"),
+              )
+            ],
+          );
+        });
+  }
 
-            new IconButton(
-                icon: new Icon(Icons.map),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Mapgoogle()),
-                  );
-                }),
-          ],
-        ),
-      ),
-      body: FutureBuilder<Restaurant>(
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  listRestaurant() {
+    return Expanded(
+      child: FutureBuilder<Restaurant>(
         future: NetworkFoods.loadRestaurant(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return new Container(
-              child: _listCard(Mrestaurant: snapshot.data),
+            if (snapshot.data != null) {
+              return new Container(
+                child: _listCard(Mrestaurant: snapshot.data),
+              );
+            } else {
+              return Container(
+                child: Center(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      SizedBox(
+                        child: CircularProgressIndicator(),
+                        height: 10.0,
+                        width: 10.0,
+                      )
+                    ],
+                  ),
+                ),
+              );
+            }
+          } else {
+            return Container(
+              child: Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    SizedBox(
+                      child: CircularProgressIndicator(),
+                      height: 10.0,
+                      width: 10.0,
+                    )
+                  ],
+                ),
+              ),
             );
-          } else {}
+          }
         },
       ),
     );
@@ -131,7 +150,7 @@ class MyHomePage extends State<MyStateful> with SingleTickerProviderStateMixin {
       itemBuilder: (context, idx) {
         return Padding(
           padding: const EdgeInsets.fromLTRB(0.0, 2, 0.0, 2),
-          child:  Container(
+          child: Container(
               height: 180.0,
               width: 420.0,
               decoration: BoxDecoration(
@@ -146,10 +165,7 @@ class MyHomePage extends State<MyStateful> with SingleTickerProviderStateMixin {
                     width: 420.0,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                          colors: [
-                            Colors.black.withOpacity(0.1),
-                            Colors.black
-                          ],
+                          colors: [Colors.black.withOpacity(0.1), Colors.black],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter),
                     ),
@@ -163,7 +179,7 @@ class MyHomePage extends State<MyStateful> with SingleTickerProviderStateMixin {
                         Text(
                           '${Mrestaurant.data[idx].restaurantName}',
                           style: TextStyle(
-                              color: textYellow,
+                              color: Colors.red,
                               fontWeight: FontWeight.bold,
                               fontSize: 24.0,
                               letterSpacing: 1.1),
@@ -194,13 +210,12 @@ class MyHomePage extends State<MyStateful> with SingleTickerProviderStateMixin {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => Cafe_Line(
-                                    restaurantID: Mrestaurant
-                                        .data[idx].restaurantID,
+                                  builder: (context) => CafeCommendPage(
+                                    restaurantID:
+                                    Mrestaurant.data[idx].restaurantID,
                                     restaurantName: Mrestaurant
                                         .data[idx].restaurantName,
-                                    content:
-                                    Mrestaurant.data[idx].content,
+                                    content: Mrestaurant.data[idx].content,
                                     description:
                                     Mrestaurant.data[idx].description,
                                     images: Mrestaurant.data[idx].images,
@@ -219,7 +234,137 @@ class MyHomePage extends State<MyStateful> with SingleTickerProviderStateMixin {
                   ),
                 ],
               )),
-
         );
       });
+
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      appBar: new AppBar(
+        backgroundColor: Colors.white,
+        title: new Text(
+          'eMENU',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            fontSize: 20.0,
+          ),
+        ),
+      ),
+      bottomNavigationBar: new BottomAppBar(
+        child: new Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.max,
+          children: <Widget>[
+            new IconButton(
+                icon: new Icon(Icons.home),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => FirstPage2()),
+                  );
+                }),
+            //   new IconButton(icon: new Text('SAVE'), onPressed: null),
+
+            new IconButton(
+                icon: new Icon(Icons.restaurant),
+                onPressed: () {
+                  if (globals.restaurantID != null) {
+                    if (globals.restaurantID != '') {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => DetailCommendPage(
+                              restaurantID: globals.restaurantID,
+                            )),
+                      );
+                    } else {
+                      _showAlertDialog();
+                    }
+                  } else {
+                    _showAlertDialog();
+                  }
+                }),
+
+            new IconButton(
+                icon: new Icon(Icons.list),
+                onPressed: () {
+                  if (globals.restaurantID != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => newOrder()),
+                    );
+                  } else {
+                    _showAlertDialog();
+                  }
+                }),
+
+            new IconButton(
+                icon: new Icon(Icons.history),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => History()),
+                  );
+                }),
+            new IconButton(
+                icon: new Icon(Icons.map),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Mapgoogle()),
+                  );
+                }),
+            new IconButton(
+                icon: new Icon(Icons.exit_to_app),
+                onPressed: () {
+                  _LogOut();
+                }),
+          ],
+        ),
+      ),
+      body: new Container(
+        child: new Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          verticalDirection: VerticalDirection.down,
+          children: <Widget>[
+            listRestaurant(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _LogOut() async {
+    if (globals.restaurantID != null) {
+      String strBody =
+          '{"restaurantID":"${globals.restaurantID}","userID":"${globals.userID}","tableID":"${globals.tableID}"}';
+      var feed = await NetworkFoods.loadRetCheckBillStatus(strBody);
+      var data = DataFeedLogout(feed: feed);
+      if (data.feed.ResultOk == "true") {
+        _showAlertLogout();
+      } else {
+        globals.tableID = '';
+        globals.restaurantID = '';
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => FirstPage2()),
+        );
+      }
+    } else {
+      globals.tableID = '';
+      globals.restaurantID = '';
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => FirstPage2()),
+      );
+    }
+  }
+}
+
+class DataFeedLogout {
+  retCheckBillStatus feed;
+  DataFeedLogout({this.feed});
 }

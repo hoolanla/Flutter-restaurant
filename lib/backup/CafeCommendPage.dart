@@ -10,7 +10,8 @@ import 'package:online_store/globals.dart' as globals;
 import 'package:online_store/screens/home/history.dart';
 import 'package:online_store/screens/home/DetailCommendPage.dart';
 import 'package:online_store/models/order.dart';
-import 'package:online_store/models/logout.dart';
+
+
 
 String _txtTitle;
 
@@ -27,10 +28,10 @@ class CafeCommendPage extends StatelessWidget {
 
   CafeCommendPage(
       {this.restaurantID,
-      this.restaurantName,
-      this.content,
-      this.description,
-      this.images});
+        this.restaurantName,
+        this.content,
+        this.description,
+        this.images});
 
   @override
   Widget build(BuildContext context) {
@@ -57,10 +58,10 @@ class HomePage extends StatefulWidget {
 
   HomePage(
       {this.restaurantID,
-      this.restaurantName,
-      this.content,
-      this.description,
-      this.images});
+        this.restaurantName,
+        this.content,
+        this.description,
+        this.images});
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -98,14 +99,30 @@ class _HomePageState extends State<HomePage>
   void initState() {
     _tabController = new TabController(length: 2, vsync: this);
     super.initState();
+    if(globals.tableID != null){
+      _txtTitle = 'โต๊ะที่  ' + globals.tableID;
+    }
+    else
+    {
       _txtTitle = 'MENU';
+    }
+
+
   }
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-
+        textTheme: TextTheme(
+          title: TextStyle(
+            color: Colors.black,
+            fontSize: 20.0,
+          ),
+        ),
+        iconTheme: IconThemeData(
+          color: Colors.black,
+        ),
         backgroundColor: Colors.white,
         title: Text(
           _txtTitle,
@@ -117,30 +134,24 @@ class _HomePageState extends State<HomePage>
           ),
         ),
         bottom: TabBar(
-          indicator: UnderlineTabIndicator(
-            borderSide: BorderSide(width: 1.0),
-            insets: EdgeInsets.only(left: 0.0, right: 8.0, bottom: 4.0),
-          ),
-        //  isScrollable: true,
-          labelPadding: EdgeInsets.only(left: 0, right: 0),
-
+          unselectedLabelColor: Colors.white,
+          labelColor: Colors.amber,
           tabs: [
-            Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: new Tab(
-            child: Text('ALL',style: TextStyle(color: Colors.black),),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: new Tab(
-              child: Text('RECOMMEND',style: TextStyle(color: Colors.black),),
+            new Tab(
+                icon: Icon(
+                  Icons.home,
+                  color: Colors.black54,
+                )),
+            new Tab(
+              icon: new Icon(
+                Icons.restaurant,
+                color: Colors.black54,
               ),
             ),
           ],
           controller: _tabController,
-//          indicatorColor: Colors.white,
-//          indicatorSize: TabBarIndicatorSize.tab,
+          indicatorColor: Colors.white,
+          indicatorSize: TabBarIndicatorSize.tab,
         ),
         bottomOpacity: 1,
       ),
@@ -175,8 +186,8 @@ class _HomePageState extends State<HomePage>
                         context,
                         MaterialPageRoute(
                             builder: (context) => DetailCommendPage(
-                                  restaurantID: globals.restaurantID,
-                                )),
+                              restaurantID: globals.restaurantID,
+                            )),
                       );
                     } else {
                       _showAlertDialog();
@@ -190,14 +201,10 @@ class _HomePageState extends State<HomePage>
                 icon: new Icon(Icons.list),
                 onPressed: () {
                   if (globals.restaurantID != null) {
-                    if (globals.restaurantID != '') {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => newOrder()),
-                      );
-                    } else {
-                      _showAlertDialog();
-                    }
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => newOrder()),
+                    );
                   } else {
                     _showAlertDialog();
                   }
@@ -219,11 +226,9 @@ class _HomePageState extends State<HomePage>
                     MaterialPageRoute(builder: (context) => Mapgoogle()),
                   );
                 }),
-            new IconButton(
-                icon: new Icon(Icons.exit_to_app),
-                onPressed: () {
-                  _LogOut();
-                }),
+            new IconButton(icon: new Icon(Icons.exit_to_app), onPressed: () {
+              _LogOut();
+            }),
           ],
         ),
       ),
@@ -397,107 +402,107 @@ class _HomePageState extends State<HomePage>
   }
 
   Widget _ListSection({Menu menu}) => ListView.builder(
-        itemBuilder: (context, int idx) {
-          return Padding(
-            padding: EdgeInsets.symmetric(vertical: 16.0),
-            child: Column(
-              children: <Widget>[
-                Container(
-                  child: new ListTile(
-                    leading: Text(menu.data[idx].foodsTypeNameLevel2,
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.bold)),
+    itemBuilder: (context, int idx) {
+      return Padding(
+        padding: EdgeInsets.symmetric(vertical: 16.0),
+        child: Column(
+          children: <Widget>[
+            Container(
+              child: new ListTile(
+                leading: Text(menu.data[idx].foodsTypeNameLevel2,
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.bold)),
 
-                    // title: Text(menu.data[idx].foodsTypeNameLevel2),
-                    trailing: Text(
-                      'ทั้งหมด (${menu.data[idx].foodsItems.length})',
-                      style: TextStyle(
-                          color: Colors.green,
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
+                // title: Text(menu.data[idx].foodsTypeNameLevel2),
+                trailing: Text(
+                  'ทั้งหมด (${menu.data[idx].foodsItems.length})',
+                  style: TextStyle(
+                      color: Colors.green,
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.bold),
                 ),
-                ListView.builder(
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 16.0,
-                        vertical: 8.0,
-                      ),
-                      child: ListTile(
-                        leading: Container(
-                          height: 50,
-                          width: 50,
-                          child: ClipOval(
-                            child: Image.network(
-                              menu.data[idx].foodsItems[index].images,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
+              ),
+            ),
+            ListView.builder(
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 8.0,
+                  ),
+                  child: ListTile(
+                    leading: Container(
+                      height: 50,
+                      width: 50,
+                      child: ClipOval(
+                        child: Image.network(
+                          menu.data[idx].foodsItems[index].images,
+                          fit: BoxFit.cover,
                         ),
-                        title: Text(menu.data[idx].foodsItems[index].foodName),
+                      ),
+                    ),
+                    title: Text(menu.data[idx].foodsItems[index].foodName),
 //                        subtitle: Text(
 //                          menu.data[idx].foodsItems[index].price.toString(),
 //                        ),
-                        onTap: () {
-                          setState(() {});
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => CafeLine2(
-                                    restaurantID: widget.restaurantID,
-                                    restaurantName: widget.restaurantName,
-                                    content: widget.content,
-                                    descriptionRest: widget.description,
-                                    imagesRest: widget.images,
-                                    foodsID:
-                                        menu.data[idx].foodsItems[index].foodID,
-                                    foodName: menu
-                                        .data[idx].foodsItems[index].foodName,
-                                    price:
-                                        menu.data[idx].foodsItems[index].price,
-                                    priceS:
-                                        menu.data[idx].foodsItems[index].priceS,
-                                    priceM:
-                                        menu.data[idx].foodsItems[index].priceM,
-                                    priceL:
-                                        menu.data[idx].foodsItems[index].priceL,
-                                    size: "size",
-                                    description: menu.data[idx]
-                                        .foodsItems[index].description,
-                                    image:
-                                        menu.data[idx].foodsItems[index].images,
-                                    foodType: menu.data[idx].foodsTypeIDLevel2,
-                                  ),
-                            ),
-                          );
-                        },
-                      ),
-                    );
-                  },
-                  itemCount: menu.data[idx].foodsItems.length,
-                  shrinkWrap: true,
-                  // todo comment this out and check the result
-                  physics:
-                      ClampingScrollPhysics(), // todo comment this out and check the result
-                )
-              ],
-            ),
-          );
-        },
-        itemCount: menu.data.length,
+                    onTap: () {
+                      setState(() {});
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CafeLine2(
+                            restaurantID: widget.restaurantID,
+                            restaurantName: widget.restaurantName,
+                            content: widget.content,
+                            descriptionRest: widget.description,
+                            imagesRest: widget.images,
+                            foodsID:
+                            menu.data[idx].foodsItems[index].foodID,
+                            foodName: menu
+                                .data[idx].foodsItems[index].foodName,
+                            price:
+                            menu.data[idx].foodsItems[index].price,
+                            priceS:
+                            menu.data[idx].foodsItems[index].priceS,
+                            priceM:
+                            menu.data[idx].foodsItems[index].priceM,
+                            priceL:
+                            menu.data[idx].foodsItems[index].priceL,
+                            size: "size",
+                            description: menu.data[idx]
+                                .foodsItems[index].description,
+                            image:
+                            menu.data[idx].foodsItems[index].images,
+                            foodType: menu.data[idx].foodsTypeIDLevel2,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                );
+              },
+              itemCount: menu.data[idx].foodsItems.length,
+              shrinkWrap: true,
+              // todo comment this out and check the result
+              physics:
+              ClampingScrollPhysics(), // todo comment this out and check the result
+            )
+          ],
+        ),
       );
+    },
+    itemCount: menu.data.length,
+  );
 
-  _showAlertLogout(String strLogOut) async {
+  _showAlertLogout() async {
     showDialog(
         context: context,
         barrierDismissible: false,
         builder: (context) {
           return AlertDialog(
-            title: Text('ยังไม่สามารถ Logout ได้ ' + strLogOut),
+            title: Text('อยู่ระหว่างเช็คบิล ไม่สามารถ Log out ตอนนี้ได้'),
             content: Text(""),
             actions: <Widget>[
               FlatButton(
@@ -515,16 +520,15 @@ class _HomePageState extends State<HomePage>
   }
 
   void _LogOut() async {
-    if (globals.tableID != null && globals.tableID != '') {
+    if (globals.restaurantID != null) {
       String strBody =
-          '{"userID":"${globals.userID}","tableID":"${globals.tableID}"}';
-      var feed = await NetworkFoods.loadLogout(strBody);
+          '{"restaurantID":"${globals.restaurantID}","userID":"${globals.userID}","tableID":"${globals.tableID}"}';
+      var feed = await NetworkFoods.loadRetCheckBillStatus(strBody);
       var data = DataFeedLogout(feed: feed);
-      if (data.feed.ResultOk == "false") {
-        _showAlertLogout(data.feed.ErrorMessage);
+      if (data.feed.ResultOk == "true") {
+        _showAlertLogout();
       } else {
         globals.tableID = '';
-        globals.tableName = '';
         globals.restaurantID = '';
         Navigator.push(
           context,
@@ -533,7 +537,6 @@ class _HomePageState extends State<HomePage>
       }
     } else {
       globals.tableID = '';
-      globals.tableName = '';
       globals.restaurantID = '';
       Navigator.push(
         context,
@@ -541,6 +544,7 @@ class _HomePageState extends State<HomePage>
       );
     }
   }
+
 }
 
 class DataFeed {
@@ -550,7 +554,8 @@ class DataFeed {
 }
 
 class DataFeedLogout {
-  LogoutTable feed;
+  retCheckBillStatus feed;
 
   DataFeedLogout({this.feed});
 }
+

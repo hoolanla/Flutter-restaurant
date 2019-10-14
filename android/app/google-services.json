@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "874349617820",
-    "firebase_url": "https://flutterlogin-4c422.firebaseio.com",
-    "project_id": "flutterlogin-4c422",
-    "storage_bucket": "flutterlogin-4c422.appspot.com"
+    "project_number": "808479543228",
+    "firebase_url": "https://emenu-e0d79.firebaseio.com",
+    "project_id": "emenu-e0d79",
+    "storage_bucket": "emenu-e0d79.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:874349617820:android:1c094b3c26657284",
+        "mobilesdk_app_id": "1:808479543228:android:bcf31a1780cd1f6462e5b9",
         "android_client_info": {
           "package_name": "com.example.onlinestore"
         }
       },
       "oauth_client": [
         {
-          "client_id": "874349617820-v7irm1fg98iuif90j7rliubbgnaludmh.apps.googleusercontent.com",
+          "client_id": "808479543228-b8i88phlh28mg2nmdtaie3172tsm0qhj.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.onlinestore",
@@ -23,28 +23,21 @@
           }
         },
         {
-          "client_id": "874349617820-4nebflh15o193hfjcs816d6s735cgmc2.apps.googleusercontent.com",
+          "client_id": "808479543228-6tct0slob862o87tl3fuk54r3l6rc0q8.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBAivxXlaiR_P8Pp4IRcxcAdQjJi6RgoIM"
+          "current_key": "AIzaSyB4JySEZUBVTY_5lc8ej6SjedQaWB_lfVk"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "874349617820-4nebflh15o193hfjcs816d6s735cgmc2.apps.googleusercontent.com",
+              "client_id": "808479543228-6tct0slob862o87tl3fuk54r3l6rc0q8.apps.googleusercontent.com",
               "client_type": 3
-            },
-            {
-              "client_id": "874349617820-hfritlc7dvr8q3t9ufg739ha9dbgav3r.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.onlinestore"
-              }
             }
           ]
         }

@@ -232,11 +232,6 @@ class DBHelper {
             json += '"comment":"${price['comme']}"},';
           }
 
-
-
-
-
-
     });
 print(json);
     return json;

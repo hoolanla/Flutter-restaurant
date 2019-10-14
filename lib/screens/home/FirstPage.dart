@@ -1,9 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
-//import 'package:polygon_clipper/polygon_clipper.dart';
-import 'package:online_store/screens/home/CafeLine.dart';
-import 'package:online_store/screens/home/CafeLine_Recommend.dart';
 import 'package:online_store/screens/barcode/barcode.dart';
 import 'package:online_store/screens/map/place.dart';
 import 'package:online_store/screens/home/Showdata.dart';
@@ -90,10 +85,7 @@ class MyAppbar extends StatelessWidget {
           new IconButton(
               icon: new Icon(Icons.home),
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Cafe_Line()),
-                );
+
               }),
           //   new IconButton(icon: new Text('SAVE'), onPressed: null),
           new IconButton(

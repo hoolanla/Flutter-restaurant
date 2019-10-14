@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:online_store/models/order.dart';
 import 'dart:async';
-import 'package:online_store/screens/home/CafeLine.dart';
 import 'package:online_store/screens/home/FirstPage2.dart';
 import 'package:online_store/screens/home/status_order.dart';
 import 'package:online_store/screens/Json/foods.dart';
@@ -12,14 +11,12 @@ import 'package:online_store/services/authService.dart';
 import 'package:online_store/screens/barcode/barcode.dart';
 import 'package:online_store/globals.dart' as globals;
 import 'package:online_store/screens/map/place.dart';
-import 'package:online_store/models/foods.dart';
 import 'package:online_store/screens/home/newOrder.dart';
 import 'package:online_store/models/restaurant.dart';
-import 'package:online_store/screens/home/DetailRestaurant.dart';
 import 'package:online_store/screens/home/history.dart';
 import 'package:online_store/screens/home/CafeCommendPage.dart';
 import 'package:online_store/screens/home/DetailCommendPage.dart';
-
+import 'package:online_store/models/logout.dart';
 
 //import 'package:json_serializable/json_serializable.dart';
 import 'dart:convert';
@@ -74,11 +71,32 @@ class _ShowData extends State<FirstPage2> {
         });
   }
 
+  _showAlertLogout(String strLogOut) async {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('ยังไม่สามารถ Logout ได้ ' + strLogOut),
+            content: Text(""),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => newOrder()),
+                  );
+                },
+                child: Text("OK"),
+              )
+            ],
+          );
+        });
+  }
+
   @override
   void initState() {
     super.initState();
-
-
   }
 
   listRestaurant() {
@@ -224,8 +242,6 @@ class _ShowData extends State<FirstPage2> {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-
-
         backgroundColor: Colors.white,
         title: new Text(
           'eMENU',
@@ -256,28 +272,34 @@ class _ShowData extends State<FirstPage2> {
                 icon: new Icon(Icons.restaurant),
                 onPressed: () {
                   if (globals.restaurantID != null) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => DetailCommendPage(
-                                restaurantID: globals.restaurantID,
-                              )),
-                    );
+                    if (globals.restaurantID != '') {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => DetailCommendPage(
+                                  restaurantID: globals.restaurantID,
+                                )),
+                      );
+                    } else {
+                      _showAlertDialog();
+                    }
                   } else {
                     _showAlertDialog();
                   }
                 }),
 
-
-
             new IconButton(
                 icon: new Icon(Icons.list),
                 onPressed: () {
                   if (globals.restaurantID != null) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => newOrder()),
-                    );
+                    if (globals.restaurantID != '') {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => newOrder()),
+                      );
+                    } else {
+                      _showAlertDialog();
+                    }
                   } else {
                     _showAlertDialog();
                   }
@@ -299,6 +321,11 @@ class _ShowData extends State<FirstPage2> {
                     MaterialPageRoute(builder: (context) => Mapgoogle()),
                   );
                 }),
+            new IconButton(
+                icon: new Icon(Icons.exit_to_app),
+                onPressed: () {
+                  _LogOut();
+                }),
           ],
         ),
       ),
@@ -314,4 +341,37 @@ class _ShowData extends State<FirstPage2> {
       ),
     );
   }
+
+  void _LogOut() async {
+    if (globals.tableID != null && globals.tableID != '') {
+      String strBody =
+          '{"userID":"${globals.userID}","tableID":"${globals.tableID}"}';
+      var feed = await NetworkFoods.loadLogout(strBody);
+      var data = DataFeedLogout(feed: feed);
+      if (data.feed.ResultOk == "false") {
+        _showAlertLogout(data.feed.ErrorMessage);
+      } else {
+        globals.tableID = '';
+        globals.tableName = '';
+        globals.restaurantID = '';
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => FirstPage2()),
+        );
+      }
+    } else {
+      globals.tableID = '';
+      globals.tableName = '';
+      globals.restaurantID = '';
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => FirstPage2()),
+      );
+    }
+  }
+}
+
+class DataFeedLogout {
+  LogoutTable feed;
+  DataFeedLogout({this.feed});
 }

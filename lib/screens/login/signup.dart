@@ -1,4 +1,4 @@
-import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:validators/validators.dart';
 import 'package:online_store/models/register.dart';
@@ -91,6 +91,8 @@ class _SignUpState extends State<SignUp> {
       print(data.feed.ResultOk);
 
       if (data.feed.ResultOk == "true") {
+
+        globals.userID = data.feed.ReturnMessage;
         _showAlertDialogComplete(strReturn: 'Account is registration success. ',strContent: 'Thank you');
       } else {
         _showAlertDialogNotComplete(strReturn: data.feed.ErrorMessage,strContent: 'Please try again.');
@@ -106,7 +108,7 @@ class _SignUpState extends State<SignUp> {
     }
 
     _textFullName.text = globals.fullName;
-    _textEmail.text = globals.emaillFB;
+    _textEmail.text = globals.emailFB;
 
     return Scaffold(
       body: SingleChildScrollView(

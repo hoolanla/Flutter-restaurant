@@ -21,7 +21,7 @@
 
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="online_store"
+        android:label="eMenu"
         android:icon="@mipmap/ic_launcher">
 
 

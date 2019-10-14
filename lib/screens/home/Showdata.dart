@@ -1,20 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:online_store/models/order.dart';
 import 'dart:async';
-import 'package:online_store/screens/home/CafeLine.dart';
 import 'package:online_store/screens/home/FirstPage2.dart';
 import 'package:online_store/screens/home/status_order.dart';
 import 'package:online_store/screens/Json/foods.dart';
 import 'package:online_store/sqlite/db_helper.dart';
-import 'package:online_store/services/Dialogs.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:online_store/services/authService.dart';
 import 'package:online_store/screens/barcode/barcode.dart';
 import 'package:online_store/globals.dart' as globals;
 import 'package:online_store/screens/map/place.dart';
-
-//import 'package:json_serializable/json_serializable.dart';
-import 'dart:convert';
 
 String _restaurantID = globals.restaurantID;
 String _tableID = globals.tableID;

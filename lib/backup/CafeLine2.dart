@@ -1,16 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:online_store/screens/home/CafeLine.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:online_store/services/foods.dart';
 import 'package:online_store/models/order.dart';
 import 'package:online_store/sqlite/db_helper.dart';
-import 'package:online_store/screens/home/Showdata.dart';
-import 'package:online_store/screens/home/FirstPage2.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:online_store/screens/barcode/barcode.dart';
-import 'package:online_store/main.dart';
 import 'package:online_store/globals.dart' as globals;
+import 'package:online_store/screens/home/CafeCommendPage.dart';
 
 String _tableID = globals.tableID;
 String _restaurantID = globals.restaurantID;
@@ -253,7 +246,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => Cafe_Line(
+                  builder: (context) => CafeCommendPage(
                     restaurantID: widget.restaurantID,
                     restaurantName: widget.restaurantName,
                     content: widget.content,

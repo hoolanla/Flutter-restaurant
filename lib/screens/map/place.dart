@@ -6,14 +6,14 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart' as LocationManager;
 import 'place_detail.dart';
 import 'package:online_store/screens/home/FirstPage2.dart';
-import 'package:online_store/screens/home/Showdata.dart';
 import 'package:online_store/screens/barcode/barcode.dart';
-import 'package:online_store/screens/home/status_order.dart';
 import 'package:online_store/globals.dart' as globals;
-import 'package:online_store/screens/home/DetailRestaurant.dart';
 import 'package:online_store/screens/home/newOrder.dart';
 import 'package:online_store/screens/home/history.dart';
 import 'package:online_store/screens/home/DetailCommendPage.dart';
+import 'package:online_store/screens/Json/foods.dart';
+import 'package:online_store/models/order.dart';
+import 'package:online_store/models/logout.dart';
 
 const kGoogleApiKey = "AIzaSyAZZQMknD9tUApMWLYZvZ4mmlVIdb_QquI";
 GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: kGoogleApiKey);
@@ -115,6 +115,7 @@ class HomeState extends State<Mapgoogle> {
             ),
           ],
         ),
+
         bottomNavigationBar: new BottomAppBar(
           child: new Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -134,13 +135,17 @@ class HomeState extends State<Mapgoogle> {
                   icon: new Icon(Icons.restaurant),
                   onPressed: () {
                     if (globals.restaurantID != null) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => DetailCommendPage(
-                                  restaurantID: globals.restaurantID,
-                                )),
-                      );
+                      if (globals.restaurantID != '') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => DetailCommendPage(
+                                restaurantID: globals.restaurantID,
+                              )),
+                        );
+                      } else {
+                        _showAlertDialog();
+                      }
                     } else {
                       _showAlertDialog();
                     }
@@ -150,10 +155,14 @@ class HomeState extends State<Mapgoogle> {
                   icon: new Icon(Icons.list),
                   onPressed: () {
                     if (globals.restaurantID != null) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => newOrder()),
-                      );
+                      if (globals.restaurantID != '') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => newOrder()),
+                        );
+                      } else {
+                        _showAlertDialog();
+                      }
                     } else {
                       _showAlertDialog();
                     }
@@ -174,6 +183,11 @@ class HomeState extends State<Mapgoogle> {
                       context,
                       MaterialPageRoute(builder: (context) => Mapgoogle()),
                     );
+                  }),
+              new IconButton(
+                  icon: new Icon(Icons.exit_to_app),
+                  onPressed: () {
+                    _LogOut();
                   }),
             ],
           ),
@@ -349,4 +363,59 @@ class HomeState extends State<Mapgoogle> {
 
     return ListView(shrinkWrap: true, children: placesWidget);
   }
+  _showAlertLogout(String strLogOut) async {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('ยังไม่สามารถ Logout ได้ ' + strLogOut),
+            content: Text(""),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => newOrder()),
+                  );
+                },
+                child: Text("OK"),
+              )
+            ],
+          );
+        });
+  }
+
+
+  void _LogOut() async {
+    if (globals.tableID != null && globals.tableID != '') {
+      String strBody =
+          '{"userID":"${globals.userID}","tableID":"${globals.tableID}"}';
+      var feed = await NetworkFoods.loadLogout(strBody);
+      var data = DataFeedLogout(feed: feed);
+      if (data.feed.ResultOk == "false") {
+        _showAlertLogout(data.feed.ErrorMessage);
+      } else {
+        globals.tableID = '';
+        globals.restaurantID = '';
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => FirstPage2()),
+        );
+      }
+    } else {
+      globals.tableID = '';
+      globals.restaurantID = '';
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => FirstPage2()),
+      );
+    }
+  }
+
+}
+
+class DataFeedLogout {
+  LogoutTable feed;
+  DataFeedLogout({this.feed});
 }

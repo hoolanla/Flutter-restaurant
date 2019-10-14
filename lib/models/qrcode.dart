@@ -1,13 +1,27 @@
 class Qrcode {
-  final String restuarantID;
+  final String ResultOk;
+  final String ErrorMessage;
+  final String ReturnMessage;
+  final String restaurantID;
   final String tableID;
+  final String tableName;
 
-  Qrcode({this.restuarantID, this.tableID});
+  Qrcode(
+      {this.ResultOk,
+      this.ErrorMessage,
+      this.ReturnMessage,
+      this.restaurantID,
+      this.tableID,
+      this.tableName});
 
   factory Qrcode.fromJson(Map<String, dynamic> parsedJson) {
     return Qrcode(
-      restuarantID: parsedJson['restuarantID'],
+      ResultOk: parsedJson['ResultOk'],
+      ErrorMessage: parsedJson['ErrorMessage'],
+      ReturnMessage: parsedJson['ReturnMessage'],
+      restaurantID: parsedJson['restaurantID'],
       tableID: parsedJson['tableID'],
+      tableName: parsedJson['tableName'],
     );
   }
 }

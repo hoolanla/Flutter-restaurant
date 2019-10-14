@@ -11,6 +11,7 @@ class NetworkQrcode{
   static Qrcode loadQrcode({String qrcode})  {
     final jsonResponse = json.decode(qrcode);
     Qrcode _qrcode = new Qrcode.fromJson(jsonResponse);
+    print(jsonResponse.toString());
     return _qrcode;
   }
 }

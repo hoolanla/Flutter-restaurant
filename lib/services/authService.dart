@@ -51,12 +51,12 @@ class AuthService {
   }
 
   Future SetRestuarant({Qrcode qrcode}) async {
-    if (qrcode.restuarantID != '') {
+    if (qrcode.restaurantID != '') {
       SharedPreferences _pref = await SharedPreferences.getInstance();
-      _pref.setString(REST_ID, qrcode.restuarantID);
+      _pref.setString(REST_ID, qrcode.restaurantID);
       _pref.setString(TABLE_ID, qrcode.tableID);
 
-      globals.restaurantID = qrcode.restuarantID;
+      globals.restaurantID = qrcode.restaurantID;
       return true;
     }
     else

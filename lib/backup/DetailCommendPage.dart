@@ -16,9 +16,6 @@ import 'package:online_store/models/logout.dart';
 
 String _mImage;
 String _mRestaurantName;
-Future<Menu> _menuPage1;
-Future<Menu> _menuPage2;
-Future<Restaurant> _rest;
 
 void main() {
   runApp(DetailCommendPage());
@@ -120,38 +117,11 @@ class _HomePageState extends State<HomePage>
     } else {}
   }
 
-
-   refreshPage1()  {
-    String strBody = '{"restaurantID":"${globals.restaurantID}"}';
-    setState(() {
-      _menuPage1 = NetworkFoods.loadFoodsAsset(RestaurantID: globals.restaurantID,Recommend: '0');
-    });
-  }
-
-
-  refreshPage2()  {
-    String strBody = '{"restaurantID":"${globals.restaurantID}"}';
-    setState(() {
-      _menuPage2 = NetworkFoods.loadFoodsAsset(RestaurantID: globals.restaurantID,Recommend: '1');
-    });
-  }
-
-
-  refreshRestCover()  {
-    String strBody = '{"restaurantID":"${globals.restaurantID}"}';
-    setState(() {
-      _rest = NetworkFoods.loadRestaurantByID(strBody: strBody);
-    });
-  }
-
   @override
   void initState() {
     _tabController = new TabController(length: 2, vsync: this);
     super.initState();
     refreshRestaurant();
-    refreshPage1();
-    refreshPage2();
-    refreshRestCover();
   }
 
   @override
@@ -161,7 +131,7 @@ class _HomePageState extends State<HomePage>
 
         backgroundColor: Colors.white,
         title: Text(
-          '${globals.tableName}',
+          'โต๊ะที่  ${globals.tableID}',
           textAlign: TextAlign.center,
           style: TextStyle(
             color: Colors.black,
@@ -292,7 +262,6 @@ class _HomePageState extends State<HomePage>
         _showAlertLogout(data.feed.ErrorMessage);
       } else {
         globals.tableID = '';
-        globals.tableName = '';
         globals.restaurantID = '';
         Navigator.push(
           context,
@@ -301,7 +270,6 @@ class _HomePageState extends State<HomePage>
       }
     } else {
       globals.tableID = '';
-      globals.tableName = '';
       globals.restaurantID = '';
       Navigator.push(
         context,
@@ -321,7 +289,8 @@ class _HomePageState extends State<HomePage>
           floating: false,
           flexibleSpace: new FlexibleSpaceBar(
               title: FutureBuilder<Restaurant>(
-                  future: _rest,
+                  future: NetworkFoods.loadRestaurantByID(
+                      strBody: '{"restaurantID":"${globals.restaurantID}"}'),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       return new Text(
@@ -357,7 +326,8 @@ class _HomePageState extends State<HomePage>
                       end: Alignment.bottomCenter),
                 ),
                 child: FutureBuilder<Restaurant>(
-                    future: _rest,
+                    future: NetworkFoods.loadRestaurantByID(
+                        strBody: '{"restaurantID":"${globals.restaurantID}"}'),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         return new Image.network(
@@ -386,7 +356,8 @@ class _HomePageState extends State<HomePage>
         ),
         SliverFillRemaining(
           child: FutureBuilder<Menu>(
-              future: _menuPage1,
+              future: NetworkFoods.loadFoodsAsset(
+                  RestaurantID: widget.restaurantID, Recommend: '0'),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   if (snapshot.data != null) {
@@ -442,7 +413,8 @@ class _HomePageState extends State<HomePage>
           floating: false,
           flexibleSpace: new FlexibleSpaceBar(
               title: FutureBuilder<Restaurant>(
-                  future: _rest,
+                  future: NetworkFoods.loadRestaurantByID(
+                      strBody: '{"restaurantID":"${globals.restaurantID}"}'),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       return new Text(
@@ -478,7 +450,8 @@ class _HomePageState extends State<HomePage>
                       end: Alignment.bottomCenter),
                 ),
                 child: FutureBuilder<Restaurant>(
-                    future: _rest,
+                    future: NetworkFoods.loadRestaurantByID(
+                        strBody: '{"restaurantID":"${globals.restaurantID}"}'),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         return new Image.network(
@@ -507,7 +480,8 @@ class _HomePageState extends State<HomePage>
         ),
         SliverFillRemaining(
           child: FutureBuilder<Menu>(
-              future: _menuPage2,
+              future: NetworkFoods.loadFoodsAsset(
+                  RestaurantID: widget.restaurantID, Recommend: '1'),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   if (snapshot.data != null) {
@@ -556,96 +530,96 @@ class _HomePageState extends State<HomePage>
 }
 
 Widget _ListSection({Menu menu}) => ListView.builder(
-      itemBuilder: (context, int idx) {
-        return Padding(
-          padding: EdgeInsets.symmetric(vertical: 16.0),
-          child: Column(
-            children: <Widget>[
-              Container(
-                child: new ListTile(
-                  leading: Text(menu.data[idx].foodsTypeNameLevel2,
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.bold)),
+  itemBuilder: (context, int idx) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 16.0),
+      child: Column(
+        children: <Widget>[
+          Container(
+            child: new ListTile(
+              leading: Text(menu.data[idx].foodsTypeNameLevel2,
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.bold)),
 
-                  // title: Text(menu.data[idx].foodsTypeNameLevel2),
-                  trailing: Text(
-                    'ทั้งหมด (${menu.data[idx].foodsItems.length})',
-                    style: TextStyle(
-                        color: Colors.green,
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
+              // title: Text(menu.data[idx].foodsTypeNameLevel2),
+              trailing: Text(
+                'ทั้งหมด (${menu.data[idx].foodsItems.length})',
+                style: TextStyle(
+                    color: Colors.green,
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.bold),
               ),
-              ListView.builder(
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 16.0,
-                      vertical: 8.0,
-                    ),
-                    child: ListTile(
-                      leading: Container(
-                        height: 50,
-                        width: 50,
-                        child: ClipOval(
-                          child: Image.network(
-                            menu.data[idx].foodsItems[index].images,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
+            ),
+          ),
+          ListView.builder(
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 8.0,
+                ),
+                child: ListTile(
+                  leading: Container(
+                    height: 50,
+                    width: 50,
+                    child: ClipOval(
+                      child: Image.network(
+                        menu.data[idx].foodsItems[index].images,
+                        fit: BoxFit.cover,
                       ),
-                      title: Text(menu.data[idx].foodsItems[index].foodName),
+                    ),
+                  ),
+                  title: Text(menu.data[idx].foodsItems[index].foodName),
 //                      subtitle: Text(menu.data[idx].foodsItems[index].price.toString(),
 //                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => DetailRestaurant2(
-                                  restaurantID: globals.restaurantID,
-                                  restaurantName: '',
-                                  content: '',
-                                  descriptionRest: '',
-                                  imagesRest: '',
-                                  foodsID:
-                                      menu.data[idx].foodsItems[index].foodID,
-                                  foodName:
-                                      menu.data[idx].foodsItems[index].foodName,
-                                  price: menu.data[idx].foodsItems[index].price,
-                                  priceS:
-                                      menu.data[idx].foodsItems[index].priceS,
-                                  priceM:
-                                      menu.data[idx].foodsItems[index].priceM,
-                                  priceL:
-                                      menu.data[idx].foodsItems[index].priceL,
-                                  size: "size",
-                                  description: menu
-                                      .data[idx].foodsItems[index].description,
-                                  image:
-                                      menu.data[idx].foodsItems[index].images,
-                                  foodType: menu.data[idx].foodsTypeIDLevel2,
-                                ),
-                          ),
-                        );
-                      },
-                    ),
-                  );
-                },
-                itemCount: menu.data[idx].foodsItems.length,
-                shrinkWrap: true,
-                // todo comment this out and check the result
-                physics:
-                    ClampingScrollPhysics(), // todo comment this out and check the result
-              )
-            ],
-          ),
-        );
-      },
-      itemCount: menu.data.length,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DetailRestaurant2(
+                          restaurantID: globals.restaurantID,
+                          restaurantName: '',
+                          content: '',
+                          descriptionRest: '',
+                          imagesRest: '',
+                          foodsID:
+                          menu.data[idx].foodsItems[index].foodID,
+                          foodName:
+                          menu.data[idx].foodsItems[index].foodName,
+                          price: menu.data[idx].foodsItems[index].price,
+                          priceS:
+                          menu.data[idx].foodsItems[index].priceS,
+                          priceM:
+                          menu.data[idx].foodsItems[index].priceM,
+                          priceL:
+                          menu.data[idx].foodsItems[index].priceL,
+                          size: "size",
+                          description: menu
+                              .data[idx].foodsItems[index].description,
+                          image:
+                          menu.data[idx].foodsItems[index].images,
+                          foodType: menu.data[idx].foodsTypeIDLevel2,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
+            itemCount: menu.data[idx].foodsItems.length,
+            shrinkWrap: true,
+            // todo comment this out and check the result
+            physics:
+            ClampingScrollPhysics(), // todo comment this out and check the result
+          )
+        ],
+      ),
     );
+  },
+  itemCount: menu.data.length,
+);
 
 class DataFeedLogout {
   LogoutTable feed;

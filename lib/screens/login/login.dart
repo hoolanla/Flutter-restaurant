@@ -1,25 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
-import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:path/path.dart';
 import 'signup.dart';
 import 'package:online_store/models/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:online_store/services/authService.dart';
-
 import 'package:validators/validators.dart';
-import 'package:online_store/screens/home/CafeLine.dart';
 import 'package:online_store/models/login.dart';
 import 'package:online_store/screens/Json/foods.dart';
 import 'package:online_store/models/register.dart';
-import 'package:online_store/screens/barcode/barcode.dart';
-import 'package:online_store/screens/home/FirstPage.dart';
 import 'package:online_store/screens/home/FirstPage2.dart';
-import 'package:online_store/globals.dart';
 import 'package:online_store/globals.dart' as globals;
 
 final User _user = new User();
@@ -77,17 +70,28 @@ class _SignUpState extends State<Login> {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final GoogleSignIn _googlSignIn = new GoogleSignIn();
 
-  Future<FirebaseUser> _signIn(BuildContext context) async {
+  Future<FirebaseUser> _signIn() async {
+
+
+    print('Step1');
+
     final GoogleSignInAccount googleUser = await _googlSignIn.signIn();
+
+
+    //CODE HERE
+
+   // print('fffff' + googleUser.displayName);
+
+
     _user.Displayname = googleUser.displayName;
     _user.imagePath = googleUser.photoUrl;
     _user.email = googleUser.email;
 
-    SharedPreferences _pref = await SharedPreferences.getInstance();
-    _pref.setString(DISPLAYNAME, googleUser.displayName);
-    _pref.setString(IMAGEPATH, googleUser.photoUrl);
-    _pref.setString(EMAIL, googleUser.email);
-    _pref.setBool(IS_LOGIN, true);
+
+    globals.emailFB = googleUser.email;
+    globals.fullName = googleUser.displayName;
+    _textEmail.text = googleUser.email;
+
 
 //    Navigator.push(
 //      context,
@@ -171,7 +175,6 @@ class _SignUpState extends State<Login> {
           var graphResponse = await http.get(
               'https://graph.facebook.com/v3.3/me?fields=name,first_name,last_name,email&access_token=${facebookLoginResult.accessToken.token}');
           var profile = json.decode(graphResponse.body);
-
           Map<String, dynamic> itemJson = profile;
           print(itemJson['name']);
           print(itemJson.toString());
@@ -191,11 +194,9 @@ class _SignUpState extends State<Login> {
               'http://www.pathstoliteracy.org/sites/pathstoliteracy.perkinsdev1.org/files/styles/full_post_view/public/uploaded-images/squeaky.jpg?itok=LVyd5YPB');
           _pref.setBool(IS_LOGIN, true);
           onLoginStatusChanged(true);
-          globals.emaillFB = itemJson['email'].toString();
+          globals.emailFB = itemJson['email'].toString();
           globals.fullName = itemJson['name'].toString();
           _textEmail.text = itemJson['email'].toString();
-
-
 
 /*
           Navigator.push(
@@ -388,23 +389,25 @@ class _SignUpState extends State<Login> {
                                 padding: const EdgeInsets.fromLTRB(
                                     14.0, 8.0, 14.0, 8.0),
                                 child: Material(
-                                    child: MaterialButton(
-                                        onPressed: () =>
-                                            initiateFacebookLogin(context),
-                                        child: Image.asset(
-                                          "assets/images/fb.png",
-                                          width: 60,
-                                        ))),
+                                  child: MaterialButton(
+                                    onPressed: () =>
+                                        initiateFacebookLogin(context),
+                                    child: Image.asset(
+                                      "assets/images/fb.png",
+                                      width: 60,
+                                    ),
+                                  ),
+                                ),
                               ),
-                              Padding(
+                                       Padding(
                                 padding: const EdgeInsets.fromLTRB(
                                     14.0, 8.0, 14.0, 8.0),
                                 child: Material(
                                     child: MaterialButton(
-                                        onPressed: () => _signIn(context)
-                                            .then((FirebaseUser user) =>
-                                                print(user))
-                                            .catchError((e) => print(e)),
+                                        onPressed: () { _signIn();},
+                                           // .then((FirebaseUser user) =>
+                                         //   print(user))
+                                          //  .catchError((e) => print(e)),
                                         child: Image.asset(
                                           "assets/images/ggg.png",
                                           width: 60,
@@ -417,7 +420,7 @@ class _SignUpState extends State<Login> {
                 ),
               ),
             ),
-            /*       Visibility(
+               /*    Visibility(
             //  visible: loading ?? true,
               child: Center(
                 child: Container(

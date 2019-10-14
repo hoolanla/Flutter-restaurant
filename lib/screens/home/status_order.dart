@@ -1,23 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-
-import 'package:online_store/screens/login/login.dart';
 import 'package:online_store/screens/map/place.dart';
 import 'package:online_store/screens/barcode/barcode.dart';
-import 'package:online_store/screens/home/CafeLine2.dart';
-
-import 'package:online_store/screens/home/foodDetail.dart';
-import 'package:online_store/screens/home/CafeLine.dart';
 import 'package:online_store/screens/home/FirstPage2.dart';
 import 'package:online_store/models/foods.dart';
 import 'package:online_store/models/order.dart';
 import 'package:online_store/models/bill.dart';
 import 'package:online_store/screens/Json/foods.dart';
 import 'dart:async' show Future;
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:online_store/screens/home/Showdata.dart';
-import 'package:online_store/services/authService.dart';
 import 'package:online_store/globals.dart' as globals;
 
 String _restaurantID = globals.restaurantID;

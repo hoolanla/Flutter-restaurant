@@ -1,21 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:online_store/screens/home/CafeLine.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:online_store/services/foods.dart';
 import 'package:online_store/models/order.dart';
 import 'package:online_store/sqlite/db_helper.dart';
-import 'package:online_store/screens/home/Showdata.dart';
 import 'package:online_store/screens/home/FirstPage2.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:online_store/screens/barcode/barcode.dart';
-import 'package:online_store/main.dart';
 import 'package:online_store/globals.dart' as globals;
-import 'package:online_store/screens/home/DetailRestaurant.dart';
 import 'package:online_store/screens/home/newOrder.dart';
 import 'package:online_store/screens/home/history.dart';
 import 'package:online_store/screens/map/place.dart';
 import 'package:online_store/screens/home/DetailCommendPage.dart';
+import 'package:online_store/screens/Json/foods.dart';
+import 'package:online_store/models/logout.dart';
 
 void main() => runApp(DetailRestaurant2());
 
@@ -59,7 +53,7 @@ class DetailRestaurant2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: ' Cart ',
+
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -255,14 +249,14 @@ class _MyHomePageState extends State<MyHomePage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => DetailRestaurant(
+                  builder: (context) => DetailCommendPage(
                         restaurantID: globals.restaurantID,
                       )),
             );
           },
         ),
         title: Text(
-          'Detail',
+          '${globals.tableName}',
           style: TextStyle(
             color: Colors.black,
             fontSize: 20.0,
@@ -289,12 +283,13 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
-                  _header(
-                      image: widget.image,
-                      price: widget.price.toString(),
-                      foodName: widget.foodName),
-                  _header2(image: widget.image),
-                  _detailCafe(desc: widget.description),
+//                  _header(
+//                      image: widget.image,
+//                      price: widget.price.toString(),
+//                      foodName: widget.foodName),
+                  _image(image: widget.image),
+                  _foodName(foodName: widget.foodName,price: widget.price,foodType: widget.foodType),
+                  _description(desc: widget.description),
                   _textSML(priceM: widget.priceM),
                   _radioSML(
                       priceS: widget.priceS,
@@ -329,13 +324,17 @@ class _MyHomePageState extends State<MyHomePage> {
                 icon: new Icon(Icons.restaurant),
                 onPressed: () {
                   if (globals.restaurantID != null) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => DetailCommendPage(
-                                restaurantID: globals.restaurantID,
-                              )),
-                    );
+                    if (globals.restaurantID != '') {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => DetailCommendPage(
+                              restaurantID: globals.restaurantID,
+                            )),
+                      );
+                    } else {
+                      _showAlertDialog();
+                    }
                   } else {
                     _showAlertDialog();
                   }
@@ -345,10 +344,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 icon: new Icon(Icons.list),
                 onPressed: () {
                   if (globals.restaurantID != null) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => newOrder()),
-                    );
+                    if (globals.restaurantID != '') {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => newOrder()),
+                      );
+                    } else {
+                      _showAlertDialog();
+                    }
                   } else {
                     _showAlertDialog();
                   }
@@ -370,10 +373,66 @@ class _MyHomePageState extends State<MyHomePage> {
                     MaterialPageRoute(builder: (context) => Mapgoogle()),
                   );
                 }),
+            new IconButton(
+                icon: new Icon(Icons.exit_to_app),
+                onPressed: () {
+                  _LogOut();
+                }),
           ],
         ),
       ),
     );
+  }
+
+
+  void _LogOut() async {
+    if (globals.tableID != null && globals.tableID != '') {
+      String strBody =
+          '{"userID":"${globals.userID}","tableID":"${globals.tableID}"}';
+      var feed = await NetworkFoods.loadLogout(strBody);
+      var data = DataFeedLogout(feed: feed);
+      if (data.feed.ResultOk == "false") {
+        _showAlertLogout(data.feed.ErrorMessage);
+      } else {
+        globals.tableID = '';
+        globals.tableName = '';
+        globals.restaurantID = '';
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => FirstPage2()),
+        );
+      }
+    } else {
+      globals.tableID = '';
+      globals.tableName = '';
+      globals.restaurantID = '';
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => FirstPage2()),
+      );
+    }
+  }
+  _showAlertLogout(String strLogOut) async {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('ยังไม่สามารถ Logout ได้ ' + strLogOut),
+            content: Text(""),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => newOrder()),
+                  );
+                },
+                child: Text("OK"),
+              )
+            ],
+          );
+        });
   }
 
   void _showAlertDialog({String strError}) async {
@@ -399,71 +458,103 @@ class _MyHomePageState extends State<MyHomePage> {
         });
   }
 
+  void _showAlertDialog2({String strError}) async {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(strError),
+            content: Text(""),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => newOrder()),
+                  );
+                },
+                child: Text("OK"),
+              )
+            ],
+          );
+        });
+  }
+
   //CODEH
   void _foo() async {
     if (globals.tableID != null) {
       if (widget.restaurantID != globals.restaurantID) {
-
-        _showAlertDialog(strError: 'ร้านนี้ไม่ตรงกับที่คุณแสกน QR CODE คุณต้องแสกน QR CODE ใหม่');
+        _showAlertDialog(
+            strError:
+                'ร้านนี้ไม่ตรงกับที่คุณแสกน QR CODE คุณต้องแสกน QR CODE ใหม่');
       } else {
-        foodID = widget.foodsID;
-        HaveData = await dbHelper.getByID(foodID);
+        ////CODE HERE
 
-        if (HaveData.length == 0) {
+        String strBody =
+            '{"restaurantID":"${globals.restaurantID}","userID":"${globals.userID}","tableID":"${globals.tableID}"}';
+
+        var feed = await NetworkFoods.loadRetCheckBillStatus(strBody);
+        var data = DataFeed(feed: feed);
+        if (data.feed.ResultOk == "false") {
+          print('ret=======' + data.feed.ResultOk);
+
           foodID = widget.foodsID;
-          foodsName = widget.foodName;
-          if (priceSml < 1) {
-            price = widget.priceS;
+          HaveData = await dbHelper.getByID(foodID);
+
+          if (HaveData.length == 0) {
+            foodID = widget.foodsID;
+            foodsName = widget.foodName;
+            if (priceSml < 1) {
+              price = widget.priceS;
+            } else {
+              price = priceSml;
+            }
+
+            size = _size;
+            description = widget.description;
+            images = widget.image;
+            qty = 1;
+            totalPrice = qty * price;
+            taste = _taste;
+
+            Order e = Order(foodID, foodsName, price, size, description, images,
+                qty, totalPrice, taste, comment);
+
+            dbHelper.save(e);
+           // showSnak();
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => newOrder()),
+            );
           } else {
-            price = priceSml;
+            foodID = widget.foodsID;
+            dbHelper.updateBySQL(foodsID: foodID);
+           // showSnak();
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => newOrder()),
+            );
           }
 
-          size = _size;
-          description = widget.description;
-          images = widget.image;
-          qty = 1;
-          totalPrice = qty * price;
-          taste = _taste;
-
-          Order e = Order(foodID, foodsName, price, size, description, images,
-              qty, totalPrice, taste, comment);
-
-          dbHelper.save(e);
-          showSnak();
+          if (priceSml < 1) {
+            priceSml = widget.priceS;
+          }
         } else {
-          foodID = widget.foodsID;
-          dbHelper.updateBySQL(foodsID: foodID);
-          showSnak();
-        }
+          //// retCheckBillStatus   false
 
-        if (priceSml < 1) {
-          priceSml = widget.priceS;
+          _showAlertDialog2(
+              strError:
+                  'โต๊ะนี้อยู่ในระหว่างเช็คบิล คุณไม่สามารถสั่งอาหารตอนนี้ได้');
         }
       }
-
-
     } else {
       _showAlertDialog(strError: 'คุณต้องแสกน QR CODE ก่อน');
     }
-
-//      dbHelper.deleteAll();
-//      refreshList();
   }
 
-/*  RaisedButton _ButtonAdd() {
-    return new RaisedButton(
-      onPressed: () => _foo(),
-      color: Colors.green,
-      child: Text(
-        'ADD TO ORDER',
-        style: TextStyle(
-          color: Colors.white,
-        ),
-      ),
-    );
-  }*/
-
-  //CODE HERE
   Widget ButtonAddCart() {
     return new RaisedButton(
         child: Text(
@@ -656,12 +747,24 @@ Widget _header({String image, String price, String foodName}) {
   );
 }
 
-Widget _detailCafe({String desc}) => Padding(
+
+Widget _foodName({String foodName, double price, String foodType}) {
+  if (foodType == "7" || foodType == "8") {
+    return Text('');
+  } else {
+    return Padding(
       padding: new EdgeInsets.all(8.0),
-      child: new Text(desc),
+      child: new Text('${foodName}    ${price.toString()}'),
+    );
+  }
+}
+
+Widget _description({String desc}) => Padding(
+      padding: new EdgeInsets.all(8.0),
+      child: new Text('${desc}'),
     );
 
-Widget _header2({String image}) => Padding(
+Widget _image({String image}) => Padding(
       padding: new EdgeInsets.all(8.0),
       child: Image.network(
         image,
@@ -670,7 +773,12 @@ Widget _header2({String image}) => Padding(
       ),
     );
 
-//              Container(
-//                height: 100,
-//                width: 100,
-//                child:  Image.network("https://enjoyjava.com/wp-content/uploads/2018/01/How-to-make-strong-coffee.jpg"),
+class DataFeed {
+  retCheckBillStatus feed;
+  DataFeed({this.feed});
+}
+
+class DataFeedLogout {
+  LogoutTable feed;
+  DataFeedLogout({this.feed});
+}

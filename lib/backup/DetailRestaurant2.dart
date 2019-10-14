@@ -1,21 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:online_store/screens/home/CafeLine.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:online_store/services/foods.dart';
 import 'package:online_store/models/order.dart';
 import 'package:online_store/sqlite/db_helper.dart';
-import 'package:online_store/screens/home/Showdata.dart';
 import 'package:online_store/screens/home/FirstPage2.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:online_store/screens/barcode/barcode.dart';
-import 'package:online_store/main.dart';
 import 'package:online_store/globals.dart' as globals;
-import 'package:online_store/screens/home/DetailRestaurant.dart';
-
-String _tableID = globals.tableID;
-String _restaurantID = globals.restaurantID;
-String _userID = globals.userID;
+import 'package:online_store/screens/home/newOrder.dart';
+import 'package:online_store/screens/home/history.dart';
+import 'package:online_store/screens/map/place.dart';
+import 'package:online_store/screens/home/DetailCommendPage.dart';
 
 void main() => runApp(DetailRestaurant2());
 
@@ -255,14 +247,14 @@ class _MyHomePageState extends State<MyHomePage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => DetailRestaurant(
+                  builder: (context) => DetailRestaurant2(
                     restaurantID: globals.restaurantID,
                   )),
             );
           },
         ),
         title: Text(
-          'Detail2',
+          'Detail',
           style: TextStyle(
             color: Colors.black,
             fontSize: 20.0,
@@ -310,23 +302,69 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      bottomNavigationBar: Container(
-          margin: EdgeInsets.only(bottom: 0.0),
-          height: 60.0,
-          decoration: BoxDecoration(
-              color: Colors.white,
-              border:
-              Border(top: BorderSide(color: Colors.grey[300], width: 1.0))),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              Container(
-                child: Row(
-                  children: <Widget>[_ButtonAdd()],
-                ),
-              ),
-            ],
-          )),
+      bottomNavigationBar: new BottomAppBar(
+        child: new Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.max,
+          children: <Widget>[
+            new IconButton(
+                icon: new Icon(Icons.home),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => FirstPage2()),
+                  );
+                }),
+            //   new IconButton(icon: new Text('SAVE'), onPressed: null),
+
+            new IconButton(
+                icon: new Icon(Icons.restaurant),
+                onPressed: () {
+                  if (globals.restaurantID != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => DetailCommendPage(
+                            restaurantID: globals.restaurantID,
+                          )),
+                    );
+                  } else {
+                    _showAlertDialog();
+                  }
+                }),
+
+            new IconButton(
+                icon: new Icon(Icons.list),
+                onPressed: () {
+                  if (globals.restaurantID != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => newOrder()),
+                    );
+                  } else {
+                    _showAlertDialog();
+                  }
+                }),
+
+            new IconButton(
+                icon: new Icon(Icons.history),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => History()),
+                  );
+                }),
+            new IconButton(
+                icon: new Icon(Icons.map),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Mapgoogle()),
+                  );
+                }),
+          ],
+        ),
+      ),
     );
   }
 
@@ -353,41 +391,62 @@ class _MyHomePageState extends State<MyHomePage> {
         });
   }
 
+  //CODEH
   void _foo() async {
     if (globals.tableID != null) {
-      foodID = widget.foodsID;
-      HaveData = await dbHelper.getByID(foodID);
+      if (widget.restaurantID != globals.restaurantID) {
+        _showAlertDialog(strError: 'ร้านนี้ไม่ตรงกับที่คุณแสกน QR CODE คุณต้องแสกน QR CODE ใหม่');
+      } else {
 
-      if (HaveData.length == 0) {
+        ////CODE HERE
+
+
+
+
+
+
+
+
+
+
+
+
         foodID = widget.foodsID;
-        foodsName = widget.foodName;
-        if (priceSml < 1) {
-          price = widget.priceS;
+        HaveData = await dbHelper.getByID(foodID);
+
+        if (HaveData.length == 0) {
+          foodID = widget.foodsID;
+          foodsName = widget.foodName;
+          if (priceSml < 1) {
+            price = widget.priceS;
+          } else {
+            price = priceSml;
+          }
+
+          size = _size;
+          description = widget.description;
+          images = widget.image;
+          qty = 1;
+          totalPrice = qty * price;
+          taste = _taste;
+
+          Order e = Order(foodID, foodsName, price, size, description, images,
+              qty, totalPrice, taste, comment);
+
+          dbHelper.save(e);
+          showSnak();
         } else {
-          price = priceSml;
+          foodID = widget.foodsID;
+          dbHelper.updateBySQL(foodsID: foodID);
+          showSnak();
         }
 
-        size = _size;
-        description = widget.description;
-        images = widget.image;
-        qty = 1;
-        totalPrice = qty * price;
-        taste = _taste;
-
-        Order e = Order(foodID, foodsName, price, size, description, images,
-            qty, totalPrice, taste, comment);
-
-        dbHelper.save(e);
-        showSnak();
-      } else {
-        foodID = widget.foodsID;
-        dbHelper.updateBySQL(foodsID: foodID);
-        showSnak();
+        if (priceSml < 1) {
+          priceSml = widget.priceS;
+        }
       }
 
-      if (priceSml < 1) {
-        priceSml = widget.priceS;
-      }
+
     } else {
       _showAlertDialog(strError: 'คุณต้องแสกน QR CODE ก่อน');
     }
@@ -396,7 +455,7 @@ class _MyHomePageState extends State<MyHomePage> {
 //      refreshList();
   }
 
-  RaisedButton _ButtonAdd() {
+/*  RaisedButton _ButtonAdd() {
     return new RaisedButton(
       onPressed: () => _foo(),
       color: Colors.green,
@@ -407,7 +466,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     );
-  }
+  }*/
 
   //CODE HERE
   Widget ButtonAddCart() {
@@ -421,17 +480,22 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget txtComment() {
-    return TextFormField(
-        decoration: InputDecoration(
-          //  border: InputBorder.none,
-          hintText: "Comment",
-          icon: Icon(Icons.note),
+    return TextField(
+      onChanged: (text) {
+        comment = text;
+        print(comment);
+      },
+      decoration: InputDecoration(
+        border: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.green),
         ),
-        onSaved: (String value) {
-          comment = value;
-          print('=========== on save' + comment);
-        },
-        onFieldSubmitted: (String value) {});
+        hintText: "Comment",
+        icon: Icon(
+          Icons.note,
+          color: Colors.green,
+        ),
+      ),
+    );
   }
 
   Widget _textSML({double priceM}) {
@@ -611,7 +675,8 @@ Widget _header2({String image}) => Padding(
   ),
 );
 
-//              Container(
-//                height: 100,
-//                width: 100,
-//                child:  Image.network("https://enjoyjava.com/wp-content/uploads/2018/01/How-to-make-strong-coffee.jpg"),
+
+class DataFeed {
+  retCheckBillStatus feed;
+  DataFeed({this.feed});
+}

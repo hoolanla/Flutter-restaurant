@@ -1,25 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:online_store/models/order.dart';
 import 'dart:async';
-import 'package:online_store/screens/home/CafeLine.dart';
 import 'package:online_store/screens/home/FirstPage2.dart';
 import 'package:online_store/screens/home/status_order.dart';
 import 'package:online_store/screens/Json/foods.dart';
 import 'package:online_store/sqlite/db_helper.dart';
-import 'package:online_store/services/Dialogs.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:online_store/services/authService.dart';
-import 'package:online_store/screens/barcode/barcode.dart';
 import 'package:online_store/globals.dart' as globals;
 import 'package:online_store/screens/map/place.dart';
-import 'package:online_store/models/foods.dart';
-import 'package:online_store/screens/home/DetailRestaurant.dart';
 import 'package:online_store/screens/home/history.dart';
 import 'package:online_store/models/bill.dart';
 import 'package:online_store/screens/home/DetailCommendPage.dart';
-
-//import 'package:json_serializable/json_serializable.dart';
-import 'dart:convert';
+import 'package:online_store/models/logout.dart';
 
 //String _restaurantID = globals.restaurantID;
 //String _tableID = globals.tableID;
@@ -29,6 +20,7 @@ Future<List<Order>> orders;
 Future<StatusOrder> statusOrders;
 List<Order> _order;
 Future<double> _totals;
+Future<double> _totalsCheckbill;
 Future<String> _jsonBody;
 String jsonBody;
 
@@ -99,6 +91,7 @@ class _ShowData extends State<newOrder> {
       refreshTotal();
       refreshStatusOrder();
       refreshJsonBody();
+      refreshTotalCheckbill();
     }
   }
 
@@ -122,6 +115,12 @@ class _ShowData extends State<newOrder> {
     });
   }
 
+  refreshTotalCheckbill() {
+    setState(() {
+      _totalsCheckbill = NetworkFoods.loadTotalStatusOrder(strBody);
+    });
+  }
+
   refreshTotal() {
     setState(() {
       _totals = dbHelper.calculateTotal();
@@ -134,6 +133,12 @@ class _ShowData extends State<newOrder> {
     });
   }
 
+// void refreshJsonBody() async {
+//
+//      _jsonBody = await dbHelper.getJsonOrder();
+//
+//  }
+
   void _removeQty({int foodsID}) async {
     int i;
 
@@ -141,6 +146,7 @@ class _ShowData extends State<newOrder> {
 
     refreshTotal();
     refreshList();
+    refreshJsonBody();
   }
 
   void _addQty({int foodsID}) async {
@@ -148,14 +154,55 @@ class _ShowData extends State<newOrder> {
     i = await dbHelper.addQty(foodsID);
     refreshTotal();
     refreshList();
+    refreshJsonBody();
   }
 
+  //CODE HERE
   SendtoJsonCancel({String orderID}) async {
-    String strBody = '{"orderID":"${orderID}"}';
-    var feed = await NetworkFoods.cancelOrder(strBody: strBody);
-    var data = DataFeedCancel(feed: feed);
-    if (data.feed.ResultOk.toString() == "true") {
-    } else {}
+    String strBody =
+        '{"restaurantID":"${globals.restaurantID}","userID":"${globals.userID}","tableID":"${globals.tableID}"}';
+
+    var feed1 = await NetworkFoods.loadRetCheckBillStatus(strBody);
+    var data1 = DataFeedReCheck(feed: feed1);
+
+    if (data1.feed.ResultOk == 'false') {
+      String strBody2 = '{"orderID":"${orderID}"}';
+      var feed = await NetworkFoods.cancelOrder(strBody: strBody2);
+      var data = DataFeedCancel(feed: feed);
+      if (data.feed.ResultOk.toString() == "true") {
+        refreshStatusOrder();
+        refreshTotalCheckbill();
+        refreshJsonBody();
+      } else {
+        _showAlertDialog2(strError: 'ไม่สามารถ Cancel ได้  ' + data.feed.ErrorMessage);
+      }
+    } else {
+      _showAlertDialog2(
+          strError: 'โต๊ะนี้อยู่ในระหว่างเช็คบิล คุณไม่สามารถ Cancel อาหารได้');
+    }
+  }
+
+  void _showAlertDialog2({String strError}) async {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(strError),
+            content: Text(""),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => newOrder()),
+                  );
+                },
+                child: Text("OK"),
+              )
+            ],
+          );
+        });
   }
 
   void SendtoJsonCheckbill(
@@ -165,8 +212,12 @@ class _ShowData extends State<newOrder> {
     var feed = await NetworkFoods.checkBill(strBody: strBody);
     var data = DataFeedBill(feed: feed);
     if (data.feed.ResultOk.toString() == "true") {
+      //CODE HERE
+      dbHelper.deleteAll();
+
+      _showAlertDialog(strError: 'แจ้งเช็คบิลล์แล้ว');
     } else {
-      _showAlertDialog(strError: 'กำลังเคลียร์โต๊ะ !!');
+      _showAlertDialog(strError: 'กำลังดำเนินการเช็คบิลล์ โปรดรอสักครู่');
     }
   }
 
@@ -214,7 +265,6 @@ class _ShowData extends State<newOrder> {
                                 onPressed: () {
                                   SendtoJsonCancel(
                                       orderID: menu.orderList[idx].orderID);
-                                  refreshStatusOrder();
                                 },
                               ),
                             ),
@@ -263,6 +313,7 @@ class _ShowData extends State<newOrder> {
 
   listStatusOrder() {
     return Expanded(
+
       child: FutureBuilder<StatusOrder>(
           future: statusOrders,
           builder: (context, snapshot) {
@@ -282,18 +333,58 @@ class _ShowData extends State<newOrder> {
                           new RaisedButton(
                             color: Colors.white,
                             child: FutureBuilder(
-                                future: _totals,
+                                future: _totalsCheckbill,
                                 builder: (context, snapshot) {
-                                  return Text(
-                                    'REFRESH',
-                                    style: TextStyle(color: Colors.black),
-                                  );
+                                  if (snapshot.hasData) {
+                                    if (snapshot.data != null) {
+                                      return Text(
+                                        'Total ${snapshot.data} || REFRESH',
+                                        style: TextStyle(color: Colors.black),
+                                      );
+                                    } else {
+                                      return Container(
+                                        child: Center(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: <Widget>[
+                                              SizedBox(
+                                                child:
+                                                    CircularProgressIndicator(),
+                                                height: 10.0,
+                                                width: 10.0,
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  } else {
+                                    return Container(
+                                      child: Center(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: <Widget>[
+                                            SizedBox(
+                                              child:
+                                                  CircularProgressIndicator(),
+                                              height: 10.0,
+                                              width: 10.0,
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  }
                                 }),
                             onPressed: () {
                               refreshStatusOrder();
+                              refreshTotalCheckbill();
                             },
                           ),
                           new RaisedButton(
+                            color: Colors.deepOrange,
                             child: FutureBuilder(
                                 future: _totals,
                                 builder: (context, snapshot) {
@@ -397,7 +488,6 @@ class _ShowData extends State<newOrder> {
                               }),
                           onPressed: () {
 //CodeHere
-
                             String _Header =
                                 '{"restaurantID":"${globals.restaurantID}","userID":"${globals.userID}","tableID":"${globals.tableID}","orderList":[';
                             String _Tail = ']}';
@@ -591,7 +681,7 @@ class _ShowData extends State<newOrder> {
           ),
           backgroundColor: Colors.white,
           title: new Text(
-            'MY ORDER',
+            'MY ORDER   ${globals.tableName}',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.black,
@@ -619,13 +709,17 @@ class _ShowData extends State<newOrder> {
                   icon: new Icon(Icons.restaurant),
                   onPressed: () {
                     if (globals.restaurantID != null) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => DetailCommendPage(
-                                  restaurantID: globals.restaurantID,
-                                )),
-                      );
+                      if (globals.restaurantID != '') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => DetailCommendPage(
+                                    restaurantID: globals.restaurantID,
+                                  )),
+                        );
+                      } else {
+                        _showAlertDialog();
+                      }
                     } else {
                       _showAlertDialog();
                     }
@@ -635,10 +729,14 @@ class _ShowData extends State<newOrder> {
                   icon: new Icon(Icons.list),
                   onPressed: () {
                     if (globals.restaurantID != null) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => newOrder()),
-                      );
+                      if (globals.restaurantID != '') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => newOrder()),
+                        );
+                      } else {
+                        _showAlertDialog();
+                      }
                     } else {
                       _showAlertDialog();
                     }
@@ -660,21 +758,29 @@ class _ShowData extends State<newOrder> {
                       MaterialPageRoute(builder: (context) => Mapgoogle()),
                     );
                   }),
+              new IconButton(
+                  icon: new Icon(Icons.exit_to_app),
+                  onPressed: () {
+                    _LogOut();
+                  }),
             ],
           ),
         ),
         body: SingleChildScrollView(
           child: new Container(
             child: new Column(
+
               mainAxisAlignment: MainAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               verticalDirection: VerticalDirection.down,
+
               children: <Widget>[
                 SizedBox(
                   height: 12,
                 ),
                 headerListOrder(),
                 Container(
+
                     height: MediaQuery.of(context).size.width,
                     width: double.infinity,
                     child: Column(
@@ -701,12 +807,61 @@ class _ShowData extends State<newOrder> {
         ));
   }
 
+  void _LogOut() async {
+    if (globals.tableID != null && globals.tableID != '') {
+      String strBody =
+          '{"userID":"${globals.userID}","tableID":"${globals.tableID}"}';
+      var feed = await NetworkFoods.loadLogout(strBody);
+      var data = DataFeedLogout(feed: feed);
+      if (data.feed.ResultOk == "false") {
+        _showAlertLogout(data.feed.ErrorMessage);
+      } else {
+        globals.tableID = '';
+        globals.restaurantID = '';
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => FirstPage2()),
+        );
+      }
+    } else {
+      globals.tableID = '';
+      globals.restaurantID = '';
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => FirstPage2()),
+      );
+    }
+  }
+
   void _dialogResult(String str) {
     if (str == 'Accept') {
       print('Accept');
     } else {
       Navigator.of(context).pop();
     }
+  }
+
+  _showAlertLogout(String strLogOut) async {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('ยังไม่สามารถ Logout ได้ ' + strLogOut),
+            content: Text(""),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => newOrder()),
+                  );
+                },
+                child: Text("OK"),
+              )
+            ],
+          );
+        });
   }
 
   void _showAlert(BuildContext context, String value) {
@@ -781,38 +936,11 @@ class _ShowData extends State<newOrder> {
       refreshList();
       refreshTotal();
       refreshStatusOrder();
+      refreshTotalCheckbill();
+      refreshJsonBody();
     } else {
       showSnak();
     }
-  }
-
-  TestFuture({String strAll}) {
-    return FutureBuilder<RetStatusInsertOrder>(
-        future: NetworkFoods.inSertOrder(strBody: strAll),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            print('Have=========');
-            dbHelper.deleteAll();
-            refreshList();
-          } else if (snapshot.hasError) {
-            print('==========Error');
-          } else {
-            print('==========No have');
-          }
-        });
-  }
-
-  FutureBody() {
-    print('Future999999');
-
-    return FutureBuilder<String>(
-      future: _jsonBody, // async work
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          print('snap9999999');
-        }
-      },
-    );
   }
 }
 
@@ -838,4 +966,16 @@ class DataFeedJson {
   strJsonOrder feed;
 
   DataFeedJson({this.feed});
+}
+
+class DataFeedLogout {
+  LogoutTable feed;
+
+  DataFeedLogout({this.feed});
+}
+
+class DataFeedReCheck {
+  retCheckBillStatus feed;
+
+  DataFeedReCheck({this.feed});
 }

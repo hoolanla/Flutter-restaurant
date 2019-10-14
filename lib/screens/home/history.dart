@@ -5,24 +5,15 @@ import 'dart:convert';
 import 'package:online_store/screens/login/login.dart';
 import 'package:online_store/screens/map/place.dart';
 import 'package:online_store/screens/barcode/barcode.dart';
-import 'package:online_store/screens/home/CafeLine2.dart';
-
-import 'package:online_store/screens/home/foodDetail.dart';
-import 'package:online_store/screens/home/CafeLine.dart';
 import 'package:online_store/screens/home/FirstPage2.dart';
-import 'package:online_store/models/foods.dart';
 import 'package:online_store/models/order.dart';
-import 'package:online_store/models/bill.dart';
 import 'package:online_store/models/history.dart';
 import 'package:online_store/screens/Json/foods.dart';
 import 'dart:async' show Future;
-import 'package:flutter/services.dart' show rootBundle;
-import 'package:online_store/screens/home/Showdata.dart';
-import 'package:online_store/services/authService.dart';
 import 'package:online_store/globals.dart' as globals;
-import 'package:online_store/screens/home/DetailRestaurant.dart';
 import 'package:online_store/screens/home/newOrder.dart';
 import 'package:online_store/screens/home/DetailCommendPage.dart';
+import 'package:online_store/models/logout.dart';
 
 
 Future<double> _totals;
@@ -154,28 +145,34 @@ class _MyStatefulState extends State<MyStateful>
                 icon: new Icon(Icons.restaurant),
                 onPressed: () {
                   if (globals.restaurantID != null) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => DetailCommendPage(
-                            restaurantID: globals.restaurantID,
-                          )),
-                    );
+                    if (globals.restaurantID != '') {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => DetailCommendPage(
+                              restaurantID: globals.restaurantID,
+                            )),
+                      );
+                    } else {
+                      _showAlertDialog();
+                    }
                   } else {
                     _showAlertDialog();
                   }
                 }),
 
-
-
             new IconButton(
                 icon: new Icon(Icons.list),
                 onPressed: () {
                   if (globals.restaurantID != null) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => newOrder()),
-                    );
+                    if (globals.restaurantID != '') {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => newOrder()),
+                      );
+                    } else {
+                      _showAlertDialog();
+                    }
                   } else {
                     _showAlertDialog();
                   }
@@ -196,6 +193,11 @@ class _MyStatefulState extends State<MyStateful>
                     context,
                     MaterialPageRoute(builder: (context) => Mapgoogle()),
                   );
+                }),
+            new IconButton(
+                icon: new Icon(Icons.exit_to_app),
+                onPressed: () {
+                  _LogOut();
                 }),
           ],
         ),
@@ -297,4 +299,60 @@ class _MyStatefulState extends State<MyStateful>
         },
         itemCount: menu.data.length,
       );
+
+  _showAlertLogout(String strLogOut) async {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('ยังไม่สามารถ Logout ได้ ' + strLogOut),
+            content: Text(""),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => newOrder()),
+                  );
+                },
+                child: Text("OK"),
+              )
+            ],
+          );
+        });
+  }
+
+
+  void _LogOut() async {
+    if (globals.tableID != null && globals.tableID != '') {
+      String strBody =
+          '{"userID":"${globals.userID}","tableID":"${globals.tableID}"}';
+      var feed = await NetworkFoods.loadLogout(strBody);
+      var data = DataFeedLogout(feed: feed);
+      if (data.feed.ResultOk == "false") {
+        _showAlertLogout(data.feed.ErrorMessage);
+      } else {
+        globals.tableID = '';
+        globals.restaurantID = '';
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => FirstPage2()),
+        );
+      }
+    } else {
+      globals.tableID = '';
+      globals.restaurantID = '';
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => FirstPage2()),
+      );
+    }
+  }
+}
+
+
+class DataFeedLogout {
+  LogoutTable feed;
+  DataFeedLogout({this.feed});
 }

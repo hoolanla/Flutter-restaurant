@@ -3,23 +3,23 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>874349617820-hfritlc7dvr8q3t9ufg739ha9dbgav3r.apps.googleusercontent.com</string>
+	<string>808479543228-jk38eo3eqjo0dthl0965ua42i2jqtgto.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.874349617820-hfritlc7dvr8q3t9ufg739ha9dbgav3r</string>
+	<string>com.googleusercontent.apps.808479543228-jk38eo3eqjo0dthl0965ua42i2jqtgto</string>
 	<key>ANDROID_CLIENT_ID</key>
-	<string>874349617820-34pciojs248a76go7brhpo0g90q4qkf8.apps.googleusercontent.com</string>
+	<string>808479543228-b8i88phlh28mg2nmdtaie3172tsm0qhj.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>AIzaSyAOPMar2bdP-CTwPxCmuVY9dG610yWvAIs</string>
+	<string>AIzaSyBW_ouosoGLZlZlsMipGG5riOhmyTTVIas</string>
 	<key>GCM_SENDER_ID</key>
-	<string>874349617820</string>
+	<string>808479543228</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.example.onlinestore</string>
 	<key>PROJECT_ID</key>
-	<string>flutterlogin-4c422</string>
+	<string>emenu-e0d79</string>
 	<key>STORAGE_BUCKET</key>
-	<string>flutterlogin-4c422.appspot.com</string>
+	<string>emenu-e0d79.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -31,8 +31,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:874349617820:ios:1c094b3c26657284</string>
+	<string>1:808479543228:ios:68ea00948b8970e662e5b9</string>
 	<key>DATABASE_URL</key>
-	<string>https://flutterlogin-4c422.firebaseio.com</string>
+	<string>https://emenu-e0d79.firebaseio.com</string>
 </dict>
 </plist>

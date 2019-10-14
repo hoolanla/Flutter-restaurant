@@ -1,5 +1,4 @@
 import 'dart:async' show Future;
-import 'package:flutter/services.dart' show rootBundle;
 import 'dart:convert';
 import 'package:online_store/models/foods.dart';
 import 'package:online_store/models/order.dart';
@@ -8,9 +7,9 @@ import 'package:online_store/models/register.dart';
 import 'package:online_store/models/bill.dart';
 import 'package:online_store/models/restaurant.dart';
 import 'package:online_store/models/history.dart';
-import 'package:online_store/models/restaurant.dart';
+import 'package:online_store/models/qrcode.dart';
+import 'package:online_store/models/logout.dart';
 import 'package:http/http.dart' as http;
-import 'package:online_store/services/authService.dart';
 import 'package:online_store/globals.dart' as globals;
 
 class NetworkFoods {
@@ -47,6 +46,49 @@ class NetworkFoods {
     return _restaurant;
   }
 
+  static Future<LogoutTable> loadLogout(String strBody) async {
+    String url = 'http://203.154.74.120/eMenuAPI/api/eMenu/Logout';
+
+    var response = await http.post(
+      '$url',
+      headers: {"Content-Type": "application/json"},
+      body: strBody,
+    );
+    final jsonResponse = json.decode(response.body.toString());
+    LogoutTable _logout = new LogoutTable.fromJson(jsonResponse);
+    print(response.body.toString());
+    return _logout;
+  }
+
+  static Future<Qrcode> loadQRCode(String strBody) async {
+    String url = 'http://203.154.74.120/eMenuAPI/api/eMenu/DecodeQRTable';
+    var response = await http.post(
+      '$url',
+      headers: {"Content-Type": "application/json"},
+      body: strBody,
+    );
+    final jsonResponse = json.decode(response.body.toString());
+
+    print(response.body.toString());
+
+    Qrcode _qr = new Qrcode.fromJson(jsonResponse);
+    return _qr;
+  }
+
+
+  static Future<retCheckBillStatus> loadRetCheckBillStatus(String strBody) async {
+    String url = 'http://203.154.74.120/eMenuAPI/api/eMenu/getStatusOrderIsBillPlease';
+    var response = await http.post(
+      '$url',
+      headers: {"Content-Type": "application/json"},
+      body: strBody,
+    );
+    final jsonResponse = json.decode(response.body.toString());
+    retCheckBillStatus _ret = new retCheckBillStatus.fromJson(jsonResponse);
+    return _ret;
+  }
+
+
   static Future<Restaurant> loadRestaurantByID({String strBody}) async {
     String url = 'http://203.154.74.120/eMenuAPI/api/eMenu/getFirstPageByID';
     String body = '';
@@ -78,6 +120,32 @@ class NetworkFoods {
 //jsonResponse.
     StatusOrder _statusOrder = new StatusOrder.fromJson(jsonResponse);
     return _statusOrder;
+  }
+
+
+
+  static Future<double> loadTotalStatusOrder(String strBody) async {
+    String url = 'http://203.154.74.120/eMenuAPI/api/eMenu/getOrder';
+    var response = await http.post('$url',
+        headers: {"Content-Type": "application/json"}, body: strBody);
+    final jsonResponse = json.decode(response.body.toString());
+
+    StatusOrder _totals = new StatusOrder.fromJson(jsonResponse);
+
+    double total = 0;
+
+    if(_totals.orderList.length > 0)
+    {
+      for (int i = 0; i < _totals.orderList.length; i++) {
+        print(_totals.orderList[i].totalPrice);
+        total += double.parse(_totals.orderList[i].totalPrice);
+      }
+      return total;
+    }
+    else
+    {
+      return 0;
+    }
   }
 
   static Future<HistoryUser> loadHistory(String strBody) async {
@@ -124,20 +192,15 @@ class NetworkFoods {
       {
         return 0;
       }
-
   }
 
-
-
   static Future<RetStatusInsertOrder> inSertOrder({String strBody}) async {
-    print(strBody);
-
+    print('inser order=====>' + strBody);
     String url = 'http://203.154.74.120/eMenuAPI/api/eMenu/insertOrder';
     var response = await http.post('$url',
         headers: {"Content-Type": "application/json"}, body: strBody);
     final jsonResponse = json.decode(response.body.toString());
-
-    print(response.body.toString());
+    print('Ret insert order========> ' + response.body.toString());
     RetStatusInsertOrder _retStatusInsertOrder =
         new RetStatusInsertOrder.fromJson(jsonResponse);
     return _retStatusInsertOrder;

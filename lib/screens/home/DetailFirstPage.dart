@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:online_store/screens/home/CafeLine.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:online_store/screens/home/FirstPage2.dart';
 import 'package:online_store/screens/home/CafeLine2.dart';
 import 'package:online_store/models/foods.dart';
